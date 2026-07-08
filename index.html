@@ -6,7 +6,7 @@
 
 <style>
 body{font-family:sans-serif;margin:0}
-#controls{padding:6px;background:#f4f4f4;}
+#controls{padding:6px;background:#f4f4f4;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
 #gantt-container{overflow-x:auto;position:relative;}
 
 #gantt-table{
@@ -23,34 +23,12 @@ body{font-family:sans-serif;margin:0}
     font-size:11px;
     line-height:1.2;
 }
-const TASK_STYLES = {
-    todo: {
-        class: "task-todo",
-        color: "#00BCD4"
-    },
-    progress: {
-        class: "task-progress",
-        color: "#1976D2"
-    },
-    validation: {
-        class: "task-validation",
-        color: "#FB8C00"
-    },
-    done: {
-        class: "task-done",
-        color: "#616161"
-    }
-};
 
-.task-cell{color:white;border-radius:4px;padding:3px;font-size:11px;}
-.task-à-faire{background:DarkTurquoise}
-.task-en-cours{background:dodgerblue}
-.task-termine{background:gray}
-.task-en-validation{background:orange}
+.task-cell{color:white;border-radius:4px;padding:3px;font-size:11px;box-sizing:border-box;}
 
 /* Jalons */
 .jalon-cell { position: relative; height: 26px; text-align: center; vertical-align: middle; }
-.jalon-cell div:last-child { width:14px; height:14px; background:#e74c3c; transform:rotate(45deg); margin:auto; margin-top:4px; }
+.jalon-cell div:last-child { width:14px; height:14px; transform:rotate(45deg); margin:auto; margin-top:4px; }
 
 .day-label{
     writing-mode: vertical-rl;
@@ -76,31 +54,107 @@ const TASK_STYLES = {
     pointer-events:none;
     z-index:10;
 }
+
+/* Bouton config */
+#configBtn{
+    cursor:pointer;
+    border:1px solid #ccc;
+    background:#fff;
+    border-radius:4px;
+    padding:4px 10px;
+    font-size:12px;
+}
+#configBtn:hover{background:#eee;}
+
+/* Panneau config */
+#configPanel{
+    display:none;
+    position:absolute;
+    top:40px;
+    left:6px;
+    z-index:200;
+    background:#fff;
+    border:1px solid #ccc;
+    border-radius:6px;
+    box-shadow:0 4px 16px rgba(0,0,0,.18);
+    padding:14px;
+    width:520px;
+    max-width:90vw;
+}
+#configPanel h3{margin:0 0 10px 0;font-size:14px;}
+#configRows{max-height:260px;overflow-y:auto;margin-bottom:8px;}
+.config-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+.config-row input[type=text]{flex:1;padding:4px 6px;font-size:12px;border:1px solid #ccc;border-radius:3px;}
+.config-row input[type=color]{width:34px;height:28px;border:none;padding:0;cursor:pointer;}
+.cfg-remove{cursor:pointer;border:none;background:none;color:#c0392b;font-size:15px;padding:2px 6px;}
+.cfg-remove:hover{background:#fdecea;border-radius:3px;}
+#addRow{margin-bottom:10px;font-size:12px;padding:4px 8px;border:1px dashed #999;background:#fafafa;border-radius:4px;cursor:pointer;}
+#addRow:hover{background:#f0f0f0;}
+.config-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px;border-top:1px solid #eee;padding-top:10px;}
+.config-hint{font-size:11px;color:#888;margin-bottom:8px;}
+#saveConfig{background:#2e7d32;color:white;border:none;padding:6px 14px;border-radius:4px;cursor:pointer;}
+#cancelConfig{background:none;border:1px solid #ccc;padding:6px 14px;border-radius:4px;cursor:pointer;}
+
+/* Legende */
+#legend{display:flex;gap:12px;flex-wrap:wrap;padding:6px 10px;font-size:11px;color:#333;}
+.legend-item{display:flex;align-items:center;gap:5px;}
+.legend-swatch{width:12px;height:12px;border-radius:3px;display:inline-block;}
 </style>
 </head>
 
 <body>
 
 <div id="controls">
-Echelle :
-<select id="scale">
-<option value="year">Année</option>
-<option value="quarter">Trimestre</option>
-<option value="month" selected>Mois</option>
-<option value="week">Semaine</option>
-<option value="day">Jour</option>
-</select>
+  <span>
+    Echelle :
+    <select id="scale">
+      <option value="year">Année</option>
+      <option value="quarter">Trimestre</option>
+      <option value="month" selected>Mois</option>
+      <option value="week">Semaine</option>
+      <option value="day">Jour</option>
+    </select>
+  </span>
 
-<label style="margin-left:12px;">
-<input type="checkbox" id="todayHighlight">
-Aujourd'hui
-</label>
+  <label>
+    <input type="checkbox" id="todayHighlight">
+    Aujourd'hui
+  </label>
+
+  <button id="configBtn" type="button">⚙ Statuts &amp; couleurs</button>
+</div>
+
+<div id="configPanel">
+  <h3>Configuration des statuts</h3>
+  <div class="config-hint">
+    Chaque ligne définit un texte à repérer dans la colonne "Etat" (insensible à la casse).
+    Laissez le champ "texte à repérer" vide pour créer le statut par défaut (utilisé quand aucune règle ne correspond).
+  </div>
+  <div id="configRows"></div>
+  <button id="addRow" type="button">+ Ajouter un statut</button>
+
+  <div>
+    <label style="font-size:12px;">
+      Couleur des jalons :
+      <input type="color" id="milestoneColorInput">
+    </label>
+  </div>
+
+  <div class="config-footer">
+    <button id="resetConfig" type="button" style="background:none;border:none;color:#888;font-size:11px;cursor:pointer;text-decoration:underline;">Réinitialiser les valeurs par défaut</button>
+    <div>
+      <button id="cancelConfig" type="button">Fermer</button>
+      <button id="saveConfig" type="button">Enregistrer</button>
+    </div>
+  </div>
 </div>
 
 <div id="gantt-container">
 <table id="gantt-table"></table>
 <div id="today-line" class="today-line" style="display:none;"></div>
 </div>
+
+<div id="legend"></div>
 
 <script>
 grist.ready({
@@ -119,6 +173,16 @@ let currentRecords=[]
 let currentMappings={}
 let highlightToday=false
 
+// ===== CONFIGURATION DES STATUTS (personnalisable) =====
+const defaultStateConfig = [
+    {match:"1-", label:"À faire",        color:"#2e7d32"},
+    {match:"2-", label:"En cours",       color:"#1e88e5"},
+    {match:"3-", label:"En validation",  color:"#fb8c00"},
+    {match:"",   label:"Terminé",        color:"#757575"}
+]
+let stateConfig = JSON.parse(JSON.stringify(defaultStateConfig))
+let milestoneColor = "#e74c3c"
+
 document.getElementById("scale").onchange = e=>{
     scale = e.target.value
     draw(currentRecords,currentMappings)
@@ -128,6 +192,86 @@ document.getElementById("todayHighlight").onchange = e=>{
     highlightToday = e.target.checked
     draw(currentRecords,currentMappings)
 }
+
+// ===== Gestion du panneau de configuration =====
+const configPanel = document.getElementById("configPanel")
+const configRowsEl = document.getElementById("configRows")
+
+document.getElementById("configBtn").onclick = ()=>{
+    renderConfigRows(stateConfig)
+    document.getElementById("milestoneColorInput").value = milestoneColor
+    configPanel.style.display = "block"
+}
+
+document.getElementById("cancelConfig").onclick = ()=>{
+    configPanel.style.display = "none"
+}
+
+document.getElementById("addRow").onclick = ()=>{
+    addConfigRow({match:"", label:"", color:"#607d8b"})
+}
+
+document.getElementById("resetConfig").onclick = ()=>{
+    renderConfigRows(JSON.parse(JSON.stringify(defaultStateConfig)))
+    document.getElementById("milestoneColorInput").value = "#e74c3c"
+}
+
+document.getElementById("saveConfig").onclick = ()=>{
+    stateConfig = collectConfigFromRows()
+    milestoneColor = document.getElementById("milestoneColorInput").value
+    grist.setOption("taskStates", stateConfig)
+    grist.setOption("milestoneColor", milestoneColor)
+    configPanel.style.display = "none"
+    draw(currentRecords, currentMappings)
+}
+
+function renderConfigRows(config){
+    configRowsEl.innerHTML = ""
+    config.forEach(rule=>addConfigRow(rule))
+}
+
+function addConfigRow(rule){
+    const row = document.createElement("div")
+    row.className = "config-row"
+    row.innerHTML = `
+        <input type="text" class="cfg-match" placeholder="Texte à repérer (vide = défaut)" value="${escapeAttr(rule.match||"")}">
+        <input type="text" class="cfg-label" placeholder="Libellé (légende)" value="${escapeAttr(rule.label||"")}">
+        <input type="color" class="cfg-color" value="${rule.color||"#607d8b"}">
+        <button type="button" class="cfg-remove" title="Supprimer">✕</button>
+    `
+    row.querySelector(".cfg-remove").onclick = ()=> row.remove()
+    configRowsEl.appendChild(row)
+}
+
+function collectConfigFromRows(){
+    const rows = configRowsEl.querySelectorAll(".config-row")
+    const result = []
+    rows.forEach(row=>{
+        result.push({
+            match: row.querySelector(".cfg-match").value.trim(),
+            label: row.querySelector(".cfg-label").value.trim(),
+            color: row.querySelector(".cfg-color").value
+        })
+    })
+    return result
+}
+
+function escapeAttr(s){
+    return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;")
+}
+
+// Charge la config sauvegardée dans le document Grist (par widget)
+grist.onOptions((options)=>{
+    if(options){
+        if(Array.isArray(options.taskStates) && options.taskStates.length>0){
+            stateConfig = options.taskStates
+        }
+        if(options.milestoneColor){
+            milestoneColor = options.milestoneColor
+        }
+    }
+    draw(currentRecords, currentMappings)
+})
 
 function parseDate(v){
     if(!v) return null
@@ -208,23 +352,23 @@ function countCols(units,start,end){
     return findCol(units,end)-findCol(units,start)+1;
 }
 
-function stateClass(state){
-    // Si pas d'etat alors "A faire"
-    if(!state)return "task-a-faire";
-    // Determination de l'etat pour gestion couleurs
-    state=state.toLowerCase();
-    if(state.includes("1-"))return "task-a-faire";
-    if(state.includes("2-"))return "task-en-cours";
-    if(state.includes("3-"))return "task-en-validation";
-    // Les autres auront la class CSS "Terminé"
-    return "task-termine";
+// Retourne la règle de statut (label + couleur) correspondant à l'état d'une tâche
+function stateRule(state){
+    let s = (state||"").toLowerCase();
+    for(const rule of stateConfig){
+        if(rule.match && s.includes(rule.match.toLowerCase())) return rule;
+    }
+    // Règle par défaut : celle dont "match" est vide
+    let def = stateConfig.find(r=>!r.match);
+    if(def) return def;
+    return {label: state||"Terminé", color:"#757575"};
 }
 
 function draw(records,mappings){
     currentRecords = records;
     currentMappings = mappings;
 
-    if(records.length===0) return
+    if(!records || records.length===0) return
 
     let dates=[]
     records.forEach(r=>{
@@ -264,18 +408,19 @@ function draw(records,mappings){
             let col=findCol(units,s||e)
             for(let i=0;i<units.length;i++){
                 if(i===col){
-                    html+=`<td class="jalon-cell"><div>${r[mappings.task]||""}</div><div></div></td>`
+                    html+=`<td class="jalon-cell"><div>${r[mappings.task]||""}</div><div style="background:${milestoneColor}"></div></td>`
                 } else html+="<td></td>"
             }
         } else {
             let startCol=findCol(units,s)
             let colspan=countCols(units,s,e)
+            let rule = stateRule(r[mappings.state])
 
             for(let i=0;i<startCol;i++) html+="<td></td>"
 
             html+=`<td colspan="${colspan}">
-                    <div class="task-cell ${stateClass(r[mappings.state])}">
-                    ${r[mappings.task]}
+                    <div class="task-cell" style="background:${rule.color}">
+                    ${r[mappings.task]||""}
                     </div>
                   </td>`
 
@@ -286,6 +431,7 @@ function draw(records,mappings){
     })
 
     document.getElementById("gantt-table").innerHTML=html
+    renderLegend()
 
     // ===== LIGNE AUJOURD'HUI =====
     let line=document.getElementById("today-line")
@@ -328,6 +474,17 @@ function draw(records,mappings){
 
     // Scroll automatique
     document.getElementById("gantt-container").scrollLeft = left - 200
+}
+
+function renderLegend(){
+    const legend = document.getElementById("legend")
+    let html = ""
+    stateConfig.forEach(rule=>{
+        let label = rule.label && rule.label.trim() !== "" ? rule.label : (rule.match || "Autre")
+        html += `<span class="legend-item"><span class="legend-swatch" style="background:${rule.color}"></span>${label}</span>`
+    })
+    html += `<span class="legend-item"><span class="legend-swatch" style="background:${milestoneColor};transform:rotate(45deg);"></span>Jalon</span>`
+    legend.innerHTML = html
 }
 
 grist.onRecords((r,m)=>draw(r,m))
