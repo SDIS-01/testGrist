@@ -9,6 +9,15 @@
 body{font-family:sans-serif;margin:0}
 #controls{padding:8px;background:#f4f4f4;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
 #controls select, #controls input[type=text], #controls button{min-height:34px;box-sizing:border-box;}
+#freeNoteInput{
+    flex:1 1 180px;
+    min-width:150px;
+    padding:6px 10px;
+    font-size:13px;
+    border:1px solid #ccc;
+    border-radius:4px;
+    color:#333;
+}
 #gantt-container{overflow-x:auto;position:relative;-webkit-overflow-scrolling:touch;}
 
 #gantt-table{
@@ -24,6 +33,16 @@ body{font-family:sans-serif;margin:0}
     width:80px;
     font-size:12px;
     line-height:1.2;
+}
+
+.clickable-mark{
+    cursor:pointer;
+}
+.task-cell.clickable-mark:hover{
+    filter:brightness(0.93);
+}
+.jalon-cell .clickable-mark:hover{
+    filter:brightness(0.85);
 }
 
 .task-cell{
@@ -82,12 +101,13 @@ body{font-family:sans-serif;margin:0}
 .col-resize-handle{
     position:absolute;
     top:0;
-    right:-4px;
-    width:8px;
-    height:100%;
+    right:-5px;
+    width:10px;
+    height:34px;
     cursor:col-resize;
-    z-index:9;
+    z-index:20;
     touch-action:none;
+    pointer-events:auto;
 }
 .col-resize-handle:hover,
 .col-resize-handle.resizing{
@@ -97,6 +117,12 @@ body{font-family:sans-serif;margin:0}
     background:#f4f4f4;
     padding:4px 10px;
     z-index:7;
+    position:sticky;
+}
+.task-name-header-inner{
+    position:relative;
+    height:100%;
+    min-height:22px;
 }
 .task-name-cell{
     background:#fff;
@@ -235,6 +261,118 @@ body{font-family:sans-serif;margin:0}
 .legend-swatch{width:12px;height:12px;border-radius:3px;display:inline-block;}
 
 /* ===== MOBILE ===== */
+/* ===== Panneau latéral de détail ===== */
+#detailOverlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.25);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease;
+    z-index:99;
+}
+#detailOverlay.open{
+    opacity:1;
+    pointer-events:auto;
+}
+#detailPanel{
+    position:fixed;
+    top:0;
+    right:0;
+    height:100vh;
+    width:380px;
+    max-width:92vw;
+    background:#fff;
+    box-shadow:-3px 0 14px rgba(0,0,0,.2);
+    transform:translateX(100%);
+    transition:transform .25s ease;
+    z-index:100;
+    display:flex;
+    flex-direction:column;
+}
+#detailPanel.open{
+    transform:translateX(0);
+}
+#detailPanelHeader{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px 16px;
+    border-bottom:1px solid #eee;
+    background:#f9f9f9;
+}
+#detailPanelTitle{
+    font-size:15px;
+    font-weight:700;
+    color:#222;
+    overflow-wrap:break-word;
+    padding-right:10px;
+}
+#detailPanelClose{
+    cursor:pointer;
+    border:1px solid #ccc;
+    background:#fff;
+    border-radius:4px;
+    padding:5px 10px;
+    font-size:14px;
+    line-height:1;
+    flex:0 0 auto;
+}
+#detailPanelClose:hover{background:#eee;}
+#detailPanelBody{
+    padding:16px;
+    overflow-y:auto;
+    flex:1 1 auto;
+}
+.detail-row{
+    margin-bottom:14px;
+}
+.detail-label{
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    color:#888;
+    margin-bottom:3px;
+}
+.detail-value{
+    font-size:13.5px;
+    color:#222;
+    overflow-wrap:break-word;
+    white-space:pre-wrap;
+}
+.detail-status-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:13px;
+    font-weight:600;
+}
+.detail-status-dot{
+    width:11px;
+    height:11px;
+    border-radius:50%;
+    display:inline-block;
+}
+.detail-attachment{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 10px;
+    border:1px solid #ddd;
+    border-radius:6px;
+    margin-bottom:8px;
+    font-size:13px;
+    text-decoration:none;
+    color:#1e88e5;
+}
+.detail-attachment:hover{background:#f5f9ff;}
+.detail-empty{
+    color:#999;
+    font-size:12.5px;
+    font-style:italic;
+}
+
 @media (max-width:600px){
     #controls{flex-direction:column;align-items:stretch;gap:10px;padding:10px;}
     #controls > *{width:100%;}
@@ -249,6 +387,20 @@ body{font-family:sans-serif;margin:0}
     .task-name-filter1{font-size:11.5px;}
     .task-name-main{font-size:11px;}
     .task-name-sub{font-size:10px;}
+    #detailPanel{
+        top:auto;
+        right:0;
+        left:0;
+        bottom:0;
+        height:75vh;
+        width:auto;
+        max-width:none;
+        border-radius:14px 14px 0 0;
+        transform:translateY(100%);
+    }
+    #detailPanel.open{
+        transform:translateY(0);
+    }
 }
 </style>
 </head>
@@ -305,6 +457,27 @@ body{font-family:sans-serif;margin:0}
     <button type="button" class="filter-clear" data-key="filterField4" title="Effacer ce filtre">✕</button>
   </span>
 
+  <span class="filter-block" id="filterControls-filterField5">
+    <span class="filter-label-text" data-key="filterField5">Filtre 5</span> :
+    <input type="text" class="filter-input" data-key="filterField5" list="filterOptions-filterField5" placeholder="Tous (ou rechercher...)" autocomplete="off">
+    <datalist id="filterOptions-filterField5"></datalist>
+    <button type="button" class="filter-clear" data-key="filterField5" title="Effacer ce filtre">✕</button>
+  </span>
+
+  <span class="filter-block" id="filterControls-filterField6">
+    <span class="filter-label-text" data-key="filterField6">Filtre 6</span> :
+    <input type="text" class="filter-input" data-key="filterField6" list="filterOptions-filterField6" placeholder="Tous (ou rechercher...)" autocomplete="off">
+    <datalist id="filterOptions-filterField6"></datalist>
+    <button type="button" class="filter-clear" data-key="filterField6" title="Effacer ce filtre">✕</button>
+  </span>
+
+  <span class="filter-block" id="filterControls-filterField7">
+    <span class="filter-label-text" data-key="filterField7">Filtre 7</span> :
+    <input type="text" class="filter-input" data-key="filterField7" list="filterOptions-filterField7" placeholder="Tous (ou rechercher...)" autocomplete="off">
+    <datalist id="filterOptions-filterField7"></datalist>
+    <button type="button" class="filter-clear" data-key="filterField7" title="Effacer ce filtre">✕</button>
+  </span>
+
   <span class="sort-block">
     Trier par :
     <select class="sort-select" data-level="1">
@@ -314,6 +487,9 @@ body{font-family:sans-serif;margin:0}
       <option value="filterField2" class="sort-opt" data-key="filterField2">Filtre 2 (A→Z)</option>
       <option value="filterField3" class="sort-opt" data-key="filterField3">Filtre 3 (A→Z)</option>
       <option value="filterField4" class="sort-opt" data-key="filterField4">Filtre 4 (A→Z)</option>
+      <option value="filterField5" class="sort-opt" data-key="filterField5">Filtre 5 (A→Z)</option>
+      <option value="filterField6" class="sort-opt" data-key="filterField6">Filtre 6 (A→Z)</option>
+      <option value="filterField7" class="sort-opt" data-key="filterField7">Filtre 7 (A→Z)</option>
     </select>
     puis
     <select class="sort-select" data-level="2">
@@ -323,6 +499,9 @@ body{font-family:sans-serif;margin:0}
       <option value="filterField2" class="sort-opt" data-key="filterField2">Filtre 2 (A→Z)</option>
       <option value="filterField3" class="sort-opt" data-key="filterField3">Filtre 3 (A→Z)</option>
       <option value="filterField4" class="sort-opt" data-key="filterField4">Filtre 4 (A→Z)</option>
+      <option value="filterField5" class="sort-opt" data-key="filterField5">Filtre 5 (A→Z)</option>
+      <option value="filterField6" class="sort-opt" data-key="filterField6">Filtre 6 (A→Z)</option>
+      <option value="filterField7" class="sort-opt" data-key="filterField7">Filtre 7 (A→Z)</option>
     </select>
     puis
     <select class="sort-select" data-level="3">
@@ -332,10 +511,15 @@ body{font-family:sans-serif;margin:0}
       <option value="filterField2" class="sort-opt" data-key="filterField2">Filtre 2 (A→Z)</option>
       <option value="filterField3" class="sort-opt" data-key="filterField3">Filtre 3 (A→Z)</option>
       <option value="filterField4" class="sort-opt" data-key="filterField4">Filtre 4 (A→Z)</option>
+      <option value="filterField5" class="sort-opt" data-key="filterField5">Filtre 5 (A→Z)</option>
+      <option value="filterField6" class="sort-opt" data-key="filterField6">Filtre 6 (A→Z)</option>
+      <option value="filterField7" class="sort-opt" data-key="filterField7">Filtre 7 (A→Z)</option>
     </select>
   </span>
 
   <button id="configBtn" type="button">⚙ Statuts &amp; couleurs</button>
+
+  <input type="text" id="freeNoteInput" placeholder="Écrire une note..." autocomplete="off">
 </div>
 
 <div id="configPanel">
@@ -375,6 +559,18 @@ body{font-family:sans-serif;margin:0}
       <span style="width:70px;font-size:12px;color:#555;">Filtre 4 :</span>
       <input type="text" id="filterLabel4" placeholder="ex: ...">
     </div>
+    <div class="config-row">
+      <span style="width:70px;font-size:12px;color:#555;">Filtre 5 :</span>
+      <input type="text" id="filterLabel5" placeholder="ex: ...">
+    </div>
+    <div class="config-row">
+      <span style="width:70px;font-size:12px;color:#555;">Filtre 6 :</span>
+      <input type="text" id="filterLabel6" placeholder="ex: ...">
+    </div>
+    <div class="config-row">
+      <span style="width:70px;font-size:12px;color:#555;">Filtre 7 :</span>
+      <input type="text" id="filterLabel7" placeholder="ex: ...">
+    </div>
   </div>
 
   <div class="config-footer">
@@ -393,6 +589,15 @@ body{font-family:sans-serif;margin:0}
 <div id="today-line" class="today-line" style="display:none;"></div>
 </div>
 
+<div id="detailOverlay"></div>
+<div id="detailPanel">
+  <div id="detailPanelHeader">
+    <span id="detailPanelTitle">Détail</span>
+    <button id="detailPanelClose" type="button" title="Fermer">✕</button>
+  </div>
+  <div id="detailPanelBody"></div>
+</div>
+
 <script>
 grist.ready({
 requiredAccess:'read table',
@@ -406,7 +611,12 @@ columns:[
 {name:'filterField2',title:'Champ de filtre 2 (optionnel)', optional:true},
 {name:'filterField3',title:'Champ de filtre 3 (optionnel)', optional:true},
 {name:'filterField4',title:'Champ de filtre 4 (optionnel)', optional:true},
-{name:'progress',title:'% Avancement (optionnel)', optional:true}
+{name:'filterField5',title:'Champ de filtre 5 (optionnel)', optional:true},
+{name:'filterField6',title:'Champ de filtre 6 (optionnel)', optional:true},
+{name:'filterField7',title:'Champ de filtre 7 (optionnel)', optional:true},
+{name:'progress',title:'% Avancement (optionnel)', optional:true},
+{name:'comment',title:'Commentaire (optionnel, panneau détail)', optional:true},
+{name:'attachment',title:'Pièce jointe (optionnel, panneau détail)', optional:true}
 ]
 })
 
@@ -417,8 +627,8 @@ const TASK_COL_MAX=800
 let currentRecords=[]
 let currentMappings={}
 let highlightToday=false
-let selectedFilterValue={filterField:"", filterField2:"", filterField3:"", filterField4:""}
-const FILTER_KEYS = ["filterField","filterField2","filterField3","filterField4"]
+let selectedFilterValue={filterField:"", filterField2:"", filterField3:"", filterField4:"", filterField5:"", filterField6:"", filterField7:""}
+const FILTER_KEYS = ["filterField","filterField2","filterField3","filterField4","filterField5","filterField6","filterField7"]
 let sortLevels=["","",""]
 let showProgress=true
 
@@ -431,7 +641,7 @@ const defaultStateConfig = [
 ]
 let stateConfig = JSON.parse(JSON.stringify(defaultStateConfig))
 let milestoneColor = "#e74c3c"
-let filterLabels = {filterField:"", filterField2:"", filterField3:"", filterField4:""}
+let filterLabels = {filterField:"", filterField2:"", filterField3:"", filterField4:"", filterField5:"", filterField6:"", filterField7:""}
 
 document.getElementById("scale").onchange = e=>{
     scale = e.target.value
@@ -531,6 +741,11 @@ document.querySelectorAll(".sort-select").forEach(select=>{
 const configPanel = document.getElementById("configPanel")
 const configRowsEl = document.getElementById("configRows")
 
+// ===== Note libre =====
+document.getElementById("freeNoteInput").oninput = e=>{
+    grist.setOption("freeNote", e.target.value)
+}
+
 document.getElementById("configBtn").onclick = ()=>{
     renderConfigRows(stateConfig)
     document.getElementById("milestoneColorInput").value = milestoneColor
@@ -538,6 +753,9 @@ document.getElementById("configBtn").onclick = ()=>{
     document.getElementById("filterLabel2").value = filterLabels.filterField2 || ""
     document.getElementById("filterLabel3").value = filterLabels.filterField3 || ""
     document.getElementById("filterLabel4").value = filterLabels.filterField4 || ""
+    document.getElementById("filterLabel5").value = filterLabels.filterField5 || ""
+    document.getElementById("filterLabel6").value = filterLabels.filterField6 || ""
+    document.getElementById("filterLabel7").value = filterLabels.filterField7 || ""
     configPanel.style.display = "block"
 }
 
@@ -556,6 +774,9 @@ document.getElementById("resetConfig").onclick = ()=>{
     document.getElementById("filterLabel2").value = ""
     document.getElementById("filterLabel3").value = ""
     document.getElementById("filterLabel4").value = ""
+    document.getElementById("filterLabel5").value = ""
+    document.getElementById("filterLabel6").value = ""
+    document.getElementById("filterLabel7").value = ""
 }
 
 document.getElementById("saveConfig").onclick = ()=>{
@@ -565,7 +786,10 @@ document.getElementById("saveConfig").onclick = ()=>{
         filterField: document.getElementById("filterLabel1").value.trim(),
         filterField2: document.getElementById("filterLabel2").value.trim(),
         filterField3: document.getElementById("filterLabel3").value.trim(),
-        filterField4: document.getElementById("filterLabel4").value.trim()
+        filterField4: document.getElementById("filterLabel4").value.trim(),
+        filterField5: document.getElementById("filterLabel5").value.trim(),
+        filterField6: document.getElementById("filterLabel6").value.trim(),
+        filterField7: document.getElementById("filterLabel7").value.trim()
     }
     grist.setOption("taskStates", stateConfig)
     grist.setOption("milestoneColor", milestoneColor)
@@ -623,6 +847,9 @@ grist.onOptions((options)=>{
         if(typeof options.taskColWidth === "number" && options.taskColWidth > 0){
             applyTaskColWidth(options.taskColWidth)
         }
+        if(typeof options.freeNote === "string"){
+            document.getElementById("freeNoteInput").value = options.freeNote
+        }
         if(Array.isArray(options.taskStates) && options.taskStates.length>0){
             stateConfig = options.taskStates
         }
@@ -630,7 +857,7 @@ grist.onOptions((options)=>{
             milestoneColor = options.milestoneColor
         }
         if(options.filterLabels && typeof options.filterLabels === "object"){
-            filterLabels = Object.assign({filterField:"", filterField2:"", filterField3:"", filterField4:""}, options.filterLabels)
+            filterLabels = Object.assign({filterField:"", filterField2:"", filterField3:"", filterField4:"", filterField5:"", filterField6:"", filterField7:""}, options.filterLabels)
         }
         FILTER_KEYS.forEach(key=>{
             let saved = options["selectedFilterValue_"+key]
@@ -916,7 +1143,7 @@ function draw(records,mappings){
 
     // HEADER
     html+="<tr>"
-    html+=`<td class="task-name-header"><span class="col-resize-handle" title="Glisser pour redimensionner"></span></td>`
+    html+=`<td class="task-name-header"><div class="task-name-header-inner"><span class="col-resize-handle" title="Glisser pour redimensionner"></span></div></td>`
     units.forEach(u=>{
         html+=`<td>${u.label}</td>`
     })
@@ -935,6 +1162,9 @@ function draw(records,mappings){
         let filter2Val = filterValue("filterField2")
         let filter3Val = filterValue("filterField3")
         let filter4Val = filterValue("filterField4")
+        let filter5Val = filterValue("filterField5")
+        let filter6Val = filterValue("filterField6")
+        let filter7Val = filterValue("filterField7")
 
         let lines = []
         if(filter1Val) lines.push({cls:"task-name-filter1", text:`${filterLabels.filterField} : ${filter1Val}`})
@@ -942,6 +1172,9 @@ function draw(records,mappings){
         if(filter2Val) lines.push({cls:"task-name-sub", text:`${filterLabels.filterField2} : ${filter2Val}`})
         if(filter3Val) lines.push({cls:"task-name-sub", text:`${filterLabels.filterField3} : ${filter3Val}`})
         if(filter4Val) lines.push({cls:"task-name-sub", text:`${filterLabels.filterField4} : ${filter4Val}`})
+        if(filter5Val) lines.push({cls:"task-name-sub", text:`${filterLabels.filterField5} : ${filter5Val}`})
+        if(filter6Val) lines.push({cls:"task-name-sub", text:`${filterLabels.filterField6} : ${filter6Val}`})
+        if(filter7Val) lines.push({cls:"task-name-sub", text:`${filterLabels.filterField7} : ${filter7Val}`})
 
         let tooltipParts = lines.map(l=>l.text)
         let linesHtml = lines.map(l=>`<div class="${l.cls}">${escapeHtml(l.text)}</div>`).join("")
@@ -954,7 +1187,7 @@ function draw(records,mappings){
             let col=findCol(units,s||e)
             for(let i=0;i<units.length;i++){
                 if(i===col){
-                    html+=`<td class="jalon-cell"><div style="background:${milestoneColor}"></div></td>`
+                    html+=`<td class="jalon-cell"><div class="clickable-mark" data-row-id="${r.id}" style="background:${milestoneColor}"></div></td>`
                 } else html+="<td></td>"
             }
         } else {
@@ -975,7 +1208,7 @@ function draw(records,mappings){
             for(let i=0;i<startCol;i++) html+="<td></td>"
 
             html+=`<td colspan="${colspan}">
-                    <div class="task-cell" style="background:${cellBg}" title="${escapeAttr(taskName)}${progress!==null?' - '+progress+'%':''}">
+                    <div class="task-cell clickable-mark" data-row-id="${r.id}" style="background:${cellBg}" title="${escapeAttr(taskName)}${progress!==null?' - '+progress+'%':''}">
                     ${progressOverlay}
                     ${progressBadge}
                     </div>
@@ -1050,6 +1283,151 @@ function renderLegend(){
     }
 
     legend.innerHTML = html
+}
+
+// ===== Panneau latéral de détail =====
+const detailPanel = document.getElementById("detailPanel")
+const detailOverlay = document.getElementById("detailOverlay")
+const detailPanelBody = document.getElementById("detailPanelBody")
+const detailPanelTitle = document.getElementById("detailPanelTitle")
+
+function closeDetailPanel(){
+    detailPanel.classList.remove("open")
+    detailOverlay.classList.remove("open")
+}
+
+document.getElementById("detailPanelClose").onclick = closeDetailPanel
+detailOverlay.onclick = closeDetailPanel
+document.addEventListener("keydown", e=>{
+    if(e.key === "Escape") closeDetailPanel()
+})
+
+// Délégation d'événements car les barres/jalons sont régénérés à chaque draw()
+document.getElementById("gantt-container").addEventListener("click", e=>{
+    const mark = e.target.closest(".clickable-mark")
+    if(!mark) return
+    let rowId = mark.dataset.rowId
+    if(rowId === undefined || rowId === "") return
+    let record = (currentRecords||[]).find(r => String(r.id) === String(rowId))
+    if(record) openDetailPanel(record, currentMappings)
+})
+
+function formatDateFr(v){
+    let d = parseDate(v)
+    if(!d) return ""
+    return d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit', year:'numeric'})
+}
+
+function detailRow(label, valueHtml){
+    return `<div class="detail-row"><div class="detail-label">${escapeHtml(label)}</div><div class="detail-value">${valueHtml}</div></div>`
+}
+
+function openDetailPanel(record, mappings){
+    let taskName = record[mappings.task] || ""
+    let isJalon = mappings.jalon && record[mappings.jalon]
+
+    detailPanelTitle.textContent = taskName || (isJalon ? "Jalon" : "Tâche")
+
+    let parts = []
+
+    // Dates
+    if(isJalon){
+        let d = formatDateFr(record[mappings.start] || record[mappings.end])
+        if(d) parts.push(detailRow("Date", escapeHtml(d)))
+    } else {
+        let dStart = formatDateFr(record[mappings.start])
+        let dEnd = formatDateFr(record[mappings.end])
+        if(dStart || dEnd){
+            parts.push(detailRow("Période", escapeHtml(`${dStart || '?'} → ${dEnd || '?'}`)))
+        }
+    }
+
+    // Statut
+    if(!isJalon && mappings.state){
+        let rule = stateRule(record[mappings.state])
+        let label = rule.label && rule.label.trim() !== "" ? rule.label : (rule.match || "Autre")
+        parts.push(detailRow("Statut", `<span class="detail-status-badge"><span class="detail-status-dot" style="background:${rule.color}"></span>${escapeHtml(label)}</span>`))
+    }
+
+    // Avancement
+    if(!isJalon && mappings.progress){
+        let progress = getProgress(record, mappings)
+        if(progress !== null){
+            parts.push(detailRow("Avancement", `${progress}%`))
+        }
+    }
+
+    // Filtres 1 à 7 (avec leur libellé personnalisé)
+    FILTER_KEYS.forEach(key=>{
+        if(!mappings[key] || !filterLabels[key]) return
+        let val = displayValue(record[mappings[key]])
+        if(val) parts.push(detailRow(filterLabels[key], escapeHtml(val)))
+    })
+
+    // Commentaire
+    if(mappings.comment){
+        let comment = displayValue(record[mappings.comment])
+        if(comment){
+            parts.push(detailRow("Commentaire", escapeHtml(comment)))
+        }
+    }
+
+    detailPanelBody.innerHTML = parts.join("")
+
+    // Pièce jointe (chargement asynchrone, avec lien de téléchargement)
+    if(mappings.attachment){
+        let attachmentBlock = document.createElement("div")
+        attachmentBlock.className = "detail-row"
+        attachmentBlock.innerHTML = `<div class="detail-label">Pièce jointe</div><div class="detail-value" id="detailAttachments"><span class="detail-empty">Chargement...</span></div>`
+        detailPanelBody.appendChild(attachmentBlock)
+        loadAttachments(record[mappings.attachment])
+    }
+
+    detailPanel.classList.add("open")
+    detailOverlay.classList.add("open")
+}
+
+// Normalise la valeur d'une cellule Pièce Jointe Grist en tableau d'identifiants numériques
+function extractAttachmentIds(value){
+    if(!value) return []
+    let arr = Array.isArray(value) ? value : [value]
+    if(arr[0] === "L") arr = arr.slice(1)
+    return arr.filter(v => v !== null && v !== undefined && v !== "")
+}
+
+async function loadAttachments(rawValue){
+    const container = document.getElementById("detailAttachments")
+    let ids = extractAttachmentIds(rawValue)
+
+    if(!container) return
+    if(ids.length === 0){
+        container.innerHTML = `<span class="detail-empty">Aucune pièce jointe</span>`
+        return
+    }
+
+    try{
+        const tokenInfo = await grist.docApi.getAccessToken({readOnly:true})
+        let html = ""
+        for(let i=0; i<ids.length; i++){
+            let id = ids[i]
+            let downloadUrl = `${tokenInfo.baseUrl}/attachments/${id}/download?auth=${tokenInfo.token}`
+            let fileName = `Pièce jointe ${i+1}`
+            // On tente de récupérer le nom réel du fichier ; en cas d'échec, on garde le libellé générique
+            try{
+                let metaResp = await fetch(`${tokenInfo.baseUrl}/attachments/${id}?auth=${tokenInfo.token}`)
+                if(metaResp.ok){
+                    let meta = await metaResp.json()
+                    let name = meta && (meta.fileName || (meta.fields && meta.fields.fileName))
+                    if(name) fileName = name
+                }
+            }catch(err){ /* on garde le libellé générique */ }
+
+            html += `<a class="detail-attachment" href="${downloadUrl}" download target="_blank" rel="noopener">📎 ${escapeHtml(fileName)}</a>`
+        }
+        container.innerHTML = html
+    }catch(err){
+        container.innerHTML = `<span class="detail-empty">Impossible de charger la pièce jointe</span>`
+    }
 }
 
 grist.onRecords((r,m)=>draw(r,m))
