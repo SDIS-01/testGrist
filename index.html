@@ -261,28 +261,28 @@ body{font-family:sans-serif;margin:0}
   </label>
 
   <span class="filter-block" id="filterControls-filterField">
-    Filtre 1 :
+    <span class="filter-label-text" data-key="filterField">Filtre 1</span> :
     <input type="text" class="filter-input" data-key="filterField" list="filterOptions-filterField" placeholder="Tous (ou rechercher...)" autocomplete="off">
     <datalist id="filterOptions-filterField"></datalist>
     <button type="button" class="filter-clear" data-key="filterField" title="Effacer ce filtre">✕</button>
   </span>
 
   <span class="filter-block" id="filterControls-filterField2">
-    Filtre 2 :
+    <span class="filter-label-text" data-key="filterField2">Filtre 2</span> :
     <input type="text" class="filter-input" data-key="filterField2" list="filterOptions-filterField2" placeholder="Tous (ou rechercher...)" autocomplete="off">
     <datalist id="filterOptions-filterField2"></datalist>
     <button type="button" class="filter-clear" data-key="filterField2" title="Effacer ce filtre">✕</button>
   </span>
 
   <span class="filter-block" id="filterControls-filterField3">
-    Filtre 3 :
+    <span class="filter-label-text" data-key="filterField3">Filtre 3</span> :
     <input type="text" class="filter-input" data-key="filterField3" list="filterOptions-filterField3" placeholder="Tous (ou rechercher...)" autocomplete="off">
     <datalist id="filterOptions-filterField3"></datalist>
     <button type="button" class="filter-clear" data-key="filterField3" title="Effacer ce filtre">✕</button>
   </span>
 
   <span class="filter-block" id="filterControls-filterField4">
-    Filtre 4 :
+    <span class="filter-label-text" data-key="filterField4">Filtre 4</span> :
     <input type="text" class="filter-input" data-key="filterField4" list="filterOptions-filterField4" placeholder="Tous (ou rechercher...)" autocomplete="off">
     <datalist id="filterOptions-filterField4"></datalist>
     <button type="button" class="filter-clear" data-key="filterField4" title="Effacer ce filtre">✕</button>
@@ -713,6 +713,21 @@ function displayValue(v){
     return String(v)
 }
 
+// Renomme "Filtre 1/2/3/4" partout (barre d'outils + menu de tri) selon les libellés configurés dans ⚙
+function updateFilterLabelsUI(){
+    FILTER_KEYS.forEach((key, idx)=>{
+        let custom = (filterLabels[key]||"").trim()
+        let label = custom || `Filtre ${idx+1}`
+
+        let labelEl = document.querySelector(`.filter-label-text[data-key="${key}"]`)
+        if(labelEl) labelEl.textContent = label
+
+        document.querySelectorAll(`.sort-opt[data-key="${key}"]`).forEach(opt=>{
+            opt.textContent = `${label} (A→Z)`
+        })
+    })
+}
+
 function updateSortUI(mappings){
     document.querySelectorAll(".sort-select").forEach(select=>{
         let level = parseInt(select.dataset.level, 10) - 1
@@ -783,6 +798,7 @@ function draw(records,mappings){
 
     if(!records || records.length===0) return
 
+    updateFilterLabelsUI()
     updateFilterUI(records, mappings)
     updateSortUI(mappings)
     let visibleRecords = applyFilter(records, mappings)
