@@ -65,16 +65,33 @@ body{font-family:sans-serif;margin:0}
 }
 
 /* Colonne des noms de tâches, figée pendant le défilement horizontal */
+:root{
+    --task-col-width: 600px;
+}
 .task-name-header,
 .task-name-cell{
     position:sticky;
     left:0;
     z-index:6;
-    width:600px;
-    max-width:600px;
+    width:var(--task-col-width);
+    max-width:var(--task-col-width);
     box-sizing:border-box;
     text-align:left;
     box-shadow:2px 0 4px rgba(0,0,0,.08);
+}
+.col-resize-handle{
+    position:absolute;
+    top:0;
+    right:-4px;
+    width:8px;
+    height:100%;
+    cursor:col-resize;
+    z-index:9;
+    touch-action:none;
+}
+.col-resize-handle:hover,
+.col-resize-handle.resizing{
+    background:rgba(46,125,50,.35);
 }
 .task-name-header{
     background:#f4f4f4;
@@ -228,7 +245,7 @@ body{font-family:sans-serif;margin:0}
     #configPanel{width:94vw;max-width:94vw;left:3vw;max-height:80vh;overflow-y:auto;top:10px;}
     #gantt-table td{width:64px;font-size:11px;}
     .task-cell{font-size:11px;}
-    .task-name-header,.task-name-cell{width:330px;max-width:330px;padding:4px 6px;}
+    .task-name-header,.task-name-cell{width:min(var(--task-col-width),260px);max-width:min(var(--task-col-width),260px);padding:4px 6px;}
     .task-name-filter1{font-size:11.5px;}
     .task-name-main{font-size:11px;}
     .task-name-sub{font-size:10px;}
@@ -369,12 +386,12 @@ body{font-family:sans-serif;margin:0}
   </div>
 </div>
 
+<div id="legend"></div>
+
 <div id="gantt-container">
 <table id="gantt-table"></table>
 <div id="today-line" class="today-line" style="display:none;"></div>
 </div>
-
-<div id="legend"></div>
 
 <script>
 grist.ready({
@@ -394,6 +411,9 @@ columns:[
 })
 
 let scale="month"
+let taskColWidth=600
+const TASK_COL_MIN=120
+const TASK_COL_MAX=800
 let currentRecords=[]
 let currentMappings={}
 let highlightToday=false
@@ -448,6 +468,54 @@ document.querySelectorAll(".filter-clear").forEach(btn=>{
         draw(currentRecords, currentMappings)
     }
 })
+
+// ===== Redimensionnement manuel de la colonne "Tâche" (souris + tactile) =====
+// Délégation d'événements car l'en-tête est régénéré à chaque draw()
+let resizing = false
+let resizeStartX = 0
+let resizeStartWidth = 0
+
+function applyTaskColWidth(px){
+    taskColWidth = Math.min(TASK_COL_MAX, Math.max(TASK_COL_MIN, Math.round(px)))
+    document.documentElement.style.setProperty("--task-col-width", taskColWidth+"px")
+}
+
+function startResize(clientX, handleEl){
+    resizing = true
+    resizeStartX = clientX
+    resizeStartWidth = taskColWidth
+    handleEl.classList.add("resizing")
+}
+
+function moveResize(clientX){
+    if(!resizing) return
+    applyTaskColWidth(resizeStartWidth + (clientX - resizeStartX))
+}
+
+function endResize(){
+    if(!resizing) return
+    resizing = false
+    document.querySelectorAll(".col-resize-handle.resizing").forEach(el=>el.classList.remove("resizing"))
+    grist.setOption("taskColWidth", taskColWidth)
+}
+
+document.getElementById("gantt-container").addEventListener("mousedown", e=>{
+    if(!e.target.classList.contains("col-resize-handle")) return
+    startResize(e.clientX, e.target)
+    e.preventDefault()
+})
+document.addEventListener("mousemove", e=> moveResize(e.clientX))
+document.addEventListener("mouseup", endResize)
+
+document.getElementById("gantt-container").addEventListener("touchstart", e=>{
+    if(!e.target.classList.contains("col-resize-handle")) return
+    startResize(e.touches[0].clientX, e.target)
+}, {passive:true})
+document.addEventListener("touchmove", e=>{
+    if(!resizing) return
+    moveResize(e.touches[0].clientX)
+}, {passive:true})
+document.addEventListener("touchend", endResize)
 
 // ===== Gestion du tri combiné (jusqu'à 3 niveaux) =====
 document.querySelectorAll(".sort-select").forEach(select=>{
@@ -551,6 +619,9 @@ grist.onOptions((options)=>{
         if(typeof options.scale === "string"){
             scale = options.scale
             document.getElementById("scale").value = scale
+        }
+        if(typeof options.taskColWidth === "number" && options.taskColWidth > 0){
+            applyTaskColWidth(options.taskColWidth)
         }
         if(Array.isArray(options.taskStates) && options.taskStates.length>0){
             stateConfig = options.taskStates
@@ -845,7 +916,7 @@ function draw(records,mappings){
 
     // HEADER
     html+="<tr>"
-    html+=`<td class="task-name-header"></td>`
+    html+=`<td class="task-name-header"><span class="col-resize-handle" title="Glisser pour redimensionner"></span></td>`
     units.forEach(u=>{
         html+=`<td>${u.label}</td>`
     })
@@ -969,7 +1040,15 @@ function renderLegend(){
         let label = rule.label && rule.label.trim() !== "" ? rule.label : (rule.match || "Autre")
         html += `<span class="legend-item"><span class="legend-swatch" style="background:${rule.color}"></span>${label}</span>`
     })
-    html += `<span class="legend-item"><span class="legend-swatch" style="background:${milestoneColor};transform:rotate(45deg);"></span>Jalon</span>`
+
+    let hasJalon = currentMappings.jalon &&
+        Array.isArray(currentRecords) &&
+        currentRecords.some(r => r[currentMappings.jalon])
+
+    if(hasJalon){
+        html += `<span class="legend-item"><span class="legend-swatch" style="background:${milestoneColor};transform:rotate(45deg);"></span>Jalon</span>`
+    }
+
     legend.innerHTML = html
 }
 
