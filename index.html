@@ -9,14 +9,15 @@
 body{font-family:sans-serif;margin:0}
 #controls{padding:8px;background:#f4f4f4;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
 #controls select, #controls input[type=text], #controls button{min-height:34px;box-sizing:border-box;}
-#freeNoteInput{
+#freeNoteDisplay{
     flex:1 1 180px;
     min-width:150px;
     padding:6px 10px;
     font-size:13px;
-    border:1px solid #ccc;
-    border-radius:4px;
     color:#333;
+    white-space:normal;
+    overflow-wrap:break-word;
+    line-height:1.4;
 }
 #gantt-container{overflow-x:auto;position:relative;-webkit-overflow-scrolling:touch;}
 
@@ -98,16 +99,24 @@ body{font-family:sans-serif;margin:0}
     text-align:left;
     box-shadow:2px 0 4px rgba(0,0,0,.08);
 }
+#colResizeHandleWrap{
+    height:0;
+    overflow:visible;
+    position:relative;
+    z-index:50;
+}
 .col-resize-handle{
-    position:absolute;
+    position:sticky;
+    left:var(--task-col-width);
     top:0;
-    right:-5px;
-    width:10px;
-    height:34px;
+    width:12px;
+    height:32px;
+    margin-left:-6px;
     cursor:col-resize;
-    z-index:20;
+    display:block;
     touch-action:none;
     pointer-events:auto;
+    background:transparent;
 }
 .col-resize-handle:hover,
 .col-resize-handle.resizing{
@@ -118,11 +127,6 @@ body{font-family:sans-serif;margin:0}
     padding:4px 10px;
     z-index:7;
     position:sticky;
-}
-.task-name-header-inner{
-    position:relative;
-    height:100%;
-    min-height:22px;
 }
 .task-name-cell{
     background:#fff;
@@ -433,6 +437,13 @@ body{font-family:sans-serif;margin:0}
     <span class="filter-label-text" data-key="filterField">Filtre 1</span> :
     <input type="text" class="filter-input" data-key="filterField" list="filterOptions-filterField" placeholder="Tous (ou rechercher...)" autocomplete="off">
     <datalist id="filterOptions-filterField"></datalist>
+    <select class="filter-percent-select" data-key="filterField" style="display:none;">
+      <option value="">Tous</option>
+      <option value="0-25">0 – 25%</option>
+      <option value="25-50">25 – 50%</option>
+      <option value="50-75">50 – 75%</option>
+      <option value="75-100">75 – 100%</option>
+    </select>
     <button type="button" class="filter-clear" data-key="filterField" title="Effacer ce filtre">✕</button>
   </span>
 
@@ -440,6 +451,13 @@ body{font-family:sans-serif;margin:0}
     <span class="filter-label-text" data-key="filterField2">Filtre 2</span> :
     <input type="text" class="filter-input" data-key="filterField2" list="filterOptions-filterField2" placeholder="Tous (ou rechercher...)" autocomplete="off">
     <datalist id="filterOptions-filterField2"></datalist>
+    <select class="filter-percent-select" data-key="filterField2" style="display:none;">
+      <option value="">Tous</option>
+      <option value="0-25">0 – 25%</option>
+      <option value="25-50">25 – 50%</option>
+      <option value="50-75">50 – 75%</option>
+      <option value="75-100">75 – 100%</option>
+    </select>
     <button type="button" class="filter-clear" data-key="filterField2" title="Effacer ce filtre">✕</button>
   </span>
 
@@ -447,6 +465,13 @@ body{font-family:sans-serif;margin:0}
     <span class="filter-label-text" data-key="filterField3">Filtre 3</span> :
     <input type="text" class="filter-input" data-key="filterField3" list="filterOptions-filterField3" placeholder="Tous (ou rechercher...)" autocomplete="off">
     <datalist id="filterOptions-filterField3"></datalist>
+    <select class="filter-percent-select" data-key="filterField3" style="display:none;">
+      <option value="">Tous</option>
+      <option value="0-25">0 – 25%</option>
+      <option value="25-50">25 – 50%</option>
+      <option value="50-75">50 – 75%</option>
+      <option value="75-100">75 – 100%</option>
+    </select>
     <button type="button" class="filter-clear" data-key="filterField3" title="Effacer ce filtre">✕</button>
   </span>
 
@@ -454,6 +479,13 @@ body{font-family:sans-serif;margin:0}
     <span class="filter-label-text" data-key="filterField4">Filtre 4</span> :
     <input type="text" class="filter-input" data-key="filterField4" list="filterOptions-filterField4" placeholder="Tous (ou rechercher...)" autocomplete="off">
     <datalist id="filterOptions-filterField4"></datalist>
+    <select class="filter-percent-select" data-key="filterField4" style="display:none;">
+      <option value="">Tous</option>
+      <option value="0-25">0 – 25%</option>
+      <option value="25-50">25 – 50%</option>
+      <option value="50-75">50 – 75%</option>
+      <option value="75-100">75 – 100%</option>
+    </select>
     <button type="button" class="filter-clear" data-key="filterField4" title="Effacer ce filtre">✕</button>
   </span>
 
@@ -461,6 +493,13 @@ body{font-family:sans-serif;margin:0}
     <span class="filter-label-text" data-key="filterField5">Filtre 5</span> :
     <input type="text" class="filter-input" data-key="filterField5" list="filterOptions-filterField5" placeholder="Tous (ou rechercher...)" autocomplete="off">
     <datalist id="filterOptions-filterField5"></datalist>
+    <select class="filter-percent-select" data-key="filterField5" style="display:none;">
+      <option value="">Tous</option>
+      <option value="0-25">0 – 25%</option>
+      <option value="25-50">25 – 50%</option>
+      <option value="50-75">50 – 75%</option>
+      <option value="75-100">75 – 100%</option>
+    </select>
     <button type="button" class="filter-clear" data-key="filterField5" title="Effacer ce filtre">✕</button>
   </span>
 
@@ -468,6 +507,13 @@ body{font-family:sans-serif;margin:0}
     <span class="filter-label-text" data-key="filterField6">Filtre 6</span> :
     <input type="text" class="filter-input" data-key="filterField6" list="filterOptions-filterField6" placeholder="Tous (ou rechercher...)" autocomplete="off">
     <datalist id="filterOptions-filterField6"></datalist>
+    <select class="filter-percent-select" data-key="filterField6" style="display:none;">
+      <option value="">Tous</option>
+      <option value="0-25">0 – 25%</option>
+      <option value="25-50">25 – 50%</option>
+      <option value="50-75">50 – 75%</option>
+      <option value="75-100">75 – 100%</option>
+    </select>
     <button type="button" class="filter-clear" data-key="filterField6" title="Effacer ce filtre">✕</button>
   </span>
 
@@ -475,6 +521,13 @@ body{font-family:sans-serif;margin:0}
     <span class="filter-label-text" data-key="filterField7">Filtre 7</span> :
     <input type="text" class="filter-input" data-key="filterField7" list="filterOptions-filterField7" placeholder="Tous (ou rechercher...)" autocomplete="off">
     <datalist id="filterOptions-filterField7"></datalist>
+    <select class="filter-percent-select" data-key="filterField7" style="display:none;">
+      <option value="">Tous</option>
+      <option value="0-25">0 – 25%</option>
+      <option value="25-50">25 – 50%</option>
+      <option value="50-75">50 – 75%</option>
+      <option value="75-100">75 – 100%</option>
+    </select>
     <button type="button" class="filter-clear" data-key="filterField7" title="Effacer ce filtre">✕</button>
   </span>
 
@@ -519,7 +572,7 @@ body{font-family:sans-serif;margin:0}
 
   <button id="configBtn" type="button">⚙ Statuts &amp; couleurs</button>
 
-  <input type="text" id="freeNoteInput" placeholder="Écrire une note..." autocomplete="off">
+  <div id="freeNoteDisplay" style="display:none;"></div>
 </div>
 
 <div id="configPanel">
@@ -545,31 +598,52 @@ body{font-family:sans-serif;margin:0}
     </div>
     <div class="config-row">
       <span style="width:70px;font-size:12px;color:#555;">Filtre 1 :</span>
-      <input type="text" id="filterLabel1" placeholder="ex: Porteur">
+      <input type="text" id="filterLabel1" placeholder="ex: Porteur" style="flex:1;">
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterPercent1"> %  (tranches de 25)
+      </label>
     </div>
     <div class="config-row">
       <span style="width:70px;font-size:12px;color:#555;">Filtre 2 :</span>
-      <input type="text" id="filterLabel2" placeholder="ex: Groupement">
+      <input type="text" id="filterLabel2" placeholder="ex: Groupement" style="flex:1;">
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterPercent2"> %  (tranches de 25)
+      </label>
     </div>
     <div class="config-row">
       <span style="width:70px;font-size:12px;color:#555;">Filtre 3 :</span>
-      <input type="text" id="filterLabel3" placeholder="ex: ...">
+      <input type="text" id="filterLabel3" placeholder="ex: ..." style="flex:1;">
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterPercent3"> %  (tranches de 25)
+      </label>
     </div>
     <div class="config-row">
       <span style="width:70px;font-size:12px;color:#555;">Filtre 4 :</span>
-      <input type="text" id="filterLabel4" placeholder="ex: ...">
+      <input type="text" id="filterLabel4" placeholder="ex: ..." style="flex:1;">
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterPercent4"> %  (tranches de 25)
+      </label>
     </div>
     <div class="config-row">
       <span style="width:70px;font-size:12px;color:#555;">Filtre 5 :</span>
-      <input type="text" id="filterLabel5" placeholder="ex: ...">
+      <input type="text" id="filterLabel5" placeholder="ex: ..." style="flex:1;">
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterPercent5"> %  (tranches de 25)
+      </label>
     </div>
     <div class="config-row">
       <span style="width:70px;font-size:12px;color:#555;">Filtre 6 :</span>
-      <input type="text" id="filterLabel6" placeholder="ex: ...">
+      <input type="text" id="filterLabel6" placeholder="ex: ..." style="flex:1;">
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterPercent6"> %  (tranches de 25)
+      </label>
     </div>
     <div class="config-row">
       <span style="width:70px;font-size:12px;color:#555;">Filtre 7 :</span>
-      <input type="text" id="filterLabel7" placeholder="ex: ...">
+      <input type="text" id="filterLabel7" placeholder="ex: ..." style="flex:1;">
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterPercent7"> %  (tranches de 25)
+      </label>
     </div>
   </div>
 
@@ -592,6 +666,14 @@ body{font-family:sans-serif;margin:0}
     </div>
   </div>
 
+  <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
+    <h3>Note libre</h3>
+    <div class="config-hint">
+      Texte affiché dans la barre de contrôles (lecture seule pour les autres utilisateurs, modifiable uniquement ici).
+    </div>
+    <textarea id="freeNoteConfigInput" placeholder="Écrire une note..." style="width:100%;box-sizing:border-box;min-height:70px;padding:8px;font-size:13px;font-family:inherit;border:1px solid #ccc;border-radius:4px;resize:vertical;"></textarea>
+  </div>
+
   <div class="config-footer">
     <button id="resetConfig" type="button" style="background:none;border:none;color:#888;font-size:11px;cursor:pointer;text-decoration:underline;">Réinitialiser les valeurs par défaut</button>
     <div>
@@ -604,6 +686,7 @@ body{font-family:sans-serif;margin:0}
 <div id="legend"></div>
 
 <div id="gantt-container">
+<div id="colResizeHandleWrap"><div id="colResizeHandle" class="col-resize-handle" title="Glisser pour redimensionner"></div></div>
 <table id="gantt-table"></table>
 <div id="today-line" class="today-line" style="display:none;"></div>
 </div>
@@ -666,6 +749,7 @@ let milestoneColor = "#e74c3c"
 let filterLabels = {filterField:"", filterField2:"", filterField3:"", filterField4:"", filterField5:"", filterField6:"", filterField7:""}
 const EXTRA_KEYS = ["extraField1","extraField2","extraField3"]
 let extraFieldLabels = {extraField1:"", extraField2:"", extraField3:""}
+let filterIsPercent = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
 
 document.getElementById("scale").onchange = e=>{
     scale = e.target.value
@@ -693,11 +777,22 @@ document.querySelectorAll(".filter-input").forEach(input=>{
     }
 })
 
+document.querySelectorAll(".filter-percent-select").forEach(select=>{
+    select.onchange = e=>{
+        let key = e.target.dataset.key
+        selectedFilterValue[key] = e.target.value
+        grist.setOption("selectedFilterValue_"+key, e.target.value)
+        draw(currentRecords, currentMappings)
+    }
+})
+
 document.querySelectorAll(".filter-clear").forEach(btn=>{
     btn.onclick = ()=>{
         let key = btn.dataset.key
         selectedFilterValue[key] = ""
         document.querySelector(`.filter-input[data-key="${key}"]`).value = ""
+        let percentSelect = document.querySelector(`.filter-percent-select[data-key="${key}"]`)
+        if(percentSelect) percentSelect.value = ""
         grist.setOption("selectedFilterValue_"+key, "")
         draw(currentRecords, currentMappings)
     }
@@ -765,9 +860,17 @@ document.querySelectorAll(".sort-select").forEach(select=>{
 const configPanel = document.getElementById("configPanel")
 const configRowsEl = document.getElementById("configRows")
 
-// ===== Note libre =====
-document.getElementById("freeNoteInput").oninput = e=>{
-    grist.setOption("freeNote", e.target.value)
+// ===== Note libre (lecture seule dans la barre, éditée via ⚙) =====
+let freeNote = ""
+
+function updateFreeNoteDisplay(){
+    const display = document.getElementById("freeNoteDisplay")
+    if(freeNote && freeNote.trim() !== ""){
+        display.textContent = freeNote
+        display.style.display = "block"
+    } else {
+        display.style.display = "none"
+    }
 }
 
 document.getElementById("configBtn").onclick = ()=>{
@@ -783,6 +886,10 @@ document.getElementById("configBtn").onclick = ()=>{
     document.getElementById("extraLabel1").value = extraFieldLabels.extraField1 || ""
     document.getElementById("extraLabel2").value = extraFieldLabels.extraField2 || ""
     document.getElementById("extraLabel3").value = extraFieldLabels.extraField3 || ""
+    document.getElementById("freeNoteConfigInput").value = freeNote || ""
+    FILTER_KEYS.forEach((key,i)=>{
+        document.getElementById("filterPercent"+(i+1)).checked = !!filterIsPercent[key]
+    })
     configPanel.style.display = "block"
 }
 
@@ -807,6 +914,10 @@ document.getElementById("resetConfig").onclick = ()=>{
     document.getElementById("extraLabel1").value = ""
     document.getElementById("extraLabel2").value = ""
     document.getElementById("extraLabel3").value = ""
+    document.getElementById("freeNoteConfigInput").value = ""
+    FILTER_KEYS.forEach((key,i)=>{
+        document.getElementById("filterPercent"+(i+1)).checked = false
+    })
 }
 
 document.getElementById("saveConfig").onclick = ()=>{
@@ -826,10 +937,20 @@ document.getElementById("saveConfig").onclick = ()=>{
         extraField2: document.getElementById("extraLabel2").value.trim(),
         extraField3: document.getElementById("extraLabel3").value.trim()
     }
+    freeNote = document.getElementById("freeNoteConfigInput").value
+    FILTER_KEYS.forEach((key,i)=>{
+        filterIsPercent[key] = document.getElementById("filterPercent"+(i+1)).checked
+        // Si on active/désactive le mode %, on réinitialise ce filtre pour éviter une valeur incohérente
+        selectedFilterValue[key] = ""
+    })
     grist.setOption("taskStates", stateConfig)
     grist.setOption("milestoneColor", milestoneColor)
     grist.setOption("filterLabels", filterLabels)
     grist.setOption("extraFieldLabels", extraFieldLabels)
+    grist.setOption("freeNote", freeNote)
+    grist.setOption("filterIsPercent", filterIsPercent)
+    FILTER_KEYS.forEach(key=> grist.setOption("selectedFilterValue_"+key, ""))
+    updateFreeNoteDisplay()
     configPanel.style.display = "none"
     draw(currentRecords, currentMappings)
 }
@@ -884,7 +1005,8 @@ grist.onOptions((options)=>{
             applyTaskColWidth(options.taskColWidth)
         }
         if(typeof options.freeNote === "string"){
-            document.getElementById("freeNoteInput").value = options.freeNote
+            freeNote = options.freeNote
+            updateFreeNoteDisplay()
         }
         if(Array.isArray(options.taskStates) && options.taskStates.length>0){
             stateConfig = options.taskStates
@@ -897,6 +1019,12 @@ grist.onOptions((options)=>{
         }
         if(options.extraFieldLabels && typeof options.extraFieldLabels === "object"){
             extraFieldLabels = Object.assign({extraField1:"", extraField2:"", extraField3:""}, options.extraFieldLabels)
+        }
+        if(options.filterIsPercent && typeof options.filterIsPercent === "object"){
+            filterIsPercent = Object.assign(
+                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false},
+                options.filterIsPercent
+            )
         }
         FILTER_KEYS.forEach(key=>{
             let saved = options["selectedFilterValue_"+key]
@@ -1026,13 +1154,27 @@ function lightenColor(hex, amount){
 // Normalise la valeur d'avancement (accepte 0-1 ou 0-100, texte ou nombre) -> entier 0-100, ou null
 function getProgress(r, mappings){
     if(!mappings.progress) return null
-    let v = r[mappings.progress]
+    return getPercentValue(r[mappings.progress])
+}
+
+// Normalise n'importe quelle valeur (0-1 ou 0-100, texte ou nombre) en entier 0-100, ou null
+function getPercentValue(v){
     if(v===null || v===undefined || v==="") return null
     let n = Number(v)
     if(isNaN(n)) return null
     if(n<=1) n = n*100
     n = Math.max(0, Math.min(100, n))
     return Math.round(n)
+}
+
+// Détermine dans quelle tranche de 25% se situe une valeur (retourne "0-25","25-50","50-75","75-100" ou null)
+function percentBracket(v){
+    let p = getPercentValue(v)
+    if(p===null) return null
+    if(p < 25) return "0-25"
+    if(p < 50) return "25-50"
+    if(p < 75) return "50-75"
+    return "75-100"
 }
 
 // Convertit une valeur brute Grist (choix, ref, liste...) en texte affichable
@@ -1091,6 +1233,7 @@ function updateFilterUI(allRecords, mappings){
         const container = document.getElementById("filterControls-"+key)
         const input = document.querySelector(`.filter-input[data-key="${key}"]`)
         const options = document.getElementById("filterOptions-"+key)
+        const percentSelect = document.querySelector(`.filter-percent-select[data-key="${key}"]`)
 
         if(!mappings[key]){
             container.style.display = "none"
@@ -1098,6 +1241,19 @@ function updateFilterUI(allRecords, mappings){
         }
 
         container.style.display = "flex"
+
+        if(filterIsPercent[key]){
+            // Mode pourcentage par tranches de 25% : on masque la recherche texte, on affiche le menu de tranches
+            input.style.display = "none"
+            percentSelect.style.display = ""
+            if(percentSelect.value !== selectedFilterValue[key]){
+                percentSelect.value = selectedFilterValue[key]
+            }
+            return
+        }
+
+        input.style.display = ""
+        percentSelect.style.display = "none"
 
         // Valeurs distinctes présentes dans la colonne de filtre (pour l'autocomplétion)
         let values = [...new Set(
@@ -1123,6 +1279,12 @@ function applyFilter(records, mappings){
         if(!mappings[key]) return
         let val = (selectedFilterValue[key]||"").trim()
         if(!val || val.toLowerCase()==="tous") return
+
+        if(filterIsPercent[key]){
+            result = result.filter(r => percentBracket(r[mappings[key]]) === val)
+            return
+        }
+
         let needle = val.toLowerCase()
         result = result.filter(r => displayValue(r[mappings[key]]).toLowerCase().includes(needle))
     })
@@ -1141,13 +1303,24 @@ function draw(records,mappings){
     let visibleRecords = applyFilter(records, mappings)
 
     let sortFields = sortLevels
-        .map(level => level ? (level==="task" ? mappings.task : mappings[level]) : null)
         .filter(Boolean)
+        .map(level => ({
+            field: level==="task" ? mappings.task : mappings[level],
+            isPercent: level!=="task" && !!filterIsPercent[level]
+        }))
+        .filter(sf => sf.field)
 
     if(sortFields.length){
         visibleRecords = [...visibleRecords].sort((a,b)=>{
-            for(let field of sortFields){
-                let cmp = displayValue(a[field]).localeCompare(displayValue(b[field]),'fr',{sensitivity:'base'})
+            for(let sf of sortFields){
+                let cmp
+                if(sf.isPercent){
+                    let pa = getPercentValue(a[sf.field])
+                    let pb = getPercentValue(b[sf.field])
+                    cmp = (pa===null?-1:pa) - (pb===null?-1:pb)
+                } else {
+                    cmp = displayValue(a[sf.field]).localeCompare(displayValue(b[sf.field]),'fr',{sensitivity:'base'})
+                }
                 if(cmp !== 0) return cmp
             }
             return 0
@@ -1182,7 +1355,7 @@ function draw(records,mappings){
 
     // HEADER
     html+="<tr>"
-    html+=`<td class="task-name-header"><div class="task-name-header-inner"><span class="col-resize-handle" title="Glisser pour redimensionner"></span></div></td>`
+    html+=`<td class="task-name-header"></td>`
     units.forEach(u=>{
         html+=`<td>${u.label}</td>`
     })
@@ -1195,7 +1368,14 @@ function draw(records,mappings){
         let isJalon=r[mappings.jalon]
         let taskName = r[mappings.task]||""
 
-        let filterValue = key => (mappings[key] && filterLabels[key]) ? displayValue(r[mappings[key]]) : ""
+        let filterValue = key => {
+            if(!mappings[key] || !filterLabels[key]) return ""
+            if(filterIsPercent[key]){
+                let p = getPercentValue(r[mappings[key]])
+                return p===null ? "" : p+"%"
+            }
+            return displayValue(r[mappings[key]])
+        }
 
         let filter1Val = filterValue("filterField")
         let filter2Val = filterValue("filterField2")
@@ -1399,7 +1579,13 @@ function openDetailPanel(record, mappings){
     // Filtres 1 à 7 (avec leur libellé personnalisé)
     FILTER_KEYS.forEach(key=>{
         if(!mappings[key] || !filterLabels[key]) return
-        let val = displayValue(record[mappings[key]])
+        let val
+        if(filterIsPercent[key]){
+            let p = getPercentValue(record[mappings[key]])
+            val = p===null ? "" : p+"%"
+        } else {
+            val = displayValue(record[mappings[key]])
+        }
         if(val) parts.push(detailRow(filterLabels[key], escapeHtml(val)))
     })
 
