@@ -573,6 +573,25 @@ body{font-family:sans-serif;margin:0}
     </div>
   </div>
 
+  <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
+    <h3>Champs supplémentaires (panneau détail uniquement)</h3>
+    <div class="config-hint">
+      Texte affiché devant la valeur, dans le panneau qui s'ouvre au clic sur une barre. Laissez vide pour ne pas afficher ce champ.
+    </div>
+    <div class="config-row">
+      <span style="width:70px;font-size:12px;color:#555;">Champ 1 :</span>
+      <input type="text" id="extraLabel1" placeholder="ex: Budget">
+    </div>
+    <div class="config-row">
+      <span style="width:70px;font-size:12px;color:#555;">Champ 2 :</span>
+      <input type="text" id="extraLabel2" placeholder="ex: ...">
+    </div>
+    <div class="config-row">
+      <span style="width:70px;font-size:12px;color:#555;">Champ 3 :</span>
+      <input type="text" id="extraLabel3" placeholder="ex: ...">
+    </div>
+  </div>
+
   <div class="config-footer">
     <button id="resetConfig" type="button" style="background:none;border:none;color:#888;font-size:11px;cursor:pointer;text-decoration:underline;">Réinitialiser les valeurs par défaut</button>
     <div>
@@ -616,7 +635,10 @@ columns:[
 {name:'filterField7',title:'Champ de filtre 7 (optionnel)', optional:true},
 {name:'progress',title:'% Avancement (optionnel)', optional:true},
 {name:'comment',title:'Commentaire (optionnel, panneau détail)', optional:true},
-{name:'attachment',title:'Pièce jointe (optionnel, panneau détail)', optional:true}
+{name:'attachment',title:'Pièce jointe (optionnel, panneau détail)', optional:true},
+{name:'extraField1',title:'Champ supplémentaire 1 (optionnel, panneau détail)', optional:true},
+{name:'extraField2',title:'Champ supplémentaire 2 (optionnel, panneau détail)', optional:true},
+{name:'extraField3',title:'Champ supplémentaire 3 (optionnel, panneau détail)', optional:true}
 ]
 })
 
@@ -642,6 +664,8 @@ const defaultStateConfig = [
 let stateConfig = JSON.parse(JSON.stringify(defaultStateConfig))
 let milestoneColor = "#e74c3c"
 let filterLabels = {filterField:"", filterField2:"", filterField3:"", filterField4:"", filterField5:"", filterField6:"", filterField7:""}
+const EXTRA_KEYS = ["extraField1","extraField2","extraField3"]
+let extraFieldLabels = {extraField1:"", extraField2:"", extraField3:""}
 
 document.getElementById("scale").onchange = e=>{
     scale = e.target.value
@@ -756,6 +780,9 @@ document.getElementById("configBtn").onclick = ()=>{
     document.getElementById("filterLabel5").value = filterLabels.filterField5 || ""
     document.getElementById("filterLabel6").value = filterLabels.filterField6 || ""
     document.getElementById("filterLabel7").value = filterLabels.filterField7 || ""
+    document.getElementById("extraLabel1").value = extraFieldLabels.extraField1 || ""
+    document.getElementById("extraLabel2").value = extraFieldLabels.extraField2 || ""
+    document.getElementById("extraLabel3").value = extraFieldLabels.extraField3 || ""
     configPanel.style.display = "block"
 }
 
@@ -777,6 +804,9 @@ document.getElementById("resetConfig").onclick = ()=>{
     document.getElementById("filterLabel5").value = ""
     document.getElementById("filterLabel6").value = ""
     document.getElementById("filterLabel7").value = ""
+    document.getElementById("extraLabel1").value = ""
+    document.getElementById("extraLabel2").value = ""
+    document.getElementById("extraLabel3").value = ""
 }
 
 document.getElementById("saveConfig").onclick = ()=>{
@@ -791,9 +821,15 @@ document.getElementById("saveConfig").onclick = ()=>{
         filterField6: document.getElementById("filterLabel6").value.trim(),
         filterField7: document.getElementById("filterLabel7").value.trim()
     }
+    extraFieldLabels = {
+        extraField1: document.getElementById("extraLabel1").value.trim(),
+        extraField2: document.getElementById("extraLabel2").value.trim(),
+        extraField3: document.getElementById("extraLabel3").value.trim()
+    }
     grist.setOption("taskStates", stateConfig)
     grist.setOption("milestoneColor", milestoneColor)
     grist.setOption("filterLabels", filterLabels)
+    grist.setOption("extraFieldLabels", extraFieldLabels)
     configPanel.style.display = "none"
     draw(currentRecords, currentMappings)
 }
@@ -858,6 +894,9 @@ grist.onOptions((options)=>{
         }
         if(options.filterLabels && typeof options.filterLabels === "object"){
             filterLabels = Object.assign({filterField:"", filterField2:"", filterField3:"", filterField4:"", filterField5:"", filterField6:"", filterField7:""}, options.filterLabels)
+        }
+        if(options.extraFieldLabels && typeof options.extraFieldLabels === "object"){
+            extraFieldLabels = Object.assign({extraField1:"", extraField2:"", extraField3:""}, options.extraFieldLabels)
         }
         FILTER_KEYS.forEach(key=>{
             let saved = options["selectedFilterValue_"+key]
@@ -1362,6 +1401,16 @@ function openDetailPanel(record, mappings){
         if(!mappings[key] || !filterLabels[key]) return
         let val = displayValue(record[mappings[key]])
         if(val) parts.push(detailRow(filterLabels[key], escapeHtml(val)))
+    })
+
+    // Champs supplémentaires (génériques, configurables dans ⚙)
+    EXTRA_KEYS.forEach(key=>{
+        if(!mappings[key]) return
+        let val = displayValue(record[mappings[key]])
+        if(!val) return
+        let idx = EXTRA_KEYS.indexOf(key) + 1
+        let label = (extraFieldLabels[key] && extraFieldLabels[key].trim()) ? extraFieldLabels[key].trim() : `Champ ${idx}`
+        parts.push(detailRow(label, escapeHtml(val)))
     })
 
     // Commentaire
