@@ -66,6 +66,20 @@ body{font-family:sans-serif;margin:0}
 }
 #configBtn:hover{background:#eee;}
 
+/* Filtre */
+#filterControls{
+    display:none;
+    align-items:center;
+    gap:6px;
+}
+#filterSelect{
+    padding:3px 6px;
+    font-size:12px;
+    border:1px solid #ccc;
+    border-radius:4px;
+    max-width:220px;
+}
+
 /* Panneau config */
 #configPanel{
     display:none;
@@ -121,6 +135,13 @@ body{font-family:sans-serif;margin:0}
     Aujourd'hui
   </label>
 
+  <span id="filterControls">
+    Filtrer :
+    <select id="filterSelect">
+      <option value="">Tous</option>
+    </select>
+  </span>
+
   <button id="configBtn" type="button">⚙ Statuts &amp; couleurs</button>
 </div>
 
@@ -164,7 +185,8 @@ columns:[
 {name:'start',title:'Date de début'},
 {name:'end',title:'Date de fin'},
 {name:'jalon',title:'Est un Jalon', optional:true},
-{name:'state',title:'Etat', optional:true}
+{name:'state',title:'Etat', optional:true},
+{name:'filterField',title:'Champ de filtre (optionnel)', optional:true}
 ]
 })
 
@@ -172,6 +194,7 @@ let scale="month"
 let currentRecords=[]
 let currentMappings={}
 let highlightToday=false
+let selectedFilterValue=""
 
 // ===== CONFIGURATION DES STATUTS (personnalisable) =====
 const defaultStateConfig = [
@@ -191,6 +214,13 @@ document.getElementById("scale").onchange = e=>{
 document.getElementById("todayHighlight").onchange = e=>{
     highlightToday = e.target.checked
     draw(currentRecords,currentMappings)
+}
+
+// ===== Gestion du filtre =====
+document.getElementById("filterSelect").onchange = e=>{
+    selectedFilterValue = e.target.value
+    grist.setOption("selectedFilterValue", selectedFilterValue)
+    draw(currentRecords, currentMappings)
 }
 
 // ===== Gestion du panneau de configuration =====
@@ -260,6 +290,10 @@ function escapeAttr(s){
     return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;")
 }
 
+function escapeHtml(s){
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+}
+
 // Charge la config sauvegardée dans le document Grist (par widget)
 grist.onOptions((options)=>{
     if(options){
@@ -268,6 +302,9 @@ grist.onOptions((options)=>{
         }
         if(options.milestoneColor){
             milestoneColor = options.milestoneColor
+        }
+        if(typeof options.selectedFilterValue === "string"){
+            selectedFilterValue = options.selectedFilterValue
         }
     }
     draw(currentRecords, currentMappings)
@@ -364,14 +401,69 @@ function stateRule(state){
     return {label: state||"Terminé", color:"#757575"};
 }
 
+// Convertit une valeur brute Grist (choix, ref, liste...) en texte affichable
+function displayValue(v){
+    if(v===null || v===undefined) return ""
+    if(Array.isArray(v)){
+        // Ex: ['L', 'val1', 'val2'] (liste Grist) -> on ignore le marqueur 'L'
+        let arr = v[0]==='L' ? v.slice(1) : v
+        return arr.map(displayValue).join(", ")
+    }
+    if(typeof v === "object"){
+        if('value' in v) return displayValue(v.value)
+        return JSON.stringify(v)
+    }
+    return String(v)
+}
+
+function updateFilterUI(allRecords, mappings){
+    const filterControls = document.getElementById("filterControls")
+    const filterSelect = document.getElementById("filterSelect")
+
+    if(!mappings.filterField){
+        filterControls.style.display = "none"
+        return
+    }
+
+    filterControls.style.display = "inline-flex"
+
+    // Valeurs distinctes présentes dans la colonne de filtre
+    let values = [...new Set(
+        allRecords
+            .map(r=>displayValue(r[mappings.filterField]))
+            .filter(v=>v!=="")
+    )].sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'}))
+
+    let html = `<option value="">Tous</option>`
+    values.forEach(v=>{
+        html += `<option value="${escapeAttr(v)}">${escapeHtml(v)}</option>`
+    })
+    filterSelect.innerHTML = html
+
+    // Si la valeur mémorisée n'existe plus parmi les valeurs actuelles, on revient à "Tous"
+    if(selectedFilterValue && !values.includes(selectedFilterValue)){
+        selectedFilterValue = ""
+        grist.setOption("selectedFilterValue", "")
+    }
+    filterSelect.value = selectedFilterValue
+}
+
+function applyFilter(records, mappings){
+    if(!mappings.filterField || !selectedFilterValue) return records
+    return records.filter(r => displayValue(r[mappings.filterField]) === selectedFilterValue)
+}
+
 function draw(records,mappings){
     currentRecords = records;
     currentMappings = mappings;
 
     if(!records || records.length===0) return
 
+    updateFilterUI(records, mappings)
+    let visibleRecords = applyFilter(records, mappings)
+
     let dates=[]
-    records.forEach(r=>{
+    visibleRecords.forEach(r=>{
         let s=parseDate(r[mappings.start]), e=parseDate(r[mappings.end]);
         if(r[mappings.jalon]){
             if(s) dates.push(s)
@@ -381,7 +473,12 @@ function draw(records,mappings){
         }
     })
 
-    if(dates.length===0) return
+    if(dates.length===0){
+        document.getElementById("gantt-table").innerHTML = ""
+        renderLegend()
+        document.getElementById("today-line").style.display = "none"
+        return
+    }
 
     let min=new Date(Math.min(...dates))
     let max=new Date(Math.max(...dates))
@@ -399,7 +496,7 @@ function draw(records,mappings){
     html+="</tr>"
 
     // ROWS
-    records.forEach(r=>{
+    visibleRecords.forEach(r=>{
         html+="<tr>"
         let s=parseDate(r[mappings.start]), e=parseDate(r[mappings.end])
         let isJalon=r[mappings.jalon]
