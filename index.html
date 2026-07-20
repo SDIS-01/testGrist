@@ -41,7 +41,6 @@ body{font-family:sans-serif;margin:0}
     top:0;
     left:0;
     bottom:0;
-    background:rgba(0,0,0,.30);
     z-index:1;
     transition:width .2s ease;
 }
@@ -49,10 +48,15 @@ body{font-family:sans-serif;margin:0}
 .task-label{
     position:relative;
     z-index:2;
-    display:block;
+    display:inline-block;
+    max-width:100%;
+    box-sizing:border-box;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
+    background:rgba(0,0,0,.30);
+    padding:1px 6px;
+    border-radius:3px;
 }
 
 /* Jalons */
@@ -194,7 +198,7 @@ body{font-family:sans-serif;margin:0}
 
   <span id="filterControls">
     Filtrer :
-    <input type="text" id="filterInput" list="filterOptions" placeholder="Rechercher..." autocomplete="off">
+    <input type="text" id="filterInput" list="filterOptions" placeholder="Tous (ou rechercher...)" autocomplete="off">
     <datalist id="filterOptions"></datalist>
     <button id="filterClear" type="button" title="Effacer le filtre">✕</button>
   </span>
@@ -472,6 +476,21 @@ function stateRule(state){
     return {label: state||"Terminé", color:"#757575"};
 }
 
+// Éclaircit une couleur hex en la mélangeant avec du blanc (amount: 0 = inchangé, 1 = blanc pur)
+function lightenColor(hex, amount){
+    let c = String(hex).replace('#','')
+    if(c.length===3) c = c.split('').map(ch=>ch+ch).join('')
+    if(c.length!==6) return hex
+    let r = parseInt(c.substring(0,2),16)
+    let g = parseInt(c.substring(2,4),16)
+    let b = parseInt(c.substring(4,6),16)
+    if([r,g,b].some(isNaN)) return hex
+    r = Math.round(r + (255-r)*amount)
+    g = Math.round(g + (255-g)*amount)
+    b = Math.round(b + (255-b)*amount)
+    return `rgb(${r},${g},${b})`
+}
+
 // Normalise la valeur d'avancement (accepte 0-1 ou 0-100, texte ou nombre) -> entier 0-100, ou null
 function getProgress(r, mappings){
     if(!mappings.progress) return null
@@ -518,7 +537,8 @@ function updateFilterUI(allRecords, mappings){
             .filter(v=>v!=="")
     )].sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'}))
 
-    filterOptions.innerHTML = values.map(v=>`<option value="${escapeAttr(v)}"></option>`).join("")
+    filterOptions.innerHTML = `<option value="Tous"></option>` +
+        values.map(v=>`<option value="${escapeAttr(v)}"></option>`).join("")
 
     // On ne réécrit le champ que si sa valeur diffère, pour ne pas perturber la saisie / le curseur
     if(filterInput.value !== selectedFilterValue){
@@ -528,6 +548,7 @@ function updateFilterUI(allRecords, mappings){
 
 function applyFilter(records, mappings){
     if(!mappings.filterField || !selectedFilterValue) return records
+    if(selectedFilterValue.trim().toLowerCase()==="tous") return records
     let needle = selectedFilterValue.toLowerCase()
     return records.filter(r => displayValue(r[mappings.filterField]).toLowerCase().includes(needle))
 }
@@ -593,17 +614,19 @@ function draw(records,mappings){
             let rule = stateRule(r[mappings.state])
             let progress = getProgress(r, mappings)
 
+            let cellBg = rule.color
             let progressOverlay = ""
             let progressLabel = ""
             if(showProgress && progress!==null){
-                progressOverlay = `<div class="progress-overlay" style="width:${progress}%"></div>`
-                progressLabel = ` (${progress}%)`
+                cellBg = lightenColor(rule.color, 0.72)
+                progressOverlay = `<div class="progress-overlay" style="width:${progress}%;background:${rule.color}"></div>`
+                progressLabel = ` · ${progress}%`
             }
 
             for(let i=0;i<startCol;i++) html+="<td></td>"
 
             html+=`<td colspan="${colspan}">
-                    <div class="task-cell" style="background:${rule.color}" title="${escapeAttr(r[mappings.task]||"")}${progress!==null?' - '+progress+'%':''}">
+                    <div class="task-cell" style="background:${cellBg}" title="${escapeAttr(r[mappings.task]||"")}${progress!==null?' - '+progress+'%':''}">
                     ${progressOverlay}
                     <span class="task-label">${escapeHtml(r[mappings.task]||"")}${progressLabel}</span>
                     </div>
