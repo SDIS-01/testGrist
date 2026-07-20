@@ -2,12 +2,14 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
 
 <style>
 body{font-family:sans-serif;margin:0}
-#controls{padding:6px;background:#f4f4f4;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
-#gantt-container{overflow-x:auto;position:relative;}
+#controls{padding:8px;background:#f4f4f4;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+#controls select, #controls input[type=text], #controls button{min-height:34px;box-sizing:border-box;}
+#gantt-container{overflow-x:auto;position:relative;-webkit-overflow-scrolling:touch;}
 
 #gantt-table{
     border-collapse:collapse;
@@ -99,13 +101,24 @@ body{font-family:sans-serif;margin:0}
     align-items:center;
     gap:6px;
 }
-#filterSelect{
-    padding:3px 6px;
-    font-size:12px;
+#filterInput{
+    padding:6px 8px;
+    font-size:13px;
     border:1px solid #ccc;
     border-radius:4px;
-    max-width:220px;
+    width:160px;
+    max-width:45vw;
 }
+#filterClear{
+    cursor:pointer;
+    border:1px solid #ccc;
+    background:#fff;
+    border-radius:4px;
+    padding:5px 10px;
+    font-size:13px;
+    line-height:1;
+}
+#filterClear:hover{background:#eee;}
 
 /* Panneau config */
 #configPanel{
@@ -133,13 +146,25 @@ body{font-family:sans-serif;margin:0}
 #addRow:hover{background:#f0f0f0;}
 .config-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px;border-top:1px solid #eee;padding-top:10px;}
 .config-hint{font-size:11px;color:#888;margin-bottom:8px;}
-#saveConfig{background:#2e7d32;color:white;border:none;padding:6px 14px;border-radius:4px;cursor:pointer;}
-#cancelConfig{background:none;border:1px solid #ccc;padding:6px 14px;border-radius:4px;cursor:pointer;}
+#saveConfig{background:#2e7d32;color:white;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;min-height:36px;}
+#cancelConfig{background:none;border:1px solid #ccc;padding:8px 16px;border-radius:4px;cursor:pointer;min-height:36px;}
 
 /* Legende */
 #legend{display:flex;gap:12px;flex-wrap:wrap;padding:6px 10px;font-size:11px;color:#333;}
 .legend-item{display:flex;align-items:center;gap:5px;}
 .legend-swatch{width:12px;height:12px;border-radius:3px;display:inline-block;}
+
+/* ===== MOBILE ===== */
+@media (max-width:600px){
+    #controls{flex-direction:column;align-items:stretch;gap:10px;padding:10px;}
+    #controls > *{width:100%;}
+    #controls label, #controls > span{display:flex;align-items:center;gap:6px;}
+    #filterInput{width:100%;max-width:none;flex:1;}
+    #configBtn{padding:8px 10px;}
+    #configPanel{width:94vw;max-width:94vw;left:3vw;max-height:80vh;overflow-y:auto;top:10px;}
+    #gantt-table td{width:64px;font-size:10px;}
+    .task-cell{font-size:10px;}
+}
 </style>
 </head>
 
@@ -169,9 +194,9 @@ body{font-family:sans-serif;margin:0}
 
   <span id="filterControls">
     Filtrer :
-    <select id="filterSelect">
-      <option value="">Tous</option>
-    </select>
+    <input type="text" id="filterInput" list="filterOptions" placeholder="Rechercher..." autocomplete="off">
+    <datalist id="filterOptions"></datalist>
+    <button id="filterClear" type="button" title="Effacer le filtre">✕</button>
   </span>
 
   <button id="configBtn" type="button">⚙ Statuts &amp; couleurs</button>
@@ -255,10 +280,17 @@ document.getElementById("showProgressToggle").onchange = e=>{
     draw(currentRecords,currentMappings)
 }
 
-// ===== Gestion du filtre =====
-document.getElementById("filterSelect").onchange = e=>{
+// ===== Gestion du filtre (recherche) =====
+document.getElementById("filterInput").oninput = e=>{
     selectedFilterValue = e.target.value
     grist.setOption("selectedFilterValue", selectedFilterValue)
+    draw(currentRecords, currentMappings)
+}
+
+document.getElementById("filterClear").onclick = ()=>{
+    selectedFilterValue = ""
+    document.getElementById("filterInput").value = ""
+    grist.setOption("selectedFilterValue", "")
     draw(currentRecords, currentMappings)
 }
 
@@ -469,39 +501,35 @@ function displayValue(v){
 
 function updateFilterUI(allRecords, mappings){
     const filterControls = document.getElementById("filterControls")
-    const filterSelect = document.getElementById("filterSelect")
+    const filterInput = document.getElementById("filterInput")
+    const filterOptions = document.getElementById("filterOptions")
 
     if(!mappings.filterField){
         filterControls.style.display = "none"
         return
     }
 
-    filterControls.style.display = "inline-flex"
+    filterControls.style.display = "flex"
 
-    // Valeurs distinctes présentes dans la colonne de filtre
+    // Valeurs distinctes présentes dans la colonne de filtre (pour l'autocomplétion)
     let values = [...new Set(
         allRecords
             .map(r=>displayValue(r[mappings.filterField]))
             .filter(v=>v!=="")
     )].sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'}))
 
-    let html = `<option value="">Tous</option>`
-    values.forEach(v=>{
-        html += `<option value="${escapeAttr(v)}">${escapeHtml(v)}</option>`
-    })
-    filterSelect.innerHTML = html
+    filterOptions.innerHTML = values.map(v=>`<option value="${escapeAttr(v)}"></option>`).join("")
 
-    // Si la valeur mémorisée n'existe plus parmi les valeurs actuelles, on revient à "Tous"
-    if(selectedFilterValue && !values.includes(selectedFilterValue)){
-        selectedFilterValue = ""
-        grist.setOption("selectedFilterValue", "")
+    // On ne réécrit le champ que si sa valeur diffère, pour ne pas perturber la saisie / le curseur
+    if(filterInput.value !== selectedFilterValue){
+        filterInput.value = selectedFilterValue
     }
-    filterSelect.value = selectedFilterValue
 }
 
 function applyFilter(records, mappings){
     if(!mappings.filterField || !selectedFilterValue) return records
-    return records.filter(r => displayValue(r[mappings.filterField]) === selectedFilterValue)
+    let needle = selectedFilterValue.toLowerCase()
+    return records.filter(r => displayValue(r[mappings.filterField]).toLowerCase().includes(needle))
 }
 
 function draw(records,mappings){
