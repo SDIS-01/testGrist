@@ -24,7 +24,34 @@ body{font-family:sans-serif;margin:0}
     line-height:1.2;
 }
 
-.task-cell{color:white;border-radius:4px;padding:3px;font-size:11px;box-sizing:border-box;}
+.task-cell{
+    color:white;
+    border-radius:4px;
+    padding:3px;
+    font-size:11px;
+    box-sizing:border-box;
+    position:relative;
+    overflow:hidden;
+}
+
+.progress-overlay{
+    position:absolute;
+    top:0;
+    left:0;
+    bottom:0;
+    background:rgba(0,0,0,.30);
+    z-index:1;
+    transition:width .2s ease;
+}
+
+.task-label{
+    position:relative;
+    z-index:2;
+    display:block;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
 
 /* Jalons */
 .jalon-cell { position: relative; height: 26px; text-align: center; vertical-align: middle; }
@@ -135,6 +162,11 @@ body{font-family:sans-serif;margin:0}
     Aujourd'hui
   </label>
 
+  <label>
+    <input type="checkbox" id="showProgressToggle" checked>
+    Avancement
+  </label>
+
   <span id="filterControls">
     Filtrer :
     <select id="filterSelect">
@@ -186,7 +218,8 @@ columns:[
 {name:'end',title:'Date de fin'},
 {name:'jalon',title:'Est un Jalon', optional:true},
 {name:'state',title:'Etat', optional:true},
-{name:'filterField',title:'Champ de filtre (optionnel)', optional:true}
+{name:'filterField',title:'Champ de filtre (optionnel)', optional:true},
+{name:'progress',title:'% Avancement (optionnel)', optional:true}
 ]
 })
 
@@ -195,6 +228,7 @@ let currentRecords=[]
 let currentMappings={}
 let highlightToday=false
 let selectedFilterValue=""
+let showProgress=true
 
 // ===== CONFIGURATION DES STATUTS (personnalisable) =====
 const defaultStateConfig = [
@@ -213,6 +247,11 @@ document.getElementById("scale").onchange = e=>{
 
 document.getElementById("todayHighlight").onchange = e=>{
     highlightToday = e.target.checked
+    draw(currentRecords,currentMappings)
+}
+
+document.getElementById("showProgressToggle").onchange = e=>{
+    showProgress = e.target.checked
     draw(currentRecords,currentMappings)
 }
 
@@ -401,6 +440,18 @@ function stateRule(state){
     return {label: state||"Terminé", color:"#757575"};
 }
 
+// Normalise la valeur d'avancement (accepte 0-1 ou 0-100, texte ou nombre) -> entier 0-100, ou null
+function getProgress(r, mappings){
+    if(!mappings.progress) return null
+    let v = r[mappings.progress]
+    if(v===null || v===undefined || v==="") return null
+    let n = Number(v)
+    if(isNaN(n)) return null
+    if(n<=1) n = n*100
+    n = Math.max(0, Math.min(100, n))
+    return Math.round(n)
+}
+
 // Convertit une valeur brute Grist (choix, ref, liste...) en texte affichable
 function displayValue(v){
     if(v===null || v===undefined) return ""
@@ -512,12 +563,21 @@ function draw(records,mappings){
             let startCol=findCol(units,s)
             let colspan=countCols(units,s,e)
             let rule = stateRule(r[mappings.state])
+            let progress = getProgress(r, mappings)
+
+            let progressOverlay = ""
+            let progressLabel = ""
+            if(showProgress && progress!==null){
+                progressOverlay = `<div class="progress-overlay" style="width:${progress}%"></div>`
+                progressLabel = ` (${progress}%)`
+            }
 
             for(let i=0;i<startCol;i++) html+="<td></td>"
 
             html+=`<td colspan="${colspan}">
-                    <div class="task-cell" style="background:${rule.color}">
-                    ${r[mappings.task]||""}
+                    <div class="task-cell" style="background:${rule.color}" title="${escapeAttr(r[mappings.task]||"")}${progress!==null?' - '+progress+'%':''}">
+                    ${progressOverlay}
+                    <span class="task-label">${escapeHtml(r[mappings.task]||"")}${progressLabel}</span>
                     </div>
                   </td>`
 
