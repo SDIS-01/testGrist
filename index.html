@@ -36,8 +36,7 @@ body{font-family:sans-serif;margin:0}
     overflow:hidden;
     display:flex;
     align-items:center;
-    justify-content:space-between;
-    gap:6px;
+    justify-content:flex-end;
 }
 
 .progress-overlay{
@@ -47,25 +46,6 @@ body{font-family:sans-serif;margin:0}
     bottom:0;
     z-index:1;
     transition:width .2s ease;
-}
-
-.task-label{
-    position:relative;
-    z-index:2;
-    flex:1 1 auto;
-    min-width:0;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    font-size:12.5px;
-    font-weight:600;
-    color:#fff;
-    text-shadow:
-        -1px -1px 1.5px rgba(0,0,0,.45),
-         1px -1px 1.5px rgba(0,0,0,.45),
-        -1px  1px 1.5px rgba(0,0,0,.45),
-         1px  1px 1.5px rgba(0,0,0,.45),
-         0 1px 3px rgba(0,0,0,.35);
 }
 
 .progress-badge{
@@ -79,6 +59,36 @@ body{font-family:sans-serif;margin:0}
     border-radius:10px;
     box-shadow:0 1px 3px rgba(0,0,0,.45);
     white-space:nowrap;
+}
+
+/* Colonne des noms de tâches, figée pendant le défilement horizontal */
+.task-name-header,
+.task-name-cell{
+    position:sticky;
+    left:0;
+    z-index:6;
+    width:160px;
+    max-width:160px;
+    box-sizing:border-box;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    text-align:left;
+    box-shadow:2px 0 4px rgba(0,0,0,.08);
+}
+.task-name-header{
+    background:#f4f4f4;
+    font-weight:700;
+    font-size:12px;
+    padding:4px 10px;
+    z-index:7;
+}
+.task-name-cell{
+    background:#fff;
+    font-size:12.5px;
+    font-weight:600;
+    color:#333;
+    padding:4px 10px;
 }
 
 /* Jalons */
@@ -122,20 +132,20 @@ body{font-family:sans-serif;margin:0}
 #configBtn:hover{background:#eee;}
 
 /* Filtre */
-#filterControls{
+.filter-block{
     display:none;
     align-items:center;
     gap:6px;
 }
-#filterInput{
+.filter-block input[type=text]{
     padding:6px 8px;
     font-size:13px;
     border:1px solid #ccc;
     border-radius:4px;
-    width:160px;
-    max-width:45vw;
+    width:150px;
+    max-width:40vw;
 }
-#filterClear{
+.filter-clear{
     cursor:pointer;
     border:1px solid #ccc;
     background:#fff;
@@ -144,7 +154,7 @@ body{font-family:sans-serif;margin:0}
     font-size:13px;
     line-height:1;
 }
-#filterClear:hover{background:#eee;}
+.filter-clear:hover{background:#eee;}
 
 /* Panneau config */
 #configPanel{
@@ -186,11 +196,12 @@ body{font-family:sans-serif;margin:0}
     #controls > *{width:100%;}
     #controls label, #controls > span{display:flex;align-items:center;gap:6px;}
     #filterInput{width:100%;max-width:none;flex:1;}
+    .filter-block input[type=text]{width:100%;max-width:none;flex:1;}
     #configBtn{padding:8px 10px;}
     #configPanel{width:94vw;max-width:94vw;left:3vw;max-height:80vh;overflow-y:auto;top:10px;}
     #gantt-table td{width:64px;font-size:11px;}
     .task-cell{font-size:11px;}
-    .task-label{font-size:11.5px;}
+    .task-name-header,.task-name-cell{width:100px;max-width:100px;font-size:11px;padding:4px 6px;}
 }
 </style>
 </head>
@@ -219,12 +230,37 @@ body{font-family:sans-serif;margin:0}
     Avancement
   </label>
 
-  <span id="filterControls">
-    Filtrer :
-    <input type="text" id="filterInput" list="filterOptions" placeholder="Tous (ou rechercher...)" autocomplete="off">
-    <datalist id="filterOptions"></datalist>
-    <button id="filterClear" type="button" title="Effacer le filtre">✕</button>
+  <span class="filter-block" id="filterControls-filterField">
+    Filtre 1 :
+    <input type="text" class="filter-input" data-key="filterField" list="filterOptions-filterField" placeholder="Tous (ou rechercher...)" autocomplete="off">
+    <datalist id="filterOptions-filterField"></datalist>
+    <button type="button" class="filter-clear" data-key="filterField" title="Effacer ce filtre">✕</button>
   </span>
+
+  <span class="filter-block" id="filterControls-filterField2">
+    Filtre 2 :
+    <input type="text" class="filter-input" data-key="filterField2" list="filterOptions-filterField2" placeholder="Tous (ou rechercher...)" autocomplete="off">
+    <datalist id="filterOptions-filterField2"></datalist>
+    <button type="button" class="filter-clear" data-key="filterField2" title="Effacer ce filtre">✕</button>
+  </span>
+
+  <span class="filter-block" id="filterControls-filterField3">
+    Filtre 3 :
+    <input type="text" class="filter-input" data-key="filterField3" list="filterOptions-filterField3" placeholder="Tous (ou rechercher...)" autocomplete="off">
+    <datalist id="filterOptions-filterField3"></datalist>
+    <button type="button" class="filter-clear" data-key="filterField3" title="Effacer ce filtre">✕</button>
+  </span>
+
+  <label>
+    Trier par :
+    <select id="sortBySelect">
+      <option value="">Aucun tri</option>
+      <option value="task">Nom de tâche (A→Z)</option>
+      <option value="filterField" class="sort-opt" data-key="filterField">Filtre 1 (A→Z)</option>
+      <option value="filterField2" class="sort-opt" data-key="filterField2">Filtre 2 (A→Z)</option>
+      <option value="filterField3" class="sort-opt" data-key="filterField3">Filtre 3 (A→Z)</option>
+    </select>
+  </label>
 
   <button id="configBtn" type="button">⚙ Statuts &amp; couleurs</button>
 </div>
@@ -270,7 +306,9 @@ columns:[
 {name:'end',title:'Date de fin'},
 {name:'jalon',title:'Est un Jalon', optional:true},
 {name:'state',title:'Etat', optional:true},
-{name:'filterField',title:'Champ de filtre (optionnel)', optional:true},
+{name:'filterField',title:'Champ de filtre 1 (optionnel)', optional:true},
+{name:'filterField2',title:'Champ de filtre 2 (optionnel)', optional:true},
+{name:'filterField3',title:'Champ de filtre 3 (optionnel)', optional:true},
 {name:'progress',title:'% Avancement (optionnel)', optional:true}
 ]
 })
@@ -279,7 +317,9 @@ let scale="month"
 let currentRecords=[]
 let currentMappings={}
 let highlightToday=false
-let selectedFilterValue=""
+let selectedFilterValue={filterField:"", filterField2:"", filterField3:""}
+const FILTER_KEYS = ["filterField","filterField2","filterField3"]
+let sortBy=""
 let showProgress=true
 
 // ===== CONFIGURATION DES STATUTS (personnalisable) =====
@@ -307,17 +347,30 @@ document.getElementById("showProgressToggle").onchange = e=>{
     draw(currentRecords,currentMappings)
 }
 
-// ===== Gestion du filtre (recherche) =====
-document.getElementById("filterInput").oninput = e=>{
-    selectedFilterValue = e.target.value
-    grist.setOption("selectedFilterValue", selectedFilterValue)
-    draw(currentRecords, currentMappings)
-}
+// ===== Gestion des filtres (recherche, combinables) =====
+document.querySelectorAll(".filter-input").forEach(input=>{
+    input.oninput = e=>{
+        let key = e.target.dataset.key
+        selectedFilterValue[key] = e.target.value
+        grist.setOption("selectedFilterValue_"+key, e.target.value)
+        draw(currentRecords, currentMappings)
+    }
+})
 
-document.getElementById("filterClear").onclick = ()=>{
-    selectedFilterValue = ""
-    document.getElementById("filterInput").value = ""
-    grist.setOption("selectedFilterValue", "")
+document.querySelectorAll(".filter-clear").forEach(btn=>{
+    btn.onclick = ()=>{
+        let key = btn.dataset.key
+        selectedFilterValue[key] = ""
+        document.querySelector(`.filter-input[data-key="${key}"]`).value = ""
+        grist.setOption("selectedFilterValue_"+key, "")
+        draw(currentRecords, currentMappings)
+    }
+})
+
+// ===== Gestion du tri A→Z =====
+document.getElementById("sortBySelect").onchange = e=>{
+    sortBy = e.target.value
+    grist.setOption("sortBy", sortBy)
     draw(currentRecords, currentMappings)
 }
 
@@ -401,8 +454,17 @@ grist.onOptions((options)=>{
         if(options.milestoneColor){
             milestoneColor = options.milestoneColor
         }
-        if(typeof options.selectedFilterValue === "string"){
-            selectedFilterValue = options.selectedFilterValue
+        FILTER_KEYS.forEach(key=>{
+            let saved = options["selectedFilterValue_"+key]
+            if(typeof saved === "string"){
+                selectedFilterValue[key] = saved
+            }
+        })
+        if(typeof options.sortBy === "string"){
+            sortBy = options.sortBy
+        } else if(options.sortAZ === true){
+            // Compatibilité avec l'ancien réglage (case à cocher "Trier A→Z")
+            sortBy = "task"
         }
     }
     draw(currentRecords, currentMappings)
@@ -541,39 +603,66 @@ function displayValue(v){
     return String(v)
 }
 
-function updateFilterUI(allRecords, mappings){
-    const filterControls = document.getElementById("filterControls")
-    const filterInput = document.getElementById("filterInput")
-    const filterOptions = document.getElementById("filterOptions")
+function updateSortUI(mappings){
+    const select = document.getElementById("sortBySelect")
 
-    if(!mappings.filterField){
-        filterControls.style.display = "none"
-        return
+    select.querySelectorAll(".sort-opt").forEach(opt=>{
+        opt.hidden = !mappings[opt.dataset.key]
+    })
+
+    // Si le tri actif pointe vers un champ non mappé, on revient à "Aucun tri"
+    let currentOpt = select.querySelector(`option[value="${sortBy}"]`)
+    if(sortBy && (!currentOpt || currentOpt.hidden)){
+        sortBy = ""
+        grist.setOption("sortBy", "")
     }
 
-    filterControls.style.display = "flex"
-
-    // Valeurs distinctes présentes dans la colonne de filtre (pour l'autocomplétion)
-    let values = [...new Set(
-        allRecords
-            .map(r=>displayValue(r[mappings.filterField]))
-            .filter(v=>v!=="")
-    )].sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'}))
-
-    filterOptions.innerHTML = `<option value="Tous"></option>` +
-        values.map(v=>`<option value="${escapeAttr(v)}"></option>`).join("")
-
-    // On ne réécrit le champ que si sa valeur diffère, pour ne pas perturber la saisie / le curseur
-    if(filterInput.value !== selectedFilterValue){
-        filterInput.value = selectedFilterValue
+    if(select.value !== sortBy){
+        select.value = sortBy
     }
 }
 
+function updateFilterUI(allRecords, mappings){
+    FILTER_KEYS.forEach(key=>{
+        const container = document.getElementById("filterControls-"+key)
+        const input = document.querySelector(`.filter-input[data-key="${key}"]`)
+        const options = document.getElementById("filterOptions-"+key)
+
+        if(!mappings[key]){
+            container.style.display = "none"
+            return
+        }
+
+        container.style.display = "flex"
+
+        // Valeurs distinctes présentes dans la colonne de filtre (pour l'autocomplétion)
+        let values = [...new Set(
+            allRecords
+                .map(r=>displayValue(r[mappings[key]]))
+                .filter(v=>v!=="")
+        )].sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'}))
+
+        options.innerHTML = `<option value="Tous"></option>` +
+            values.map(v=>`<option value="${escapeAttr(v)}"></option>`).join("")
+
+        // On ne réécrit le champ que si sa valeur diffère, pour ne pas perturber la saisie / le curseur
+        if(input.value !== selectedFilterValue[key]){
+            input.value = selectedFilterValue[key]
+        }
+    })
+}
+
+// Applique les filtres actifs de façon combinée (ET logique) : une tâche doit correspondre à TOUS les filtres renseignés
 function applyFilter(records, mappings){
-    if(!mappings.filterField || !selectedFilterValue) return records
-    if(selectedFilterValue.trim().toLowerCase()==="tous") return records
-    let needle = selectedFilterValue.toLowerCase()
-    return records.filter(r => displayValue(r[mappings.filterField]).toLowerCase().includes(needle))
+    let result = records
+    FILTER_KEYS.forEach(key=>{
+        if(!mappings[key]) return
+        let val = (selectedFilterValue[key]||"").trim()
+        if(!val || val.toLowerCase()==="tous") return
+        let needle = val.toLowerCase()
+        result = result.filter(r => displayValue(r[mappings[key]]).toLowerCase().includes(needle))
+    })
+    return result
 }
 
 function draw(records,mappings){
@@ -583,7 +672,17 @@ function draw(records,mappings){
     if(!records || records.length===0) return
 
     updateFilterUI(records, mappings)
+    updateSortUI(mappings)
     let visibleRecords = applyFilter(records, mappings)
+
+    if(sortBy){
+        let sortField = sortBy === "task" ? mappings.task : mappings[sortBy]
+        if(sortField){
+            visibleRecords = [...visibleRecords].sort((a,b)=>
+                displayValue(a[sortField]).localeCompare(displayValue(b[sortField]),'fr',{sensitivity:'base'})
+            )
+        }
+    }
 
     let dates=[]
     visibleRecords.forEach(r=>{
@@ -613,6 +712,7 @@ function draw(records,mappings){
 
     // HEADER
     html+="<tr>"
+    html+=`<td class="task-name-header">Tâche</td>`
     units.forEach(u=>{
         html+=`<td>${u.label}</td>`
     })
@@ -623,12 +723,15 @@ function draw(records,mappings){
         html+="<tr>"
         let s=parseDate(r[mappings.start]), e=parseDate(r[mappings.end])
         let isJalon=r[mappings.jalon]
+        let taskName = r[mappings.task]||""
+
+        html+=`<td class="task-name-cell" title="${escapeAttr(taskName)}">${escapeHtml(taskName)}</td>`
 
         if(isJalon){
             let col=findCol(units,s||e)
             for(let i=0;i<units.length;i++){
                 if(i===col){
-                    html+=`<td class="jalon-cell"><div>${r[mappings.task]||""}</div><div style="background:${milestoneColor}"></div></td>`
+                    html+=`<td class="jalon-cell"><div style="background:${milestoneColor}"></div></td>`
                 } else html+="<td></td>"
             }
         } else {
@@ -649,9 +752,8 @@ function draw(records,mappings){
             for(let i=0;i<startCol;i++) html+="<td></td>"
 
             html+=`<td colspan="${colspan}">
-                    <div class="task-cell" style="background:${cellBg}" title="${escapeAttr(r[mappings.task]||"")}${progress!==null?' - '+progress+'%':''}">
+                    <div class="task-cell" style="background:${cellBg}" title="${escapeAttr(taskName)}${progress!==null?' - '+progress+'%':''}">
                     ${progressOverlay}
-                    <span class="task-label">${escapeHtml(r[mappings.task]||"")}</span>
                     ${progressBadge}
                     </div>
                   </td>`
