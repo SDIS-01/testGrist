@@ -70,8 +70,8 @@ body{font-family:sans-serif;margin:0}
     position:sticky;
     left:0;
     z-index:6;
-    width:290px;
-    max-width:290px;
+    width:400px;
+    max-width:400px;
     box-sizing:border-box;
     text-align:left;
     box-shadow:2px 0 4px rgba(0,0,0,.08);
@@ -228,7 +228,7 @@ body{font-family:sans-serif;margin:0}
     #configPanel{width:94vw;max-width:94vw;left:3vw;max-height:80vh;overflow-y:auto;top:10px;}
     #gantt-table td{width:64px;font-size:11px;}
     .task-cell{font-size:11px;}
-    .task-name-header,.task-name-cell{width:180px;max-width:180px;padding:4px 6px;}
+    .task-name-header,.task-name-cell{width:220px;max-width:220px;padding:4px 6px;}
     .task-name-filter1{font-size:11.5px;}
     .task-name-main{font-size:11px;}
     .task-name-sub{font-size:10px;}
@@ -281,6 +281,13 @@ body{font-family:sans-serif;margin:0}
     <button type="button" class="filter-clear" data-key="filterField3" title="Effacer ce filtre">✕</button>
   </span>
 
+  <span class="filter-block" id="filterControls-filterField4">
+    Filtre 4 :
+    <input type="text" class="filter-input" data-key="filterField4" list="filterOptions-filterField4" placeholder="Tous (ou rechercher...)" autocomplete="off">
+    <datalist id="filterOptions-filterField4"></datalist>
+    <button type="button" class="filter-clear" data-key="filterField4" title="Effacer ce filtre">✕</button>
+  </span>
+
   <span class="sort-block">
     Trier par :
     <select class="sort-select" data-level="1">
@@ -289,6 +296,7 @@ body{font-family:sans-serif;margin:0}
       <option value="filterField" class="sort-opt" data-key="filterField">Filtre 1 (A→Z)</option>
       <option value="filterField2" class="sort-opt" data-key="filterField2">Filtre 2 (A→Z)</option>
       <option value="filterField3" class="sort-opt" data-key="filterField3">Filtre 3 (A→Z)</option>
+      <option value="filterField4" class="sort-opt" data-key="filterField4">Filtre 4 (A→Z)</option>
     </select>
     puis
     <select class="sort-select" data-level="2">
@@ -297,6 +305,7 @@ body{font-family:sans-serif;margin:0}
       <option value="filterField" class="sort-opt" data-key="filterField">Filtre 1 (A→Z)</option>
       <option value="filterField2" class="sort-opt" data-key="filterField2">Filtre 2 (A→Z)</option>
       <option value="filterField3" class="sort-opt" data-key="filterField3">Filtre 3 (A→Z)</option>
+      <option value="filterField4" class="sort-opt" data-key="filterField4">Filtre 4 (A→Z)</option>
     </select>
     puis
     <select class="sort-select" data-level="3">
@@ -305,6 +314,7 @@ body{font-family:sans-serif;margin:0}
       <option value="filterField" class="sort-opt" data-key="filterField">Filtre 1 (A→Z)</option>
       <option value="filterField2" class="sort-opt" data-key="filterField2">Filtre 2 (A→Z)</option>
       <option value="filterField3" class="sort-opt" data-key="filterField3">Filtre 3 (A→Z)</option>
+      <option value="filterField4" class="sort-opt" data-key="filterField4">Filtre 4 (A→Z)</option>
     </select>
   </span>
 
@@ -344,6 +354,10 @@ body{font-family:sans-serif;margin:0}
       <span style="width:70px;font-size:12px;color:#555;">Filtre 3 :</span>
       <input type="text" id="filterLabel3" placeholder="ex: ...">
     </div>
+    <div class="config-row">
+      <span style="width:70px;font-size:12px;color:#555;">Filtre 4 :</span>
+      <input type="text" id="filterLabel4" placeholder="ex: ...">
+    </div>
   </div>
 
   <div class="config-footer">
@@ -374,6 +388,7 @@ columns:[
 {name:'filterField',title:'Champ de filtre 1 (optionnel)', optional:true},
 {name:'filterField2',title:'Champ de filtre 2 (optionnel)', optional:true},
 {name:'filterField3',title:'Champ de filtre 3 (optionnel)', optional:true},
+{name:'filterField4',title:'Champ de filtre 4 (optionnel)', optional:true},
 {name:'progress',title:'% Avancement (optionnel)', optional:true}
 ]
 })
@@ -382,8 +397,8 @@ let scale="month"
 let currentRecords=[]
 let currentMappings={}
 let highlightToday=false
-let selectedFilterValue={filterField:"", filterField2:"", filterField3:""}
-const FILTER_KEYS = ["filterField","filterField2","filterField3"]
+let selectedFilterValue={filterField:"", filterField2:"", filterField3:"", filterField4:""}
+const FILTER_KEYS = ["filterField","filterField2","filterField3","filterField4"]
 let sortLevels=["","",""]
 let showProgress=true
 
@@ -396,10 +411,11 @@ const defaultStateConfig = [
 ]
 let stateConfig = JSON.parse(JSON.stringify(defaultStateConfig))
 let milestoneColor = "#e74c3c"
-let filterLabels = {filterField:"", filterField2:"", filterField3:""}
+let filterLabels = {filterField:"", filterField2:"", filterField3:"", filterField4:""}
 
 document.getElementById("scale").onchange = e=>{
     scale = e.target.value
+    grist.setOption("scale", scale)
     draw(currentRecords,currentMappings)
 }
 
@@ -453,6 +469,7 @@ document.getElementById("configBtn").onclick = ()=>{
     document.getElementById("filterLabel1").value = filterLabels.filterField || ""
     document.getElementById("filterLabel2").value = filterLabels.filterField2 || ""
     document.getElementById("filterLabel3").value = filterLabels.filterField3 || ""
+    document.getElementById("filterLabel4").value = filterLabels.filterField4 || ""
     configPanel.style.display = "block"
 }
 
@@ -470,6 +487,7 @@ document.getElementById("resetConfig").onclick = ()=>{
     document.getElementById("filterLabel1").value = ""
     document.getElementById("filterLabel2").value = ""
     document.getElementById("filterLabel3").value = ""
+    document.getElementById("filterLabel4").value = ""
 }
 
 document.getElementById("saveConfig").onclick = ()=>{
@@ -478,7 +496,8 @@ document.getElementById("saveConfig").onclick = ()=>{
     filterLabels = {
         filterField: document.getElementById("filterLabel1").value.trim(),
         filterField2: document.getElementById("filterLabel2").value.trim(),
-        filterField3: document.getElementById("filterLabel3").value.trim()
+        filterField3: document.getElementById("filterLabel3").value.trim(),
+        filterField4: document.getElementById("filterLabel4").value.trim()
     }
     grist.setOption("taskStates", stateConfig)
     grist.setOption("milestoneColor", milestoneColor)
@@ -529,6 +548,10 @@ function escapeHtml(s){
 // Charge la config sauvegardée dans le document Grist (par widget)
 grist.onOptions((options)=>{
     if(options){
+        if(typeof options.scale === "string"){
+            scale = options.scale
+            document.getElementById("scale").value = scale
+        }
         if(Array.isArray(options.taskStates) && options.taskStates.length>0){
             stateConfig = options.taskStates
         }
@@ -536,7 +559,7 @@ grist.onOptions((options)=>{
             milestoneColor = options.milestoneColor
         }
         if(options.filterLabels && typeof options.filterLabels === "object"){
-            filterLabels = Object.assign({filterField:"", filterField2:"", filterField3:""}, options.filterLabels)
+            filterLabels = Object.assign({filterField:"", filterField2:"", filterField3:"", filterField4:""}, options.filterLabels)
         }
         FILTER_KEYS.forEach(key=>{
             let saved = options["selectedFilterValue_"+key]
@@ -824,12 +847,14 @@ function draw(records,mappings){
         let filter1Val = filterValue("filterField")
         let filter2Val = filterValue("filterField2")
         let filter3Val = filterValue("filterField3")
+        let filter4Val = filterValue("filterField4")
 
         let lines = []
         if(filter1Val) lines.push({cls:"task-name-filter1", text:`${filterLabels.filterField} : ${filter1Val}`})
         lines.push({cls:"task-name-main", text:taskName})
         if(filter2Val) lines.push({cls:"task-name-sub", text:`${filterLabels.filterField2} : ${filter2Val}`})
         if(filter3Val) lines.push({cls:"task-name-sub", text:`${filterLabels.filterField3} : ${filter3Val}`})
+        if(filter4Val) lines.push({cls:"task-name-sub", text:`${filterLabels.filterField4} : ${filter4Val}`})
 
         let tooltipParts = lines.map(l=>l.text)
         let linesHtml = lines.map(l=>`<div class="${l.cls}">${escapeHtml(l.text)}</div>`).join("")
