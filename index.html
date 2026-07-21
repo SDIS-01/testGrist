@@ -547,14 +547,6 @@ body{font-family:sans-serif;margin:0}
     </select>
   </span>
 
-  <label class="admin-control" style="display:none;align-items:center;gap:6px;white-space:nowrap;">
-    Largeur colonne Tâche :
-    <input type="number" id="taskColWidthInput" min="120" max="2000" step="10" style="width:70px;padding:5px 6px;font-size:13px;border:1px solid #ccc;border-radius:4px;">
-    px
-  </label>
-
-  <button id="configBtn" class="admin-control" type="button" style="display:none;">⚙ Statuts &amp; couleurs</button>
-
   <div id="freeNoteDisplay" style="display:none;"></div>
 </div>
 
@@ -578,6 +570,14 @@ body{font-family:sans-serif;margin:0}
     <label style="font-size:12px;display:flex;align-items:center;gap:6px;">
       <input type="checkbox" id="showStatusInPanelInput">
       Afficher le Statut (Etat) dans le panneau latéral
+    </label>
+  </div>
+
+  <div style="margin-top:10px;">
+    <label style="font-size:12px;display:flex;align-items:center;gap:6px;">
+      Largeur de la colonne Tâche :
+      <input type="number" id="taskColWidthConfigInput" min="120" max="2000" step="10" style="width:80px;padding:4px 6px;font-size:12px;border:1px solid #ccc;border-radius:4px;">
+      px
     </label>
   </div>
 
@@ -782,7 +782,8 @@ columns:[
 {name:'extraField4',title:'Champ supplémentaire 4 (optionnel, panneau détail)', optional:true},
 {name:'extraField5',title:'Champ supplémentaire 5 (optionnel, panneau détail)', optional:true},
 {name:'extraField6',title:'Champ supplémentaire 6 (optionnel, panneau détail)', optional:true}
-]
+],
+onEditOptions: ()=> openConfigPanel()
 })
 
 let scale="month"
@@ -861,29 +862,12 @@ document.querySelectorAll(".filter-clear").forEach(btn=>{
     }
 })
 
-// ===== Largeur de la colonne "Tâche" (champ numérique dans la barre de contrôles) =====
+// ===== Largeur de la colonne "Tâche" (réglable dans le panneau ⚙, via "Open configuration") =====
 
 function applyTaskColWidth(px){
     taskColWidth = Math.min(TASK_COL_MAX, Math.max(TASK_COL_MIN, Math.round(px)))
     document.documentElement.style.setProperty("--task-col-width", taskColWidth+"px")
-    const input = document.getElementById("taskColWidthInput")
-    if(input && Number(input.value) !== taskColWidth){
-        input.value = taskColWidth
-    }
 }
-
-document.getElementById("taskColWidthInput").value = taskColWidth
-
-document.getElementById("taskColWidthInput").addEventListener("input", e=>{
-    let px = parseInt(e.target.value, 10)
-    if(isNaN(px)) return
-    applyTaskColWidth(px)
-    grist.setOption("taskColWidth", taskColWidth)
-})
-document.getElementById("taskColWidthInput").addEventListener("change", e=>{
-    // Au blur / validation, on s'assure que le champ affiche bien la valeur bornée (120-800)
-    e.target.value = taskColWidth
-})
 
 // ===== Gestion du tri combiné (jusqu'à 3 niveaux) =====
 document.querySelectorAll(".sort-select").forEach(select=>{
@@ -937,10 +921,11 @@ function updateFreeNoteDisplay(){
     }
 }
 
-document.getElementById("configBtn").onclick = ()=>{
+function openConfigPanel(){
     renderConfigRows(stateConfig)
     document.getElementById("milestoneColorInput").value = milestoneColor
     document.getElementById("showStatusInPanelInput").checked = showStatusInPanel
+    document.getElementById("taskColWidthConfigInput").value = taskColWidth
     document.getElementById("filterLabel1").value = filterLabels.filterField || ""
     document.getElementById("filterLabel2").value = filterLabels.filterField2 || ""
     document.getElementById("filterLabel3").value = filterLabels.filterField3 || ""
@@ -977,6 +962,7 @@ document.getElementById("resetConfig").onclick = ()=>{
     renderConfigRows(JSON.parse(JSON.stringify(defaultStateConfig)))
     document.getElementById("milestoneColorInput").value = "#e74c3c"
     document.getElementById("showStatusInPanelInput").checked = false
+    document.getElementById("taskColWidthConfigInput").value = 600
     document.getElementById("filterLabel1").value = ""
     document.getElementById("filterLabel2").value = ""
     document.getElementById("filterLabel3").value = ""
@@ -1004,6 +990,7 @@ document.getElementById("saveConfig").onclick = ()=>{
     stateConfig = collectConfigFromRows()
     milestoneColor = document.getElementById("milestoneColorInput").value
     showStatusInPanel = document.getElementById("showStatusInPanelInput").checked
+    applyTaskColWidth(parseInt(document.getElementById("taskColWidthConfigInput").value, 10) || taskColWidth)
     filterLabels = {
         filterField: document.getElementById("filterLabel1").value.trim(),
         filterField2: document.getElementById("filterLabel2").value.trim(),
@@ -1034,6 +1021,7 @@ document.getElementById("saveConfig").onclick = ()=>{
     grist.setOption("taskStates", stateConfig)
     grist.setOption("milestoneColor", milestoneColor)
     grist.setOption("showStatusInPanel", showStatusInPanel)
+    grist.setOption("taskColWidth", taskColWidth)
     grist.setOption("filterLabels", filterLabels)
     grist.setOption("filterHidePanel", filterHidePanel)
     grist.setOption("filterHideColumn", filterHideColumn)
@@ -1333,6 +1321,9 @@ function percentBracket(v){
 // Convertit une valeur brute Grist (choix, ref, liste...) en texte affichable
 function displayValue(v){
     if(v===null || v===undefined) return ""
+    if(v instanceof Date){
+        return formatDateFr(v)
+    }
     if(Array.isArray(v)){
         // Ex: ['L', 'val1', 'val2'] (liste Grist) -> on ignore le marqueur 'L'
         let arr = v[0]==='L' ? v.slice(1) : v
@@ -1350,6 +1341,9 @@ function displayValue(v){
 // Les retours à la ligne déjà présents dans le texte d'origine sont conservés tels quels.
 function displayValueMultiline(v){
     if(v===null || v===undefined) return ""
+    if(v instanceof Date){
+        return formatDateFr(v)
+    }
     if(Array.isArray(v)){
         let arr = v[0]==='L' ? v.slice(1) : v
         return arr.map(displayValueMultiline).join("\n")
@@ -1893,17 +1887,6 @@ async function loadAttachments(rawValue){
         container.innerHTML = `<span class="detail-empty">Impossible de charger la pièce jointe</span>`
     }
 }
-
-// Raccourci discret (Ctrl+Alt+G) pour afficher/masquer les réglages sensibles
-// (largeur de la colonne Tâche, bouton Statuts & couleurs), cachés du grand public par défaut.
-document.addEventListener("keydown", e=>{
-    if(e.ctrlKey && e.altKey && (e.key === "g" || e.key === "G")){
-        document.querySelectorAll(".admin-control").forEach(el=>{
-            const isHidden = el.style.display === "none"
-            el.style.display = isHidden ? (el.tagName === "BUTTON" ? "inline-block" : "flex") : "none"
-        })
-    }
-})
 
 grist.onRecords((r,m)=>draw(r,m))
 </script>
