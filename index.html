@@ -177,6 +177,15 @@ body{font-family:sans-serif;margin:0}
     font-size:12px;
 }
 #configBtn:hover{background:#eee;}
+#printBtn{
+    cursor:pointer;
+    border:1px solid #ccc;
+    background:#fff;
+    border-radius:4px;
+    padding:4px 10px;
+    font-size:12px;
+}
+#printBtn:hover{background:#eee;}
 #resetAllFiltersBtn{
     cursor:pointer;
     border:1px solid rgba(192,80,77,.35);
@@ -413,6 +422,34 @@ body{font-family:sans-serif;margin:0}
         transform:translateY(0);
     }
 }
+/* ===== Impression / Export PDF ===== */
+@page{
+    size: landscape;
+    margin: 10mm;
+}
+@media print{
+    #controls, #legend, #detailOverlay, #detailPanel, #configPanel{
+        display:none !important;
+    }
+    body{margin:0;}
+    #gantt-container{
+        overflow:visible !important;
+        width:auto !important;
+    }
+    #gantt-table{
+        page-break-inside:auto;
+    }
+    #gantt-table tr{
+        page-break-inside:avoid;
+    }
+    .task-name-header,.task-name-cell{
+        position:static !important;
+        box-shadow:none !important;
+    }
+    .today-line{
+        display:none !important;
+    }
+}
 </style>
 </head>
 
@@ -631,6 +668,8 @@ body{font-family:sans-serif;margin:0}
 
   <button id="resetAllFiltersBtn" type="button" title="Réinitialiser tous les filtres">↺ Réinitialiser les filtres</button>
 
+  <button id="printBtn" type="button" title="Imprimer ou exporter en PDF">🖨️ Imprimer / Exporter en PDF</button>
+
   <span class="sort-block">
     Trier par :
     <select class="sort-select" data-level="1">
@@ -676,7 +715,7 @@ body{font-family:sans-serif;margin:0}
 <div id="configPanel">
   <h3>Configuration des statuts</h3>
   <div class="config-hint">
-    Chaque ligne définit un texte à repérer dans la colonne "Etat" (insensible à la casse).
+    Chaque ligne définit un texte que la colonne "Etat" doit avoir en <strong>début</strong> de valeur (insensible à la casse).
     Laissez le champ "texte à repérer" vide pour créer le statut par défaut (utilisé quand aucune règle ne correspond).
   </div>
   <div id="configRows"></div>
@@ -1047,6 +1086,10 @@ document.querySelectorAll(".filter-clear").forEach(btn=>{
 document.getElementById("resetAllFiltersBtn").onclick = ()=>{
     FILTER_KEYS.forEach(key => clearFilter(key))
     draw(currentRecords, currentMappings)
+}
+
+document.getElementById("printBtn").onclick = ()=>{
+    window.print()
 }
 
 // ===== Largeur de la colonne "Tâche" (réglable dans le panneau ⚙, via "Open configuration") =====
@@ -1492,14 +1535,14 @@ function countCols(units,start,end){
 
 // Retourne la règle de statut (label + couleur) correspondant à l'état d'une tâche
 function stateRule(state){
-    let s = (state||"").toLowerCase();
+    let s = displayValue(state).toLowerCase();
     for(const rule of stateConfig){
-        if(rule.match && s.includes(rule.match.toLowerCase())) return rule;
+        if(rule.match && s.startsWith(rule.match.toLowerCase())) return rule;
     }
     // Règle par défaut : celle dont "match" est vide
     let def = stateConfig.find(r=>!r.match);
     if(def) return def;
-    return {label: state||"Terminé", color:"#757575"};
+    return {label: displayValue(state)||"Terminé", color:"#757575"};
 }
 
 // Éclaircit une couleur hex en la mélangeant avec du blanc (amount: 0 = inchangé, 1 = blanc pur)
