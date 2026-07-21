@@ -120,8 +120,8 @@ body{font-family:sans-serif;margin:0}
 }
 .task-name-main{
     font-size:13px;
-    font-weight:400;
-    color:#333;
+    font-weight:600;
+    color:#111827;
     white-space:normal;
     overflow-wrap:break-word;
     line-height:1.3;
@@ -1463,9 +1463,11 @@ function draw(records,mappings){
         let filter6Val = filterValue("filterField6")
         let filter7Val = filterValue("filterField7")
 
+        let statusColor = isJalon ? milestoneColor : (mappings.state ? stateRule(r[mappings.state]).color : null)
+
         let lines = []
         if(filter1Val) lines.push({cls:"task-name-filter1", text:`${filterLabelOrDefault("filterField",1)} : ${filter1Val}`})
-        lines.push({cls:"task-name-main", text:taskName})
+        lines.push({cls:"task-name-main", text:taskName, color: statusColor})
         if(filter2Val) lines.push({cls:"task-name-sub", text:`${filterLabelOrDefault("filterField2",2)} : ${filter2Val}`})
         if(filter3Val) lines.push({cls:"task-name-sub", text:`${filterLabelOrDefault("filterField3",3)} : ${filter3Val}`})
         if(filter4Val) lines.push({cls:"task-name-sub", text:`${filterLabelOrDefault("filterField4",4)} : ${filter4Val}`})
@@ -1474,7 +1476,10 @@ function draw(records,mappings){
         if(filter7Val) lines.push({cls:"task-name-sub", text:`${filterLabelOrDefault("filterField7",7)} : ${filter7Val}`})
 
         let tooltipParts = lines.map(l=>l.text)
-        let linesHtml = lines.map(l=>`<div class="${l.cls}">${escapeHtml(l.text)}</div>`).join("")
+        let linesHtml = lines.map(l=>{
+            let styleAttr = l.color ? ` style="color:${l.color}"` : ""
+            return `<div class="${l.cls}"${styleAttr}>${escapeHtml(l.text)}</div>`
+        }).join("")
 
         html+=`<td class="task-name-cell" title="${escapeAttr(tooltipParts.join(' — '))}">
                 ${linesHtml}
