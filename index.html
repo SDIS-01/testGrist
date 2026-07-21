@@ -549,7 +549,7 @@ body{font-family:sans-serif;margin:0}
 
   <label style="display:flex;align-items:center;gap:6px;white-space:nowrap;">
     Largeur colonne Tâche :
-    <input type="number" id="taskColWidthInput" min="120" max="800" step="10" style="width:70px;padding:5px 6px;font-size:13px;border:1px solid #ccc;border-radius:4px;">
+    <input type="number" id="taskColWidthInput" min="120" max="2000" step="10" style="width:70px;padding:5px 6px;font-size:13px;border:1px solid #ccc;border-radius:4px;">
     px
   </label>
 
@@ -774,7 +774,7 @@ columns:[
 let scale="month"
 let taskColWidth=600
 const TASK_COL_MIN=120
-const TASK_COL_MAX=800
+const TASK_COL_MAX=2000
 let currentRecords=[]
 let currentMappings={}
 let highlightToday=false
