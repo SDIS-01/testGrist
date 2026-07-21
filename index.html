@@ -196,6 +196,22 @@ body{font-family:sans-serif;margin:0}
     width:150px;
     max-width:40vw;
 }
+.filter-date-op,
+.filter-date-1,
+.filter-date-2{
+    padding:5px 6px;
+    font-size:13px;
+    border:1px solid #ccc;
+    border-radius:4px;
+}
+.filter-date-1,
+.filter-date-2{
+    width:140px;
+}
+.filter-date-and{
+    font-size:12px;
+    color:#666;
+}
 .filter-clear{
     cursor:pointer;
     border:1px solid #ccc;
@@ -421,6 +437,19 @@ body{font-family:sans-serif;margin:0}
       <option value="50-75">50 – 75%</option>
       <option value="75-100">75 – 100%</option>
     </select>
+    <span class="filter-date-controls" data-key="filterField" style="display:none;align-items:center;gap:4px;">
+      <select class="filter-date-op" data-key="filterField">
+        <option value="lt">&lt;</option>
+        <option value="lte">≤</option>
+        <option value="eq">=</option>
+        <option value="gte">≥</option>
+        <option value="gt">&gt;</option>
+        <option value="between">Entre</option>
+      </select>
+      <input type="date" class="filter-date-1" data-key="filterField">
+      <span class="filter-date-and" data-key="filterField" style="display:none;">et</span>
+      <input type="date" class="filter-date-2" data-key="filterField" style="display:none;">
+    </span>
     <button type="button" class="filter-clear" data-key="filterField" title="Effacer ce filtre">✕</button>
   </span>
 
@@ -435,6 +464,19 @@ body{font-family:sans-serif;margin:0}
       <option value="50-75">50 – 75%</option>
       <option value="75-100">75 – 100%</option>
     </select>
+    <span class="filter-date-controls" data-key="filterField2" style="display:none;align-items:center;gap:4px;">
+      <select class="filter-date-op" data-key="filterField2">
+        <option value="lt">&lt;</option>
+        <option value="lte">≤</option>
+        <option value="eq">=</option>
+        <option value="gte">≥</option>
+        <option value="gt">&gt;</option>
+        <option value="between">Entre</option>
+      </select>
+      <input type="date" class="filter-date-1" data-key="filterField2">
+      <span class="filter-date-and" data-key="filterField2" style="display:none;">et</span>
+      <input type="date" class="filter-date-2" data-key="filterField2" style="display:none;">
+    </span>
     <button type="button" class="filter-clear" data-key="filterField2" title="Effacer ce filtre">✕</button>
   </span>
 
@@ -449,6 +491,19 @@ body{font-family:sans-serif;margin:0}
       <option value="50-75">50 – 75%</option>
       <option value="75-100">75 – 100%</option>
     </select>
+    <span class="filter-date-controls" data-key="filterField3" style="display:none;align-items:center;gap:4px;">
+      <select class="filter-date-op" data-key="filterField3">
+        <option value="lt">&lt;</option>
+        <option value="lte">≤</option>
+        <option value="eq">=</option>
+        <option value="gte">≥</option>
+        <option value="gt">&gt;</option>
+        <option value="between">Entre</option>
+      </select>
+      <input type="date" class="filter-date-1" data-key="filterField3">
+      <span class="filter-date-and" data-key="filterField3" style="display:none;">et</span>
+      <input type="date" class="filter-date-2" data-key="filterField3" style="display:none;">
+    </span>
     <button type="button" class="filter-clear" data-key="filterField3" title="Effacer ce filtre">✕</button>
   </span>
 
@@ -463,6 +518,19 @@ body{font-family:sans-serif;margin:0}
       <option value="50-75">50 – 75%</option>
       <option value="75-100">75 – 100%</option>
     </select>
+    <span class="filter-date-controls" data-key="filterField4" style="display:none;align-items:center;gap:4px;">
+      <select class="filter-date-op" data-key="filterField4">
+        <option value="lt">&lt;</option>
+        <option value="lte">≤</option>
+        <option value="eq">=</option>
+        <option value="gte">≥</option>
+        <option value="gt">&gt;</option>
+        <option value="between">Entre</option>
+      </select>
+      <input type="date" class="filter-date-1" data-key="filterField4">
+      <span class="filter-date-and" data-key="filterField4" style="display:none;">et</span>
+      <input type="date" class="filter-date-2" data-key="filterField4" style="display:none;">
+    </span>
     <button type="button" class="filter-clear" data-key="filterField4" title="Effacer ce filtre">✕</button>
   </span>
 
@@ -477,6 +545,19 @@ body{font-family:sans-serif;margin:0}
       <option value="50-75">50 – 75%</option>
       <option value="75-100">75 – 100%</option>
     </select>
+    <span class="filter-date-controls" data-key="filterField5" style="display:none;align-items:center;gap:4px;">
+      <select class="filter-date-op" data-key="filterField5">
+        <option value="lt">&lt;</option>
+        <option value="lte">≤</option>
+        <option value="eq">=</option>
+        <option value="gte">≥</option>
+        <option value="gt">&gt;</option>
+        <option value="between">Entre</option>
+      </select>
+      <input type="date" class="filter-date-1" data-key="filterField5">
+      <span class="filter-date-and" data-key="filterField5" style="display:none;">et</span>
+      <input type="date" class="filter-date-2" data-key="filterField5" style="display:none;">
+    </span>
     <button type="button" class="filter-clear" data-key="filterField5" title="Effacer ce filtre">✕</button>
   </span>
 
@@ -491,6 +572,19 @@ body{font-family:sans-serif;margin:0}
       <option value="50-75">50 – 75%</option>
       <option value="75-100">75 – 100%</option>
     </select>
+    <span class="filter-date-controls" data-key="filterField6" style="display:none;align-items:center;gap:4px;">
+      <select class="filter-date-op" data-key="filterField6">
+        <option value="lt">&lt;</option>
+        <option value="lte">≤</option>
+        <option value="eq">=</option>
+        <option value="gte">≥</option>
+        <option value="gt">&gt;</option>
+        <option value="between">Entre</option>
+      </select>
+      <input type="date" class="filter-date-1" data-key="filterField6">
+      <span class="filter-date-and" data-key="filterField6" style="display:none;">et</span>
+      <input type="date" class="filter-date-2" data-key="filterField6" style="display:none;">
+    </span>
     <button type="button" class="filter-clear" data-key="filterField6" title="Effacer ce filtre">✕</button>
   </span>
 
@@ -505,6 +599,19 @@ body{font-family:sans-serif;margin:0}
       <option value="50-75">50 – 75%</option>
       <option value="75-100">75 – 100%</option>
     </select>
+    <span class="filter-date-controls" data-key="filterField7" style="display:none;align-items:center;gap:4px;">
+      <select class="filter-date-op" data-key="filterField7">
+        <option value="lt">&lt;</option>
+        <option value="lte">≤</option>
+        <option value="eq">=</option>
+        <option value="gte">≥</option>
+        <option value="gt">&gt;</option>
+        <option value="between">Entre</option>
+      </select>
+      <input type="date" class="filter-date-1" data-key="filterField7">
+      <span class="filter-date-and" data-key="filterField7" style="display:none;">et</span>
+      <input type="date" class="filter-date-2" data-key="filterField7" style="display:none;">
+    </span>
     <button type="button" class="filter-clear" data-key="filterField7" title="Effacer ce filtre">✕</button>
   </span>
 
@@ -590,7 +697,10 @@ body{font-family:sans-serif;margin:0}
       <span style="width:70px;font-size:12px;color:#555;">Filtre 1 :</span>
       <input type="text" id="filterLabel1" placeholder="ex: Porteur" style="flex:1;">
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterPercent1"> %  (tranches de 25)
+        <input type="checkbox" id="filterPercent1" class="filter-percent-checkbox" data-idx="1"> %  (tranches de 25)
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterDate1" class="filter-date-checkbox" data-idx="1"> c'est une date
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel1"> masquer du panneau
@@ -603,7 +713,10 @@ body{font-family:sans-serif;margin:0}
       <span style="width:70px;font-size:12px;color:#555;">Filtre 2 :</span>
       <input type="text" id="filterLabel2" placeholder="ex: Groupement" style="flex:1;">
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterPercent2"> %  (tranches de 25)
+        <input type="checkbox" id="filterPercent2" class="filter-percent-checkbox" data-idx="2"> %  (tranches de 25)
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterDate2" class="filter-date-checkbox" data-idx="2"> c'est une date
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel2"> masquer du panneau
@@ -616,7 +729,10 @@ body{font-family:sans-serif;margin:0}
       <span style="width:70px;font-size:12px;color:#555;">Filtre 3 :</span>
       <input type="text" id="filterLabel3" placeholder="ex: ..." style="flex:1;">
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterPercent3"> %  (tranches de 25)
+        <input type="checkbox" id="filterPercent3" class="filter-percent-checkbox" data-idx="3"> %  (tranches de 25)
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterDate3" class="filter-date-checkbox" data-idx="3"> c'est une date
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel3"> masquer du panneau
@@ -629,7 +745,10 @@ body{font-family:sans-serif;margin:0}
       <span style="width:70px;font-size:12px;color:#555;">Filtre 4 :</span>
       <input type="text" id="filterLabel4" placeholder="ex: ..." style="flex:1;">
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterPercent4"> %  (tranches de 25)
+        <input type="checkbox" id="filterPercent4" class="filter-percent-checkbox" data-idx="4"> %  (tranches de 25)
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterDate4" class="filter-date-checkbox" data-idx="4"> c'est une date
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel4"> masquer du panneau
@@ -642,7 +761,10 @@ body{font-family:sans-serif;margin:0}
       <span style="width:70px;font-size:12px;color:#555;">Filtre 5 :</span>
       <input type="text" id="filterLabel5" placeholder="ex: ..." style="flex:1;">
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterPercent5"> %  (tranches de 25)
+        <input type="checkbox" id="filterPercent5" class="filter-percent-checkbox" data-idx="5"> %  (tranches de 25)
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterDate5" class="filter-date-checkbox" data-idx="5"> c'est une date
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel5"> masquer du panneau
@@ -655,7 +777,10 @@ body{font-family:sans-serif;margin:0}
       <span style="width:70px;font-size:12px;color:#555;">Filtre 6 :</span>
       <input type="text" id="filterLabel6" placeholder="ex: ..." style="flex:1;">
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterPercent6"> %  (tranches de 25)
+        <input type="checkbox" id="filterPercent6" class="filter-percent-checkbox" data-idx="6"> %  (tranches de 25)
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterDate6" class="filter-date-checkbox" data-idx="6"> c'est une date
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel6"> masquer du panneau
@@ -668,7 +793,10 @@ body{font-family:sans-serif;margin:0}
       <span style="width:70px;font-size:12px;color:#555;">Filtre 7 :</span>
       <input type="text" id="filterLabel7" placeholder="ex: ..." style="flex:1;">
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterPercent7"> %  (tranches de 25)
+        <input type="checkbox" id="filterPercent7" class="filter-percent-checkbox" data-idx="7"> %  (tranches de 25)
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterDate7" class="filter-date-checkbox" data-idx="7"> c'est une date
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel7"> masquer du panneau
@@ -811,6 +939,7 @@ let filterLabels = {filterField:"", filterField2:"", filterField3:"", filterFiel
 const EXTRA_KEYS = ["extraField1","extraField2","extraField3","extraField4","extraField5","extraField6"]
 let extraFieldLabels = {extraField1:"", extraField2:"", extraField3:"", extraField4:"", extraField5:"", extraField6:""}
 let filterIsPercent = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
+let filterIsDate = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
 let filterHidePanel = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
 let filterHideColumn = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
 let showStatusInPanel = false
@@ -850,6 +979,21 @@ document.querySelectorAll(".filter-percent-select").forEach(select=>{
     }
 })
 
+// Reconstruit et sauvegarde la valeur composite "operateur|date1|date2" pour un filtre en mode date
+function updateDateFilterValue(key){
+    let op = document.querySelector(`.filter-date-op[data-key="${key}"]`).value
+    let d1 = document.querySelector(`.filter-date-1[data-key="${key}"]`).value
+    let d2 = op === "between" ? document.querySelector(`.filter-date-2[data-key="${key}"]`).value : ""
+    let val = `${op}|${d1}|${d2}`
+    selectedFilterValue[key] = val
+    grist.setOption("selectedFilterValue_"+key, val)
+    draw(currentRecords, currentMappings)
+}
+
+document.querySelectorAll(".filter-date-op, .filter-date-1, .filter-date-2").forEach(el=>{
+    el.addEventListener("change", e=> updateDateFilterValue(e.target.dataset.key))
+})
+
 document.querySelectorAll(".filter-clear").forEach(btn=>{
     btn.onclick = ()=>{
         let key = btn.dataset.key
@@ -857,6 +1001,12 @@ document.querySelectorAll(".filter-clear").forEach(btn=>{
         document.querySelector(`.filter-input[data-key="${key}"]`).value = ""
         let percentSelect = document.querySelector(`.filter-percent-select[data-key="${key}"]`)
         if(percentSelect) percentSelect.value = ""
+        let dateOp = document.querySelector(`.filter-date-op[data-key="${key}"]`)
+        let date1 = document.querySelector(`.filter-date-1[data-key="${key}"]`)
+        let date2 = document.querySelector(`.filter-date-2[data-key="${key}"]`)
+        if(dateOp) dateOp.value = "lt"
+        if(date1) date1.value = ""
+        if(date2) date2.value = ""
         grist.setOption("selectedFilterValue_"+key, "")
         draw(currentRecords, currentMappings)
     }
@@ -921,6 +1071,22 @@ function updateFreeNoteDisplay(){
     }
 }
 
+// % et Date sont mutuellement exclusifs pour un même filtre (cocher l'un décoche l'autre)
+document.querySelectorAll(".filter-percent-checkbox").forEach(cb=>{
+    cb.onchange = ()=>{
+        if(cb.checked){
+            document.getElementById("filterDate"+cb.dataset.idx).checked = false
+        }
+    }
+})
+document.querySelectorAll(".filter-date-checkbox").forEach(cb=>{
+    cb.onchange = ()=>{
+        if(cb.checked){
+            document.getElementById("filterPercent"+cb.dataset.idx).checked = false
+        }
+    }
+})
+
 function openConfigPanel(){
     renderConfigRows(stateConfig)
     document.getElementById("milestoneColorInput").value = milestoneColor
@@ -944,6 +1110,7 @@ function openConfigPanel(){
     renderFormPrefillRows(formPrefillMap)
     FILTER_KEYS.forEach((key,i)=>{
         document.getElementById("filterPercent"+(i+1)).checked = !!filterIsPercent[key]
+        document.getElementById("filterDate"+(i+1)).checked = !!filterIsDate[key]
         document.getElementById("filterHidePanel"+(i+1)).checked = !!filterHidePanel[key]
         document.getElementById("filterHideColumn"+(i+1)).checked = !!filterHideColumn[key]
     })
@@ -981,6 +1148,7 @@ document.getElementById("resetConfig").onclick = ()=>{
     renderFormPrefillRows([])
     FILTER_KEYS.forEach((key,i)=>{
         document.getElementById("filterPercent"+(i+1)).checked = false
+        document.getElementById("filterDate"+(i+1)).checked = false
         document.getElementById("filterHidePanel"+(i+1)).checked = false
         document.getElementById("filterHideColumn"+(i+1)).checked = false
     })
@@ -1013,6 +1181,7 @@ document.getElementById("saveConfig").onclick = ()=>{
     formPrefillMap = collectFormPrefillRows()
     FILTER_KEYS.forEach((key,i)=>{
         filterIsPercent[key] = document.getElementById("filterPercent"+(i+1)).checked
+        filterIsDate[key] = document.getElementById("filterDate"+(i+1)).checked
         filterHidePanel[key] = document.getElementById("filterHidePanel"+(i+1)).checked
         filterHideColumn[key] = document.getElementById("filterHideColumn"+(i+1)).checked
         // Si on active/désactive le mode %, on réinitialise ce filtre pour éviter une valeur incohérente
@@ -1030,6 +1199,7 @@ document.getElementById("saveConfig").onclick = ()=>{
     grist.setOption("formUrl", formUrl)
     grist.setOption("formPrefillMap", formPrefillMap)
     grist.setOption("filterIsPercent", filterIsPercent)
+    grist.setOption("filterIsDate", filterIsDate)
     FILTER_KEYS.forEach(key=> grist.setOption("selectedFilterValue_"+key, ""))
     updateFreeNoteDisplay()
     configPanel.style.display = "none"
@@ -1153,6 +1323,12 @@ grist.onOptions((options)=>{
             filterIsPercent = Object.assign(
                 {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false},
                 options.filterIsPercent
+            )
+        }
+        if(options.filterIsDate && typeof options.filterIsDate === "object"){
+            filterIsDate = Object.assign(
+                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false},
+                options.filterIsDate
             )
         }
         if(options.filterHidePanel && typeof options.filterHidePanel === "object"){
@@ -1397,6 +1573,11 @@ function updateFilterUI(allRecords, mappings){
         const input = document.querySelector(`.filter-input[data-key="${key}"]`)
         const options = document.getElementById("filterOptions-"+key)
         const percentSelect = document.querySelector(`.filter-percent-select[data-key="${key}"]`)
+        const dateControls = document.querySelector(`.filter-date-controls[data-key="${key}"]`)
+        const dateOp = document.querySelector(`.filter-date-op[data-key="${key}"]`)
+        const date1 = document.querySelector(`.filter-date-1[data-key="${key}"]`)
+        const date2 = document.querySelector(`.filter-date-2[data-key="${key}"]`)
+        const dateAnd = document.querySelector(`.filter-date-and[data-key="${key}"]`)
 
         if(!mappings[key]){
             container.style.display = "none"
@@ -1404,6 +1585,29 @@ function updateFilterUI(allRecords, mappings){
         }
 
         container.style.display = "flex"
+
+        if(filterIsDate[key]){
+            // Mode date : on masque la recherche texte et le mode %, on affiche opérateur + date(s)
+            input.style.display = "none"
+            percentSelect.style.display = "none"
+            dateControls.style.display = "inline-flex"
+
+            let parts = (selectedFilterValue[key]||"").split("|")
+            let op = parts[0] || "lt"
+            let d1 = parts[1] || ""
+            let d2 = parts[2] || ""
+
+            if(dateOp.value !== op) dateOp.value = op
+            if(date1.value !== d1) date1.value = d1
+            if(date2.value !== d2) date2.value = d2
+
+            let isBetween = op === "between"
+            dateAnd.style.display = isBetween ? "" : "none"
+            date2.style.display = isBetween ? "" : "none"
+            return
+        }
+
+        if(dateControls) dateControls.style.display = "none"
 
         if(filterIsPercent[key]){
             // Mode pourcentage par tranches de 25% : on masque la recherche texte, on affiche le menu de tranches
@@ -1442,6 +1646,34 @@ function applyFilter(records, mappings){
         if(!mappings[key]) return
         let val = (selectedFilterValue[key]||"").trim()
         if(!val || val.toLowerCase()==="tous") return
+
+        if(filterIsDate[key]){
+            let parts = val.split("|")
+            let op = parts[0] || "lt"
+            let d1raw = parts[1] || ""
+            let d2raw = parts[2] || ""
+            if(!d1raw) return // aucune date choisie pour l'instant : filtre inactif
+
+            let d1 = new Date(d1raw); d1.setHours(0,0,0,0)
+            let d2 = null
+            if(d2raw){ d2 = new Date(d2raw); d2.setHours(0,0,0,0) }
+
+            result = result.filter(r=>{
+                let rd = parseDate(r[mappings[key]])
+                if(!rd) return false
+                rd = new Date(rd); rd.setHours(0,0,0,0)
+                switch(op){
+                    case "lt": return rd < d1
+                    case "lte": return rd <= d1
+                    case "eq": return rd.getTime() === d1.getTime()
+                    case "gte": return rd >= d1
+                    case "gt": return rd > d1
+                    case "between": return d2 ? (rd >= d1 && rd <= d2) : rd >= d1
+                    default: return true
+                }
+            })
+            return
+        }
 
         if(filterIsPercent[key]){
             result = result.filter(r => percentBracket(r[mappings[key]]) === val)
@@ -1710,6 +1942,16 @@ function formatDateFr(v){
     return `${day}/${month}/${year}`
 }
 
+// Format ISO (aaaa-mm-jj), plus fiable pour pré-remplir un champ Date de formulaire
+function formatDateISO(v){
+    let d = parseDate(v)
+    if(!d) return ""
+    let day = String(d.getDate()).padStart(2,'0')
+    let month = String(d.getMonth()+1).padStart(2,'0')
+    let year = d.getFullYear()
+    return `${year}-${month}-${day}`
+}
+
 function detailRow(label, valueHtml){
     return `<div class="detail-row"><div class="detail-label">${escapeHtml(label)}</div><div class="detail-value">${valueHtml}</div></div>`
 }
@@ -1720,9 +1962,9 @@ function resolvePrefillValue(source, record, mappings){
         case "task":
             return record[mappings.task] || ""
         case "start":
-            return formatDateFr(record[mappings.start])
+            return formatDateISO(record[mappings.start])
         case "end":
-            return formatDateFr(record[mappings.end])
+            return formatDateISO(record[mappings.end])
         case "state": {
             if(!mappings.state) return ""
             let rule = stateRule(record[mappings.state])
@@ -1837,7 +2079,8 @@ function openDetailPanel(record, mappings){
         let formBlock = document.createElement("div")
         formBlock.className = "detail-row"
         let url = buildFormUrl(record, mappings)
-        formBlock.innerHTML = `<a class="detail-attachment" href="${escapeAttr(url)}" target="_blank" rel="noopener">📝 Ouvrir le formulaire</a>`
+        formBlock.innerHTML = `<a class="detail-attachment" href="${escapeAttr(url)}" title="${escapeAttr(url)}" target="_blank" rel="noopener">📝 Ouvrir le formulaire</a>
+            <div style="font-size:10px;color:#999;margin-top:4px;overflow-wrap:break-word;user-select:all;">${escapeHtml(url)}</div>`
         detailPanelBody.appendChild(formBlock)
     }
 
