@@ -1253,6 +1253,22 @@ function displayValue(v){
     return String(v)
 }
 
+// Variante utilisée uniquement dans le panneau latéral : si un champ contient plusieurs valeurs
+// (liste, choix multiples...), chacune apparaît sur sa propre ligne au lieu d'être séparée par une virgule.
+// Les retours à la ligne déjà présents dans le texte d'origine sont conservés tels quels.
+function displayValueMultiline(v){
+    if(v===null || v===undefined) return ""
+    if(Array.isArray(v)){
+        let arr = v[0]==='L' ? v.slice(1) : v
+        return arr.map(displayValueMultiline).join("\n")
+    }
+    if(typeof v === "object"){
+        if('value' in v) return displayValueMultiline(v.value)
+        return JSON.stringify(v)
+    }
+    return String(v)
+}
+
 // Renomme "Filtre 1/2/3/4" partout (barre d'outils + menu de tri) selon les libellés configurés dans ⚙
 function updateFilterLabelsUI(){
     FILTER_KEYS.forEach((key, idx)=>{
@@ -1650,7 +1666,7 @@ function openDetailPanel(record, mappings){
             let p = getPercentValue(record[mappings[key]])
             val = p===null ? "" : p+"%"
         } else {
-            val = displayValue(record[mappings[key]])
+            val = displayValueMultiline(record[mappings[key]])
         }
         let label = (filterLabels[key] && filterLabels[key].trim()) ? filterLabels[key].trim() : `Filtre ${idx+1}`
         if(val) parts.push(detailRow(label, escapeHtml(val)))
@@ -1659,7 +1675,7 @@ function openDetailPanel(record, mappings){
     // Champs supplémentaires (génériques, configurables dans ⚙)
     EXTRA_KEYS.forEach(key=>{
         if(!mappings[key]) return
-        let val = displayValue(record[mappings[key]])
+        let val = displayValueMultiline(record[mappings[key]])
         if(!val) return
         let idx = EXTRA_KEYS.indexOf(key) + 1
         let label = (extraFieldLabels[key] && extraFieldLabels[key].trim()) ? extraFieldLabels[key].trim() : `Champ ${idx}`
@@ -1668,7 +1684,7 @@ function openDetailPanel(record, mappings){
 
     // Commentaire
     if(mappings.comment){
-        let comment = displayValue(record[mappings.comment])
+        let comment = displayValueMultiline(record[mappings.comment])
         if(comment){
             parts.push(detailRow("Commentaire", escapeHtml(comment)))
         }
