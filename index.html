@@ -32,6 +32,7 @@ body{font-family:sans-serif;margin:0}
     text-align:center;
     vertical-align:middle;
     width:80px;
+    max-width:80px;
     font-size:12px;
     line-height:1.2;
 }
@@ -88,8 +89,8 @@ body{font-family:sans-serif;margin:0}
 :root{
     --task-col-width: 600px;
 }
-.task-name-header,
-.task-name-cell{
+#gantt-table .task-name-header,
+#gantt-table .task-name-cell{
     position:sticky;
     left:0;
     z-index:6;
@@ -390,7 +391,7 @@ body{font-family:sans-serif;margin:0}
     #configPanel{width:94vw;max-width:94vw;left:3vw;max-height:80vh;overflow-y:auto;top:10px;}
     #gantt-table td{width:64px;font-size:11px;}
     .task-cell{font-size:11px;}
-    .task-name-header,.task-name-cell{width:min(var(--task-col-width),85vw);max-width:min(var(--task-col-width),85vw);padding:4px 6px;}
+    #gantt-table .task-name-header,#gantt-table .task-name-cell{width:min(var(--task-col-width),85vw);max-width:min(var(--task-col-width),85vw);padding:4px 6px;}
     .task-name-filter1{font-size:12.5px;}
     .task-name-main{font-size:12.5px;}
     .task-name-sub{font-size:12.5px;}
@@ -2101,8 +2102,7 @@ function openDetailPanel(record, mappings){
         let formBlock = document.createElement("div")
         formBlock.className = "detail-row"
         let url = buildFormUrl(record, mappings)
-        formBlock.innerHTML = `<a class="detail-attachment" href="${escapeAttr(url)}" title="${escapeAttr(url)}" target="_blank" rel="noopener">📝 Ouvrir le formulaire</a>
-            <div style="font-size:10px;color:#999;margin-top:4px;overflow-wrap:break-word;user-select:all;">${escapeHtml(url)}</div>`
+        formBlock.innerHTML = `<a class="detail-attachment" href="${escapeAttr(url)}" target="_blank" rel="noopener">📝 Saisir une information</a>`
         detailPanelBody.appendChild(formBlock)
     }
 
