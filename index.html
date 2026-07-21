@@ -1759,7 +1759,9 @@ function draw(records,mappings){
     })
 
     if(dates.length===0){
-        document.getElementById("gantt-table").innerHTML = ""
+        const emptyTableEl = document.getElementById("gantt-table")
+        emptyTableEl.innerHTML = ""
+        emptyTableEl.style.width = ""
         renderLegend()
         document.getElementById("today-line").style.display = "none"
         return
@@ -1863,7 +1865,15 @@ function draw(records,mappings){
         html+="</tr>"
     })
 
-    document.getElementById("gantt-table").innerHTML=html
+    const ganttTableEl = document.getElementById("gantt-table")
+    ganttTableEl.innerHTML=html
+
+    // Fixe la largeur exacte du tableau (colonne Tâche + colonnes de la frise) pour que le
+    // navigateur ne redistribue jamais d'espace excédentaire entre les colonnes, quel que
+    // soit le nombre de colonnes affiché (ex: après un filtrage qui réduit la période).
+    let unitColWidth = window.innerWidth <= 600 ? 64 : 80
+    ganttTableEl.style.width = (taskColWidth + units.length * unitColWidth) + "px"
+
     renderLegend()
 
     // ===== LIGNE AUJOURD'HUI =====
