@@ -228,6 +228,54 @@ body{font-family:sans-serif;margin:0}
     font-size:12px;
     color:#666;
 }
+.filter-multi-toggle{
+    cursor:pointer;
+    border:1px solid #ccc;
+    background:#fff;
+    border-radius:4px;
+    padding:6px 10px;
+    font-size:13px;
+    max-width:180px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+.filter-multi-toggle:hover{background:#f5f5f5;}
+.filter-multi-dropdown{
+    position:absolute;
+    top:100%;
+    left:0;
+    margin-top:4px;
+    background:#fff;
+    border:1px solid #ccc;
+    border-radius:6px;
+    box-shadow:0 4px 14px rgba(0,0,0,.15);
+    padding:8px;
+    z-index:60;
+    max-height:220px;
+    overflow-y:auto;
+    min-width:180px;
+}
+.filter-multi-dropdown label{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:13px;
+    padding:3px 2px;
+    white-space:nowrap;
+}
+.filter-multi-dropdown label:hover{background:#f5f5f5;}
+.filter-multi-actions{
+    display:flex;
+    justify-content:space-between;
+    font-size:11px;
+    color:#1e88e5;
+    margin-bottom:6px;
+    border-bottom:1px solid #eee;
+    padding-bottom:6px;
+}
+.filter-multi-actions span{cursor:pointer;}
+.filter-multi-actions span:hover{text-decoration:underline;}
 .filter-clear{
     cursor:pointer;
     border:1px solid #ccc;
@@ -494,6 +542,10 @@ body{font-family:sans-serif;margin:0}
       <span class="filter-date-and" data-key="filterField" style="display:none;">et</span>
       <input type="date" class="filter-date-2" data-key="filterField" style="display:none;">
     </span>
+    <span class="filter-multi-controls" data-key="filterField" style="display:none;position:relative;">
+      <button type="button" class="filter-multi-toggle" data-key="filterField">Tous</button>
+      <div class="filter-multi-dropdown" data-key="filterField" style="display:none;"></div>
+    </span>
     <button type="button" class="filter-clear" data-key="filterField" title="Effacer ce filtre">✕</button>
   </span>
 
@@ -520,6 +572,10 @@ body{font-family:sans-serif;margin:0}
       <input type="date" class="filter-date-1" data-key="filterField2">
       <span class="filter-date-and" data-key="filterField2" style="display:none;">et</span>
       <input type="date" class="filter-date-2" data-key="filterField2" style="display:none;">
+    </span>
+    <span class="filter-multi-controls" data-key="filterField2" style="display:none;position:relative;">
+      <button type="button" class="filter-multi-toggle" data-key="filterField2">Tous</button>
+      <div class="filter-multi-dropdown" data-key="filterField2" style="display:none;"></div>
     </span>
     <button type="button" class="filter-clear" data-key="filterField2" title="Effacer ce filtre">✕</button>
   </span>
@@ -548,6 +604,10 @@ body{font-family:sans-serif;margin:0}
       <span class="filter-date-and" data-key="filterField3" style="display:none;">et</span>
       <input type="date" class="filter-date-2" data-key="filterField3" style="display:none;">
     </span>
+    <span class="filter-multi-controls" data-key="filterField3" style="display:none;position:relative;">
+      <button type="button" class="filter-multi-toggle" data-key="filterField3">Tous</button>
+      <div class="filter-multi-dropdown" data-key="filterField3" style="display:none;"></div>
+    </span>
     <button type="button" class="filter-clear" data-key="filterField3" title="Effacer ce filtre">✕</button>
   </span>
 
@@ -574,6 +634,10 @@ body{font-family:sans-serif;margin:0}
       <input type="date" class="filter-date-1" data-key="filterField4">
       <span class="filter-date-and" data-key="filterField4" style="display:none;">et</span>
       <input type="date" class="filter-date-2" data-key="filterField4" style="display:none;">
+    </span>
+    <span class="filter-multi-controls" data-key="filterField4" style="display:none;position:relative;">
+      <button type="button" class="filter-multi-toggle" data-key="filterField4">Tous</button>
+      <div class="filter-multi-dropdown" data-key="filterField4" style="display:none;"></div>
     </span>
     <button type="button" class="filter-clear" data-key="filterField4" title="Effacer ce filtre">✕</button>
   </span>
@@ -602,6 +666,10 @@ body{font-family:sans-serif;margin:0}
       <span class="filter-date-and" data-key="filterField5" style="display:none;">et</span>
       <input type="date" class="filter-date-2" data-key="filterField5" style="display:none;">
     </span>
+    <span class="filter-multi-controls" data-key="filterField5" style="display:none;position:relative;">
+      <button type="button" class="filter-multi-toggle" data-key="filterField5">Tous</button>
+      <div class="filter-multi-dropdown" data-key="filterField5" style="display:none;"></div>
+    </span>
     <button type="button" class="filter-clear" data-key="filterField5" title="Effacer ce filtre">✕</button>
   </span>
 
@@ -629,6 +697,10 @@ body{font-family:sans-serif;margin:0}
       <span class="filter-date-and" data-key="filterField6" style="display:none;">et</span>
       <input type="date" class="filter-date-2" data-key="filterField6" style="display:none;">
     </span>
+    <span class="filter-multi-controls" data-key="filterField6" style="display:none;position:relative;">
+      <button type="button" class="filter-multi-toggle" data-key="filterField6">Tous</button>
+      <div class="filter-multi-dropdown" data-key="filterField6" style="display:none;"></div>
+    </span>
     <button type="button" class="filter-clear" data-key="filterField6" title="Effacer ce filtre">✕</button>
   </span>
 
@@ -655,6 +727,10 @@ body{font-family:sans-serif;margin:0}
       <input type="date" class="filter-date-1" data-key="filterField7">
       <span class="filter-date-and" data-key="filterField7" style="display:none;">et</span>
       <input type="date" class="filter-date-2" data-key="filterField7" style="display:none;">
+    </span>
+    <span class="filter-multi-controls" data-key="filterField7" style="display:none;position:relative;">
+      <button type="button" class="filter-multi-toggle" data-key="filterField7">Tous</button>
+      <div class="filter-multi-dropdown" data-key="filterField7" style="display:none;"></div>
     </span>
     <button type="button" class="filter-clear" data-key="filterField7" title="Effacer ce filtre">✕</button>
   </span>
@@ -759,6 +835,9 @@ body{font-family:sans-serif;margin:0}
         <input type="checkbox" id="filterDate1" class="filter-date-checkbox" data-idx="1"> c'est une date
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterMulti1" class="filter-multi-checkbox" data-idx="1"> sélection multiple
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel1"> masquer du panneau
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
@@ -773,6 +852,9 @@ body{font-family:sans-serif;margin:0}
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterDate2" class="filter-date-checkbox" data-idx="2"> c'est une date
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterMulti2" class="filter-multi-checkbox" data-idx="2"> sélection multiple
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel2"> masquer du panneau
@@ -791,6 +873,9 @@ body{font-family:sans-serif;margin:0}
         <input type="checkbox" id="filterDate3" class="filter-date-checkbox" data-idx="3"> c'est une date
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterMulti3" class="filter-multi-checkbox" data-idx="3"> sélection multiple
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel3"> masquer du panneau
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
@@ -805,6 +890,9 @@ body{font-family:sans-serif;margin:0}
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterDate4" class="filter-date-checkbox" data-idx="4"> c'est une date
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterMulti4" class="filter-multi-checkbox" data-idx="4"> sélection multiple
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel4"> masquer du panneau
@@ -823,6 +911,9 @@ body{font-family:sans-serif;margin:0}
         <input type="checkbox" id="filterDate5" class="filter-date-checkbox" data-idx="5"> c'est une date
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterMulti5" class="filter-multi-checkbox" data-idx="5"> sélection multiple
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel5"> masquer du panneau
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
@@ -839,6 +930,9 @@ body{font-family:sans-serif;margin:0}
         <input type="checkbox" id="filterDate6" class="filter-date-checkbox" data-idx="6"> c'est une date
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterMulti6" class="filter-multi-checkbox" data-idx="6"> sélection multiple
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel6"> masquer du panneau
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
@@ -853,6 +947,9 @@ body{font-family:sans-serif;margin:0}
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterDate7" class="filter-date-checkbox" data-idx="7"> c'est une date
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterMulti7" class="filter-multi-checkbox" data-idx="7"> sélection multiple
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel7"> masquer du panneau
@@ -999,6 +1096,8 @@ const EXTRA_KEYS = ["extraField1","extraField2","extraField3","extraField4","ext
 let extraFieldLabels = {extraField1:"", extraField2:"", extraField3:"", extraField4:"", extraField5:"", extraField6:""}
 let filterIsPercent = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
 let filterIsDate = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
+let filterIsMulti = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
+const MULTI_SEP = "\u001F"
 let filterHidePanel = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
 let filterHideColumn = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
 let showStatusInPanel = false
@@ -1038,6 +1137,63 @@ document.querySelectorAll(".filter-percent-select").forEach(select=>{
     }
 })
 
+// ===== Sélection multiple =====
+
+function closeAllMultiDropdowns(except){
+    document.querySelectorAll(".filter-multi-dropdown").forEach(d=>{
+        if(d !== except) d.style.display = "none"
+    })
+}
+
+document.querySelectorAll(".filter-multi-toggle").forEach(btn=>{
+    btn.onclick = e=>{
+        e.stopPropagation()
+        let key = btn.dataset.key
+        let dropdown = document.querySelector(`.filter-multi-dropdown[data-key="${key}"]`)
+        let isOpen = dropdown.style.display !== "none"
+        closeAllMultiDropdowns()
+        dropdown.style.display = isOpen ? "none" : "block"
+    }
+})
+
+// Empêche un clic à l'intérieur du menu de le refermer (délégation posée plus bas)
+document.addEventListener("click", e=>{
+    if(!e.target.closest(".filter-multi-dropdown") && !e.target.closest(".filter-multi-toggle")){
+        closeAllMultiDropdowns()
+    }
+})
+
+// Délégation car le contenu des menus est régénéré à chaque draw()
+document.getElementById("controls").addEventListener("click", e=>{
+    if(e.target.classList.contains("filter-multi-item")){
+        let key = e.target.dataset.key
+        let checked = Array.from(document.querySelectorAll(`.filter-multi-item[data-key="${key}"]:checked`)).map(cb=>cb.value)
+        selectedFilterValue[key] = checked.join(MULTI_SEP)
+        grist.setOption("selectedFilterValue_"+key, selectedFilterValue[key])
+        draw(currentRecords, currentMappings)
+        // On rouvre le menu (redessiné) car draw() referme tout par défaut
+        let dropdown = document.querySelector(`.filter-multi-dropdown[data-key="${key}"]`)
+        if(dropdown) dropdown.style.display = "block"
+        return
+    }
+    if(e.target.dataset && e.target.dataset.action){
+        let key = e.target.dataset.key
+        let action = e.target.dataset.action
+        if(action === "all"){
+            let values = [...new Set((currentRecords||[]).map(r=>displayValue(r[currentMappings[key]])).filter(v=>v!==""))]
+            selectedFilterValue[key] = values.join(MULTI_SEP)
+        } else {
+            selectedFilterValue[key] = ""
+        }
+        grist.setOption("selectedFilterValue_"+key, selectedFilterValue[key])
+        // Force la reconstruction complète du menu (signature différente)
+        let dropdown = document.querySelector(`.filter-multi-dropdown[data-key="${key}"]`)
+        if(dropdown) dropdown.dataset.signature = ""
+        draw(currentRecords, currentMappings)
+        if(dropdown) dropdown.style.display = "block"
+    }
+})
+
 // Reconstruit et sauvegarde la valeur composite "operateur|date1|date2" pour un filtre en mode date
 function updateDateFilterValue(key){
     let op = document.querySelector(`.filter-date-op[data-key="${key}"]`).value
@@ -1066,6 +1222,8 @@ function clearFilter(key){
     if(dateOp) dateOp.value = "lt"
     if(date1) date1.value = ""
     if(date2) date2.value = ""
+    let multiDropdown = document.querySelector(`.filter-multi-dropdown[data-key="${key}"]`)
+    if(multiDropdown) multiDropdown.dataset.signature = ""
     grist.setOption("selectedFilterValue_"+key, "")
 }
 
@@ -1154,6 +1312,7 @@ document.querySelectorAll(".filter-percent-checkbox").forEach(cb=>{
     cb.onchange = ()=>{
         if(cb.checked){
             document.getElementById("filterDate"+cb.dataset.idx).checked = false
+            document.getElementById("filterMulti"+cb.dataset.idx).checked = false
         }
     }
 })
@@ -1161,6 +1320,15 @@ document.querySelectorAll(".filter-date-checkbox").forEach(cb=>{
     cb.onchange = ()=>{
         if(cb.checked){
             document.getElementById("filterPercent"+cb.dataset.idx).checked = false
+            document.getElementById("filterMulti"+cb.dataset.idx).checked = false
+        }
+    }
+})
+document.querySelectorAll(".filter-multi-checkbox").forEach(cb=>{
+    cb.onchange = ()=>{
+        if(cb.checked){
+            document.getElementById("filterPercent"+cb.dataset.idx).checked = false
+            document.getElementById("filterDate"+cb.dataset.idx).checked = false
         }
     }
 })
@@ -1190,6 +1358,7 @@ function openConfigPanel(){
     FILTER_KEYS.forEach((key,i)=>{
         document.getElementById("filterPercent"+(i+1)).checked = !!filterIsPercent[key]
         document.getElementById("filterDate"+(i+1)).checked = !!filterIsDate[key]
+        document.getElementById("filterMulti"+(i+1)).checked = !!filterIsMulti[key]
         document.getElementById("filterHidePanel"+(i+1)).checked = !!filterHidePanel[key]
         document.getElementById("filterHideColumn"+(i+1)).checked = !!filterHideColumn[key]
     })
@@ -1229,6 +1398,7 @@ document.getElementById("resetConfig").onclick = ()=>{
     FILTER_KEYS.forEach((key,i)=>{
         document.getElementById("filterPercent"+(i+1)).checked = false
         document.getElementById("filterDate"+(i+1)).checked = false
+        document.getElementById("filterMulti"+(i+1)).checked = false
         document.getElementById("filterHidePanel"+(i+1)).checked = false
         document.getElementById("filterHideColumn"+(i+1)).checked = false
     })
@@ -1263,6 +1433,7 @@ document.getElementById("saveConfig").onclick = ()=>{
     FILTER_KEYS.forEach((key,i)=>{
         filterIsPercent[key] = document.getElementById("filterPercent"+(i+1)).checked
         filterIsDate[key] = document.getElementById("filterDate"+(i+1)).checked
+        filterIsMulti[key] = document.getElementById("filterMulti"+(i+1)).checked
         filterHidePanel[key] = document.getElementById("filterHidePanel"+(i+1)).checked
         filterHideColumn[key] = document.getElementById("filterHideColumn"+(i+1)).checked
         // Si on active/désactive le mode %, on réinitialise ce filtre pour éviter une valeur incohérente
@@ -1282,6 +1453,7 @@ document.getElementById("saveConfig").onclick = ()=>{
     grist.setOption("formPrefillMap", formPrefillMap)
     grist.setOption("filterIsPercent", filterIsPercent)
     grist.setOption("filterIsDate", filterIsDate)
+    grist.setOption("filterIsMulti", filterIsMulti)
     FILTER_KEYS.forEach(key=> grist.setOption("selectedFilterValue_"+key, ""))
     updateFreeNoteDisplay()
     configPanel.style.display = "none"
@@ -1414,6 +1586,12 @@ grist.onOptions((options)=>{
             filterIsDate = Object.assign(
                 {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false},
                 options.filterIsDate
+            )
+        }
+        if(options.filterIsMulti && typeof options.filterIsMulti === "object"){
+            filterIsMulti = Object.assign(
+                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false},
+                options.filterIsMulti
             )
         }
         if(options.filterHidePanel && typeof options.filterHidePanel === "object"){
@@ -1663,6 +1841,9 @@ function updateFilterUI(allRecords, mappings){
         const date1 = document.querySelector(`.filter-date-1[data-key="${key}"]`)
         const date2 = document.querySelector(`.filter-date-2[data-key="${key}"]`)
         const dateAnd = document.querySelector(`.filter-date-and[data-key="${key}"]`)
+        const multiControls = document.querySelector(`.filter-multi-controls[data-key="${key}"]`)
+        const multiToggle = document.querySelector(`.filter-multi-toggle[data-key="${key}"]`)
+        const multiDropdown = document.querySelector(`.filter-multi-dropdown[data-key="${key}"]`)
 
         if(!mappings[key]){
             container.style.display = "none"
@@ -1675,6 +1856,7 @@ function updateFilterUI(allRecords, mappings){
             // Mode date : on masque la recherche texte et le mode %, on affiche opérateur + date(s)
             input.style.display = "none"
             percentSelect.style.display = "none"
+            if(multiControls) multiControls.style.display = "none"
             dateControls.style.display = "inline-flex"
 
             let parts = (selectedFilterValue[key]||"").split("|")
@@ -1697,12 +1879,54 @@ function updateFilterUI(allRecords, mappings){
         if(filterIsPercent[key]){
             // Mode pourcentage par tranches de 25% : on masque la recherche texte, on affiche le menu de tranches
             input.style.display = "none"
+            if(multiControls) multiControls.style.display = "none"
             percentSelect.style.display = ""
             if(percentSelect.value !== selectedFilterValue[key]){
                 percentSelect.value = selectedFilterValue[key]
             }
             return
         }
+
+        if(filterIsMulti[key]){
+            // Mode sélection multiple : liste à cocher des valeurs distinctes
+            input.style.display = "none"
+            percentSelect.style.display = "none"
+            multiControls.style.display = "inline-flex"
+
+            let values = [...new Set(
+                allRecords
+                    .map(r=>displayValue(r[mappings[key]]))
+                    .filter(v=>v!=="")
+            )].sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'}))
+
+            let selected = (selectedFilterValue[key]||"").split(MULTI_SEP).filter(v=>v!=="")
+
+            // Ne reconstruit la liste que si elle a changé, pour ne pas fermer le menu pendant qu'on coche
+            let signature = values.join("|")
+            if(multiDropdown.dataset.signature !== signature){
+                multiDropdown.dataset.signature = signature
+                let html = `<div class="filter-multi-actions"><span data-action="all" data-key="${key}">Tout cocher</span><span data-action="none" data-key="${key}">Tout décocher</span></div>`
+                html += values.map(v=>
+                    `<label><input type="checkbox" class="filter-multi-item" data-key="${key}" value="${escapeAttr(v)}" ${selected.includes(v)?"checked":""}>${escapeHtml(v)}</label>`
+                ).join("")
+                multiDropdown.innerHTML = html
+            } else {
+                multiDropdown.querySelectorAll(".filter-multi-item").forEach(cb=>{
+                    cb.checked = selected.includes(cb.value)
+                })
+            }
+
+            if(selected.length === 0){
+                multiToggle.textContent = "Tous"
+            } else if(selected.length <= 2){
+                multiToggle.textContent = selected.join(", ")
+            } else {
+                multiToggle.textContent = `${selected.length} valeurs sélectionnées`
+            }
+            return
+        }
+
+        if(multiControls) multiControls.style.display = "none"
 
         input.style.display = ""
         percentSelect.style.display = "none"
@@ -1762,6 +1986,13 @@ function applyFilter(records, mappings){
 
         if(filterIsPercent[key]){
             result = result.filter(r => percentBracket(r[mappings[key]]) === val)
+            return
+        }
+
+        if(filterIsMulti[key]){
+            let selected = val.split(MULTI_SEP).filter(v=>v!=="")
+            if(selected.length === 0) return
+            result = result.filter(r => selected.includes(displayValue(r[mappings[key]])))
             return
         }
 
