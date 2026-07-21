@@ -584,6 +584,13 @@ body{font-family:sans-serif;margin:0}
     </label>
   </div>
 
+  <div style="margin-top:10px;">
+    <label style="font-size:12px;display:flex;align-items:center;gap:6px;">
+      <input type="checkbox" id="showStatusInPanelInput">
+      Afficher le Statut (Etat) dans le panneau latéral
+    </label>
+  </div>
+
   <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
     <h3>Libellés affichés sous le nom de tâche</h3>
     <div class="config-hint">
@@ -595,12 +602,18 @@ body{font-family:sans-serif;margin:0}
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterPercent1"> %  (tranches de 25)
       </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterHidePanel1"> masquer du panneau
+      </label>
     </div>
     <div class="config-row">
       <span style="width:70px;font-size:12px;color:#555;">Filtre 2 :</span>
       <input type="text" id="filterLabel2" placeholder="ex: Groupement" style="flex:1;">
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterPercent2"> %  (tranches de 25)
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterHidePanel2"> masquer du panneau
       </label>
     </div>
     <div class="config-row">
@@ -609,12 +622,18 @@ body{font-family:sans-serif;margin:0}
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterPercent3"> %  (tranches de 25)
       </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterHidePanel3"> masquer du panneau
+      </label>
     </div>
     <div class="config-row">
       <span style="width:70px;font-size:12px;color:#555;">Filtre 4 :</span>
       <input type="text" id="filterLabel4" placeholder="ex: ..." style="flex:1;">
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterPercent4"> %  (tranches de 25)
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterHidePanel4"> masquer du panneau
       </label>
     </div>
     <div class="config-row">
@@ -623,6 +642,9 @@ body{font-family:sans-serif;margin:0}
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterPercent5"> %  (tranches de 25)
       </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterHidePanel5"> masquer du panneau
+      </label>
     </div>
     <div class="config-row">
       <span style="width:70px;font-size:12px;color:#555;">Filtre 6 :</span>
@@ -630,12 +652,18 @@ body{font-family:sans-serif;margin:0}
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterPercent6"> %  (tranches de 25)
       </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterHidePanel6"> masquer du panneau
+      </label>
     </div>
     <div class="config-row">
       <span style="width:70px;font-size:12px;color:#555;">Filtre 7 :</span>
       <input type="text" id="filterLabel7" placeholder="ex: ..." style="flex:1;">
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterPercent7"> %  (tranches de 25)
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterHidePanel7"> masquer du panneau
       </label>
     </div>
   </div>
@@ -758,6 +786,8 @@ let filterLabels = {filterField:"", filterField2:"", filterField3:"", filterFiel
 const EXTRA_KEYS = ["extraField1","extraField2","extraField3","extraField4","extraField5","extraField6"]
 let extraFieldLabels = {extraField1:"", extraField2:"", extraField3:"", extraField4:"", extraField5:"", extraField6:""}
 let filterIsPercent = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
+let filterHidePanel = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
+let showStatusInPanel = false
 
 document.getElementById("scale").onchange = e=>{
     scale = e.target.value
@@ -897,6 +927,7 @@ function updateFreeNoteDisplay(){
 document.getElementById("configBtn").onclick = ()=>{
     renderConfigRows(stateConfig)
     document.getElementById("milestoneColorInput").value = milestoneColor
+    document.getElementById("showStatusInPanelInput").checked = showStatusInPanel
     document.getElementById("filterLabel1").value = filterLabels.filterField || ""
     document.getElementById("filterLabel2").value = filterLabels.filterField2 || ""
     document.getElementById("filterLabel3").value = filterLabels.filterField3 || ""
@@ -913,6 +944,7 @@ document.getElementById("configBtn").onclick = ()=>{
     document.getElementById("freeNoteConfigInput").value = freeNote || ""
     FILTER_KEYS.forEach((key,i)=>{
         document.getElementById("filterPercent"+(i+1)).checked = !!filterIsPercent[key]
+        document.getElementById("filterHidePanel"+(i+1)).checked = !!filterHidePanel[key]
     })
     configPanel.style.display = "block"
 }
@@ -928,6 +960,7 @@ document.getElementById("addRow").onclick = ()=>{
 document.getElementById("resetConfig").onclick = ()=>{
     renderConfigRows(JSON.parse(JSON.stringify(defaultStateConfig)))
     document.getElementById("milestoneColorInput").value = "#e74c3c"
+    document.getElementById("showStatusInPanelInput").checked = false
     document.getElementById("filterLabel1").value = ""
     document.getElementById("filterLabel2").value = ""
     document.getElementById("filterLabel3").value = ""
@@ -944,12 +977,14 @@ document.getElementById("resetConfig").onclick = ()=>{
     document.getElementById("freeNoteConfigInput").value = ""
     FILTER_KEYS.forEach((key,i)=>{
         document.getElementById("filterPercent"+(i+1)).checked = false
+        document.getElementById("filterHidePanel"+(i+1)).checked = false
     })
 }
 
 document.getElementById("saveConfig").onclick = ()=>{
     stateConfig = collectConfigFromRows()
     milestoneColor = document.getElementById("milestoneColorInput").value
+    showStatusInPanel = document.getElementById("showStatusInPanelInput").checked
     filterLabels = {
         filterField: document.getElementById("filterLabel1").value.trim(),
         filterField2: document.getElementById("filterLabel2").value.trim(),
@@ -970,12 +1005,15 @@ document.getElementById("saveConfig").onclick = ()=>{
     freeNote = document.getElementById("freeNoteConfigInput").value
     FILTER_KEYS.forEach((key,i)=>{
         filterIsPercent[key] = document.getElementById("filterPercent"+(i+1)).checked
+        filterHidePanel[key] = document.getElementById("filterHidePanel"+(i+1)).checked
         // Si on active/désactive le mode %, on réinitialise ce filtre pour éviter une valeur incohérente
         selectedFilterValue[key] = ""
     })
     grist.setOption("taskStates", stateConfig)
     grist.setOption("milestoneColor", milestoneColor)
+    grist.setOption("showStatusInPanel", showStatusInPanel)
     grist.setOption("filterLabels", filterLabels)
+    grist.setOption("filterHidePanel", filterHidePanel)
     grist.setOption("extraFieldLabels", extraFieldLabels)
     grist.setOption("freeNote", freeNote)
     grist.setOption("filterIsPercent", filterIsPercent)
@@ -1044,6 +1082,9 @@ grist.onOptions((options)=>{
         if(options.milestoneColor){
             milestoneColor = options.milestoneColor
         }
+        if(typeof options.showStatusInPanel === "boolean"){
+            showStatusInPanel = options.showStatusInPanel
+        }
         if(options.filterLabels && typeof options.filterLabels === "object"){
             filterLabels = Object.assign({filterField:"", filterField2:"", filterField3:"", filterField4:"", filterField5:"", filterField6:"", filterField7:""}, options.filterLabels)
         }
@@ -1054,6 +1095,12 @@ grist.onOptions((options)=>{
             filterIsPercent = Object.assign(
                 {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false},
                 options.filterIsPercent
+            )
+        }
+        if(options.filterHidePanel && typeof options.filterHidePanel === "object"){
+            filterHidePanel = Object.assign(
+                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false},
+                options.filterHidePanel
             )
         }
         FILTER_KEYS.forEach(key=>{
@@ -1596,8 +1643,8 @@ function openDetailPanel(record, mappings){
         }
     }
 
-    // Statut
-    if(!isJalon && mappings.state){
+    // Statut (masqué par défaut dans le panneau, réactivable via ⚙)
+    if(showStatusInPanel && !isJalon && mappings.state){
         let rule = stateRule(record[mappings.state])
         let label = rule.label && rule.label.trim() !== "" ? rule.label : (rule.match || "Autre")
         parts.push(detailRow("Statut", `<span class="detail-status-badge"><span class="detail-status-dot" style="background:${rule.color}"></span>${escapeHtml(label)}</span>`))
@@ -1613,7 +1660,7 @@ function openDetailPanel(record, mappings){
 
     // Filtres 1 à 7 (avec leur libellé personnalisé, ou un nom générique si non renseigné)
     FILTER_KEYS.forEach((key, idx)=>{
-        if(!mappings[key]) return
+        if(!mappings[key] || filterHidePanel[key]) return
         let val
         if(filterIsPercent[key]){
             let p = getPercentValue(record[mappings[key]])
