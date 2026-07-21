@@ -595,6 +595,9 @@ body{font-family:sans-serif;margin:0}
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel1"> masquer du panneau
       </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterHideColumn1"> masquer colonne Tâche
+      </label>
     </div>
     <div class="config-row">
       <span style="width:70px;font-size:12px;color:#555;">Filtre 2 :</span>
@@ -604,6 +607,9 @@ body{font-family:sans-serif;margin:0}
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel2"> masquer du panneau
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterHideColumn2"> masquer colonne Tâche
       </label>
     </div>
     <div class="config-row">
@@ -615,6 +621,9 @@ body{font-family:sans-serif;margin:0}
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel3"> masquer du panneau
       </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterHideColumn3"> masquer colonne Tâche
+      </label>
     </div>
     <div class="config-row">
       <span style="width:70px;font-size:12px;color:#555;">Filtre 4 :</span>
@@ -624,6 +633,9 @@ body{font-family:sans-serif;margin:0}
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel4"> masquer du panneau
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterHideColumn4"> masquer colonne Tâche
       </label>
     </div>
     <div class="config-row">
@@ -635,6 +647,9 @@ body{font-family:sans-serif;margin:0}
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel5"> masquer du panneau
       </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterHideColumn5"> masquer colonne Tâche
+      </label>
     </div>
     <div class="config-row">
       <span style="width:70px;font-size:12px;color:#555;">Filtre 6 :</span>
@@ -645,6 +660,9 @@ body{font-family:sans-serif;margin:0}
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel6"> masquer du panneau
       </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterHideColumn6"> masquer colonne Tâche
+      </label>
     </div>
     <div class="config-row">
       <span style="width:70px;font-size:12px;color:#555;">Filtre 7 :</span>
@@ -654,6 +672,9 @@ body{font-family:sans-serif;margin:0}
       </label>
       <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel7"> masquer du panneau
+      </label>
+      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+        <input type="checkbox" id="filterHideColumn7"> masquer colonne Tâche
       </label>
     </div>
   </div>
@@ -776,6 +797,7 @@ const EXTRA_KEYS = ["extraField1","extraField2","extraField3","extraField4","ext
 let extraFieldLabels = {extraField1:"", extraField2:"", extraField3:"", extraField4:"", extraField5:"", extraField6:""}
 let filterIsPercent = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
 let filterHidePanel = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
+let filterHideColumn = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
 let showStatusInPanel = false
 
 document.getElementById("scale").onchange = e=>{
@@ -897,6 +919,7 @@ document.getElementById("configBtn").onclick = ()=>{
     FILTER_KEYS.forEach((key,i)=>{
         document.getElementById("filterPercent"+(i+1)).checked = !!filterIsPercent[key]
         document.getElementById("filterHidePanel"+(i+1)).checked = !!filterHidePanel[key]
+        document.getElementById("filterHideColumn"+(i+1)).checked = !!filterHideColumn[key]
     })
     configPanel.style.display = "block"
 }
@@ -930,6 +953,7 @@ document.getElementById("resetConfig").onclick = ()=>{
     FILTER_KEYS.forEach((key,i)=>{
         document.getElementById("filterPercent"+(i+1)).checked = false
         document.getElementById("filterHidePanel"+(i+1)).checked = false
+        document.getElementById("filterHideColumn"+(i+1)).checked = false
     })
 }
 
@@ -958,6 +982,7 @@ document.getElementById("saveConfig").onclick = ()=>{
     FILTER_KEYS.forEach((key,i)=>{
         filterIsPercent[key] = document.getElementById("filterPercent"+(i+1)).checked
         filterHidePanel[key] = document.getElementById("filterHidePanel"+(i+1)).checked
+        filterHideColumn[key] = document.getElementById("filterHideColumn"+(i+1)).checked
         // Si on active/désactive le mode %, on réinitialise ce filtre pour éviter une valeur incohérente
         selectedFilterValue[key] = ""
     })
@@ -966,6 +991,7 @@ document.getElementById("saveConfig").onclick = ()=>{
     grist.setOption("showStatusInPanel", showStatusInPanel)
     grist.setOption("filterLabels", filterLabels)
     grist.setOption("filterHidePanel", filterHidePanel)
+    grist.setOption("filterHideColumn", filterHideColumn)
     grist.setOption("extraFieldLabels", extraFieldLabels)
     grist.setOption("freeNote", freeNote)
     grist.setOption("filterIsPercent", filterIsPercent)
@@ -1053,6 +1079,12 @@ grist.onOptions((options)=>{
             filterHidePanel = Object.assign(
                 {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false},
                 options.filterHidePanel
+            )
+        }
+        if(options.filterHideColumn && typeof options.filterHideColumn === "object"){
+            filterHideColumn = Object.assign(
+                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false},
+                options.filterHideColumn
             )
         }
         FILTER_KEYS.forEach(key=>{
@@ -1398,13 +1430,14 @@ function draw(records,mappings){
         let taskName = r[mappings.task]||""
 
         let filterValue = key => {
-            if(!mappings[key] || !filterLabels[key]) return ""
+            if(!mappings[key] || filterHideColumn[key]) return ""
             if(filterIsPercent[key]){
                 let p = getPercentValue(r[mappings[key]])
                 return p===null ? "" : p+"%"
             }
             return displayValue(r[mappings[key]])
         }
+        let filterLabelOrDefault = (key, idx) => (filterLabels[key] && filterLabels[key].trim()) ? filterLabels[key].trim() : `Filtre ${idx}`
 
         let filter1Val = filterValue("filterField")
         let filter2Val = filterValue("filterField2")
@@ -1415,14 +1448,14 @@ function draw(records,mappings){
         let filter7Val = filterValue("filterField7")
 
         let lines = []
-        if(filter1Val) lines.push({cls:"task-name-filter1", text:`${filterLabels.filterField} : ${filter1Val}`})
+        if(filter1Val) lines.push({cls:"task-name-filter1", text:`${filterLabelOrDefault("filterField",1)} : ${filter1Val}`})
         lines.push({cls:"task-name-main", text:taskName})
-        if(filter2Val) lines.push({cls:"task-name-sub", text:`${filterLabels.filterField2} : ${filter2Val}`})
-        if(filter3Val) lines.push({cls:"task-name-sub", text:`${filterLabels.filterField3} : ${filter3Val}`})
-        if(filter4Val) lines.push({cls:"task-name-sub", text:`${filterLabels.filterField4} : ${filter4Val}`})
-        if(filter5Val) lines.push({cls:"task-name-sub", text:`${filterLabels.filterField5} : ${filter5Val}`})
-        if(filter6Val) lines.push({cls:"task-name-sub", text:`${filterLabels.filterField6} : ${filter6Val}`})
-        if(filter7Val) lines.push({cls:"task-name-sub", text:`${filterLabels.filterField7} : ${filter7Val}`})
+        if(filter2Val) lines.push({cls:"task-name-sub", text:`${filterLabelOrDefault("filterField2",2)} : ${filter2Val}`})
+        if(filter3Val) lines.push({cls:"task-name-sub", text:`${filterLabelOrDefault("filterField3",3)} : ${filter3Val}`})
+        if(filter4Val) lines.push({cls:"task-name-sub", text:`${filterLabelOrDefault("filterField4",4)} : ${filter4Val}`})
+        if(filter5Val) lines.push({cls:"task-name-sub", text:`${filterLabelOrDefault("filterField5",5)} : ${filter5Val}`})
+        if(filter6Val) lines.push({cls:"task-name-sub", text:`${filterLabelOrDefault("filterField6",6)} : ${filter6Val}`})
+        if(filter7Val) lines.push({cls:"task-name-sub", text:`${filterLabelOrDefault("filterField7",7)} : ${filter7Val}`})
 
         let tooltipParts = lines.map(l=>l.text)
         let linesHtml = lines.map(l=>`<div class="${l.cls}">${escapeHtml(l.text)}</div>`).join("")
@@ -1502,8 +1535,9 @@ function draw(records,mappings){
     ratio = Math.max(0, Math.min(1, ratio))
 
     // Position réelle
+    // +1 car la colonne 0 est la colonne "Tâche" figée, les colonnes de dates commencent à l'index 1
     let table = document.getElementById("gantt-table")
-    let cell = table.rows[0].cells[col]
+    let cell = table.rows[0].cells[col + 1]
     let realWidth = cell.getBoundingClientRect().width
     let left = cell.offsetLeft + ratio * realWidth
 
