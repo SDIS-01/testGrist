@@ -1807,7 +1807,7 @@ function draw(records,mappings){
 
         let lines = []
         if(filter1Val) lines.push({cls:"task-name-filter1", text:`${filterLabelOrDefault("filterField",1)} : ${filter1Val}`})
-        lines.push({cls:"task-name-main", text:taskName})
+        if(String(taskName).trim() !== String(filter1Val).trim()) lines.push({cls:"task-name-main", text:taskName})
         if(filter2Val) lines.push({cls:"task-name-sub", text:`${filterLabelOrDefault("filterField2",2)} : ${filter2Val}`})
         if(filter3Val) lines.push({cls:"task-name-sub", text:`${filterLabelOrDefault("filterField3",3)} : ${filter3Val}`})
         if(filter4Val) lines.push({cls:"task-name-sub", text:`${filterLabelOrDefault("filterField4",4)} : ${filter4Val}`})
