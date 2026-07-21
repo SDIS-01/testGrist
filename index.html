@@ -177,26 +177,19 @@ body{font-family:sans-serif;margin:0}
     font-size:12px;
 }
 #configBtn:hover{background:#eee;}
-#printBtn{
-    cursor:pointer;
-    border:1px solid #ccc;
-    background:#fff;
-    border-radius:4px;
-    padding:4px 10px;
-    font-size:12px;
-}
-#printBtn:hover{background:#eee;}
+#printBtn,
 #resetAllFiltersBtn{
     cursor:pointer;
-    border:1px solid rgba(192,80,77,.35);
-    background:rgba(192,80,77,.15);
+    border:1px solid rgba(0,0,145,.35);
+    background:rgba(0,0,145,.12);
     border-radius:14px;
     padding:5px 12px;
     font-size:12px;
     font-weight:600;
     color:#000;
 }
-#resetAllFiltersBtn:hover{background:rgba(192,80,77,.28);}
+#printBtn:hover,
+#resetAllFiltersBtn:hover{background:rgba(0,0,145,.22);}
 
 /* Filtre */
 .filter-block{
@@ -1843,12 +1836,12 @@ function draw(records,mappings){
     let html=""
 
     // HEADER
-    html+="<tr>"
+    html+="<thead><tr>"
     html+=`<td class="task-name-header"></td>`
     units.forEach(u=>{
         html+=`<td>${u.label}</td>`
     })
-    html+="</tr>"
+    html+="</tr></thead><tbody>"
 
     // ROWS
     visibleRecords.forEach(r=>{
@@ -1931,6 +1924,7 @@ function draw(records,mappings){
 
         html+="</tr>"
     })
+    html+="</tbody>"
 
     const ganttTableEl = document.getElementById("gantt-table")
     ganttTableEl.innerHTML=html
