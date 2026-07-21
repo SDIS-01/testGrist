@@ -32,8 +32,8 @@ body{font-family:sans-serif;margin:0}
     height:30px;
     text-align:center;
     vertical-align:middle;
-    width:80px;
-    max-width:80px;
+    width:var(--timeline-col-width);
+    max-width:var(--timeline-col-width);
     font-size:12px;
     line-height:1.2;
 }
@@ -89,6 +89,7 @@ body{font-family:sans-serif;margin:0}
 /* Colonne des noms de tâches, figée pendant le défilement horizontal */
 :root{
     --task-col-width: 600px;
+    --timeline-col-width: 80px;
 }
 #gantt-table .task-name-header,
 #gantt-table .task-name-cell{
@@ -391,7 +392,7 @@ body{font-family:sans-serif;margin:0}
     .filter-block input[type=text]{width:100%;max-width:none;flex:1;}
     #configBtn{padding:8px 10px;}
     #configPanel{width:94vw;max-width:94vw;left:3vw;max-height:80vh;overflow-y:auto;top:10px;}
-    #gantt-table td{width:64px;font-size:11px;}
+    #gantt-table td{width:min(var(--timeline-col-width),64px);max-width:min(var(--timeline-col-width),64px);font-size:11px;}
     .task-cell{font-size:11px;}
     #gantt-table .task-name-header,#gantt-table .task-name-cell{width:min(var(--task-col-width),85vw);max-width:min(var(--task-col-width),85vw);padding:4px 6px;}
     .task-name-filter1{font-size:12.5px;}
@@ -703,6 +704,14 @@ body{font-family:sans-serif;margin:0}
     </label>
   </div>
 
+  <div style="margin-top:10px;">
+    <label style="font-size:12px;display:flex;align-items:center;gap:6px;">
+      Largeur des colonnes de la frise (Mois/Trimestre/...) :
+      <input type="number" id="timelineColWidthConfigInput" min="30" max="300" step="5" style="width:70px;padding:4px 6px;font-size:12px;border:1px solid #ccc;border-radius:4px;">
+      px
+    </label>
+  </div>
+
   <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
     <h3>Libellés affichés sous le nom de tâche</h3>
     <div class="config-hint">
@@ -933,6 +942,9 @@ let scale="month"
 let taskColWidth=600
 const TASK_COL_MIN=120
 const TASK_COL_MAX=6000
+let timelineColWidth=80
+const TIMELINE_COL_MIN=30
+const TIMELINE_COL_MAX=300
 let currentRecords=[]
 let currentMappings={}
 let highlightToday=false
@@ -1044,6 +1056,11 @@ function applyTaskColWidth(px){
     document.documentElement.style.setProperty("--task-col-width", taskColWidth+"px")
 }
 
+function applyTimelineColWidth(px){
+    timelineColWidth = Math.min(TIMELINE_COL_MAX, Math.max(TIMELINE_COL_MIN, Math.round(px)))
+    document.documentElement.style.setProperty("--timeline-col-width", timelineColWidth+"px")
+}
+
 // ===== Gestion du tri combiné (jusqu'à 3 niveaux) =====
 document.querySelectorAll(".sort-select").forEach(select=>{
     select.onchange = e=>{
@@ -1117,6 +1134,7 @@ function openConfigPanel(){
     document.getElementById("milestoneColorInput").value = milestoneColor
     document.getElementById("showStatusInPanelInput").checked = showStatusInPanel
     document.getElementById("taskColWidthConfigInput").value = taskColWidth
+    document.getElementById("timelineColWidthConfigInput").value = timelineColWidth
     document.getElementById("filterLabel1").value = filterLabels.filterField || ""
     document.getElementById("filterLabel2").value = filterLabels.filterField2 || ""
     document.getElementById("filterLabel3").value = filterLabels.filterField3 || ""
@@ -1155,6 +1173,7 @@ document.getElementById("resetConfig").onclick = ()=>{
     document.getElementById("milestoneColorInput").value = "#e74c3c"
     document.getElementById("showStatusInPanelInput").checked = false
     document.getElementById("taskColWidthConfigInput").value = 600
+    document.getElementById("timelineColWidthConfigInput").value = 80
     document.getElementById("filterLabel1").value = ""
     document.getElementById("filterLabel2").value = ""
     document.getElementById("filterLabel3").value = ""
@@ -1184,6 +1203,7 @@ document.getElementById("saveConfig").onclick = ()=>{
     milestoneColor = document.getElementById("milestoneColorInput").value
     showStatusInPanel = document.getElementById("showStatusInPanelInput").checked
     applyTaskColWidth(parseInt(document.getElementById("taskColWidthConfigInput").value, 10) || taskColWidth)
+    applyTimelineColWidth(parseInt(document.getElementById("timelineColWidthConfigInput").value, 10) || timelineColWidth)
     filterLabels = {
         filterField: document.getElementById("filterLabel1").value.trim(),
         filterField2: document.getElementById("filterLabel2").value.trim(),
@@ -1216,6 +1236,7 @@ document.getElementById("saveConfig").onclick = ()=>{
     grist.setOption("milestoneColor", milestoneColor)
     grist.setOption("showStatusInPanel", showStatusInPanel)
     grist.setOption("taskColWidth", taskColWidth)
+    grist.setOption("timelineColWidth", timelineColWidth)
     grist.setOption("filterLabels", filterLabels)
     grist.setOption("filterHidePanel", filterHidePanel)
     grist.setOption("filterHideColumn", filterHideColumn)
@@ -1318,6 +1339,9 @@ grist.onOptions((options)=>{
         }
         if(typeof options.taskColWidth === "number" && options.taskColWidth > 0){
             applyTaskColWidth(options.taskColWidth)
+        }
+        if(typeof options.timelineColWidth === "number" && options.timelineColWidth > 0){
+            applyTimelineColWidth(options.timelineColWidth)
         }
         if(typeof options.freeNote === "string"){
             freeNote = options.freeNote
@@ -1871,7 +1895,7 @@ function draw(records,mappings){
     // Fixe la largeur exacte du tableau (colonne Tâche + colonnes de la frise) pour que le
     // navigateur ne redistribue jamais d'espace excédentaire entre les colonnes, quel que
     // soit le nombre de colonnes affiché (ex: après un filtrage qui réduit la période).
-    let unitColWidth = window.innerWidth <= 600 ? 64 : 80
+    let unitColWidth = window.innerWidth <= 600 ? Math.min(timelineColWidth, 64) : timelineColWidth
     ganttTableEl.style.width = (taskColWidth + units.length * unitColWidth) + "px"
 
     renderLegend()
