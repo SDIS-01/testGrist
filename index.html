@@ -657,6 +657,18 @@ body{font-family:sans-serif;margin:0}
       <span style="width:70px;font-size:12px;color:#555;">Champ 3 :</span>
       <input type="text" id="extraLabel3" placeholder="ex: ...">
     </div>
+    <div class="config-row">
+      <span style="width:70px;font-size:12px;color:#555;">Champ 4 :</span>
+      <input type="text" id="extraLabel4" placeholder="ex: ...">
+    </div>
+    <div class="config-row">
+      <span style="width:70px;font-size:12px;color:#555;">Champ 5 :</span>
+      <input type="text" id="extraLabel5" placeholder="ex: ...">
+    </div>
+    <div class="config-row">
+      <span style="width:70px;font-size:12px;color:#555;">Champ 6 :</span>
+      <input type="text" id="extraLabel6" placeholder="ex: ...">
+    </div>
   </div>
 
   <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
@@ -714,7 +726,10 @@ columns:[
 {name:'attachment',title:'Pièce jointe (optionnel, panneau détail)', optional:true},
 {name:'extraField1',title:'Champ supplémentaire 1 (optionnel, panneau détail)', optional:true},
 {name:'extraField2',title:'Champ supplémentaire 2 (optionnel, panneau détail)', optional:true},
-{name:'extraField3',title:'Champ supplémentaire 3 (optionnel, panneau détail)', optional:true}
+{name:'extraField3',title:'Champ supplémentaire 3 (optionnel, panneau détail)', optional:true},
+{name:'extraField4',title:'Champ supplémentaire 4 (optionnel, panneau détail)', optional:true},
+{name:'extraField5',title:'Champ supplémentaire 5 (optionnel, panneau détail)', optional:true},
+{name:'extraField6',title:'Champ supplémentaire 6 (optionnel, panneau détail)', optional:true}
 ]
 })
 
@@ -740,8 +755,8 @@ const defaultStateConfig = [
 let stateConfig = JSON.parse(JSON.stringify(defaultStateConfig))
 let milestoneColor = "#e74c3c"
 let filterLabels = {filterField:"", filterField2:"", filterField3:"", filterField4:"", filterField5:"", filterField6:"", filterField7:""}
-const EXTRA_KEYS = ["extraField1","extraField2","extraField3"]
-let extraFieldLabels = {extraField1:"", extraField2:"", extraField3:""}
+const EXTRA_KEYS = ["extraField1","extraField2","extraField3","extraField4","extraField5","extraField6"]
+let extraFieldLabels = {extraField1:"", extraField2:"", extraField3:"", extraField4:"", extraField5:"", extraField6:""}
 let filterIsPercent = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
 
 document.getElementById("scale").onchange = e=>{
@@ -892,6 +907,9 @@ document.getElementById("configBtn").onclick = ()=>{
     document.getElementById("extraLabel1").value = extraFieldLabels.extraField1 || ""
     document.getElementById("extraLabel2").value = extraFieldLabels.extraField2 || ""
     document.getElementById("extraLabel3").value = extraFieldLabels.extraField3 || ""
+    document.getElementById("extraLabel4").value = extraFieldLabels.extraField4 || ""
+    document.getElementById("extraLabel5").value = extraFieldLabels.extraField5 || ""
+    document.getElementById("extraLabel6").value = extraFieldLabels.extraField6 || ""
     document.getElementById("freeNoteConfigInput").value = freeNote || ""
     FILTER_KEYS.forEach((key,i)=>{
         document.getElementById("filterPercent"+(i+1)).checked = !!filterIsPercent[key]
@@ -920,6 +938,9 @@ document.getElementById("resetConfig").onclick = ()=>{
     document.getElementById("extraLabel1").value = ""
     document.getElementById("extraLabel2").value = ""
     document.getElementById("extraLabel3").value = ""
+    document.getElementById("extraLabel4").value = ""
+    document.getElementById("extraLabel5").value = ""
+    document.getElementById("extraLabel6").value = ""
     document.getElementById("freeNoteConfigInput").value = ""
     FILTER_KEYS.forEach((key,i)=>{
         document.getElementById("filterPercent"+(i+1)).checked = false
@@ -941,7 +962,10 @@ document.getElementById("saveConfig").onclick = ()=>{
     extraFieldLabels = {
         extraField1: document.getElementById("extraLabel1").value.trim(),
         extraField2: document.getElementById("extraLabel2").value.trim(),
-        extraField3: document.getElementById("extraLabel3").value.trim()
+        extraField3: document.getElementById("extraLabel3").value.trim(),
+        extraField4: document.getElementById("extraLabel4").value.trim(),
+        extraField5: document.getElementById("extraLabel5").value.trim(),
+        extraField6: document.getElementById("extraLabel6").value.trim()
     }
     freeNote = document.getElementById("freeNoteConfigInput").value
     FILTER_KEYS.forEach((key,i)=>{
@@ -1024,7 +1048,7 @@ grist.onOptions((options)=>{
             filterLabels = Object.assign({filterField:"", filterField2:"", filterField3:"", filterField4:"", filterField5:"", filterField6:"", filterField7:""}, options.filterLabels)
         }
         if(options.extraFieldLabels && typeof options.extraFieldLabels === "object"){
-            extraFieldLabels = Object.assign({extraField1:"", extraField2:"", extraField3:""}, options.extraFieldLabels)
+            extraFieldLabels = Object.assign({extraField1:"", extraField2:"", extraField3:"", extraField4:"", extraField5:"", extraField6:""}, options.extraFieldLabels)
         }
         if(options.filterIsPercent && typeof options.filterIsPercent === "object"){
             filterIsPercent = Object.assign(
@@ -1587,9 +1611,9 @@ function openDetailPanel(record, mappings){
         }
     }
 
-    // Filtres 1 à 7 (avec leur libellé personnalisé)
-    FILTER_KEYS.forEach(key=>{
-        if(!mappings[key] || !filterLabels[key]) return
+    // Filtres 1 à 7 (avec leur libellé personnalisé, ou un nom générique si non renseigné)
+    FILTER_KEYS.forEach((key, idx)=>{
+        if(!mappings[key]) return
         let val
         if(filterIsPercent[key]){
             let p = getPercentValue(record[mappings[key]])
@@ -1597,7 +1621,8 @@ function openDetailPanel(record, mappings){
         } else {
             val = displayValue(record[mappings[key]])
         }
-        if(val) parts.push(detailRow(filterLabels[key], escapeHtml(val)))
+        let label = (filterLabels[key] && filterLabels[key].trim()) ? filterLabels[key].trim() : `Filtre ${idx+1}`
+        if(val) parts.push(detailRow(label, escapeHtml(val)))
     })
 
     // Champs supplémentaires (génériques, configurables dans ⚙)
