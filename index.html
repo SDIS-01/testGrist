@@ -718,6 +718,20 @@ body{font-family:sans-serif;margin:0}
     <textarea id="freeNoteConfigInput" placeholder="Écrire une note..." style="width:100%;box-sizing:border-box;min-height:70px;padding:8px;font-size:13px;font-family:inherit;border:1px solid #ccc;border-radius:4px;resize:vertical;"></textarea>
   </div>
 
+  <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
+    <h3>Lien vers un formulaire (panneau détail)</h3>
+    <div class="config-hint">
+      URL de votre formulaire Grist. Si renseignée, un lien pour l'ouvrir apparaît dans le panneau latéral au clic sur une tâche.
+    </div>
+    <input type="text" id="formUrlConfigInput" placeholder="https://docs.getgrist.com/.../forms/..." style="width:100%;box-sizing:border-box;padding:8px;font-size:13px;font-family:inherit;border:1px solid #ccc;border-radius:4px;">
+
+    <div class="config-hint" style="margin-top:10px;">
+      Pré-remplissage (facultatif) : associez l'identifiant de colonne de votre formulaire (visible sous chaque champ dans l'éditeur de formulaire Grist) à une donnée du planning.
+    </div>
+    <div id="formPrefillRows"></div>
+    <button id="addFormPrefillRow" type="button" style="margin-top:6px;font-size:12px;padding:4px 8px;border:1px dashed #999;background:#fafafa;border-radius:4px;cursor:pointer;">+ Ajouter une correspondance</button>
+  </div>
+
   <div class="config-footer">
     <button id="resetConfig" type="button" style="background:none;border:none;color:#888;font-size:11px;cursor:pointer;text-decoration:underline;">Réinitialiser les valeurs par défaut</button>
     <div>
@@ -887,6 +901,31 @@ const configRowsEl = document.getElementById("configRows")
 
 // ===== Note libre (lecture seule dans la barre, éditée via ⚙) =====
 let freeNote = ""
+let formUrl = ""
+let formPrefillMap = []
+
+// Sources de données disponibles pour le pré-remplissage du formulaire
+const PREFILL_SOURCES = [
+    {value:"task", label:"Nom de la tâche"},
+    {value:"start", label:"Date de début"},
+    {value:"end", label:"Date de fin"},
+    {value:"state", label:"Statut"},
+    {value:"progress", label:"% Avancement"},
+    {value:"filterField", label:"Filtre 1"},
+    {value:"filterField2", label:"Filtre 2"},
+    {value:"filterField3", label:"Filtre 3"},
+    {value:"filterField4", label:"Filtre 4"},
+    {value:"filterField5", label:"Filtre 5"},
+    {value:"filterField6", label:"Filtre 6"},
+    {value:"filterField7", label:"Filtre 7"},
+    {value:"extraField1", label:"Champ supplémentaire 1"},
+    {value:"extraField2", label:"Champ supplémentaire 2"},
+    {value:"extraField3", label:"Champ supplémentaire 3"},
+    {value:"extraField4", label:"Champ supplémentaire 4"},
+    {value:"extraField5", label:"Champ supplémentaire 5"},
+    {value:"extraField6", label:"Champ supplémentaire 6"},
+    {value:"comment", label:"Commentaire"}
+]
 
 function updateFreeNoteDisplay(){
     const display = document.getElementById("freeNoteDisplay")
@@ -916,6 +955,8 @@ document.getElementById("configBtn").onclick = ()=>{
     document.getElementById("extraLabel5").value = extraFieldLabels.extraField5 || ""
     document.getElementById("extraLabel6").value = extraFieldLabels.extraField6 || ""
     document.getElementById("freeNoteConfigInput").value = freeNote || ""
+    document.getElementById("formUrlConfigInput").value = formUrl || ""
+    renderFormPrefillRows(formPrefillMap)
     FILTER_KEYS.forEach((key,i)=>{
         document.getElementById("filterPercent"+(i+1)).checked = !!filterIsPercent[key]
         document.getElementById("filterHidePanel"+(i+1)).checked = !!filterHidePanel[key]
@@ -950,6 +991,8 @@ document.getElementById("resetConfig").onclick = ()=>{
     document.getElementById("extraLabel5").value = ""
     document.getElementById("extraLabel6").value = ""
     document.getElementById("freeNoteConfigInput").value = ""
+    document.getElementById("formUrlConfigInput").value = ""
+    renderFormPrefillRows([])
     FILTER_KEYS.forEach((key,i)=>{
         document.getElementById("filterPercent"+(i+1)).checked = false
         document.getElementById("filterHidePanel"+(i+1)).checked = false
@@ -979,6 +1022,8 @@ document.getElementById("saveConfig").onclick = ()=>{
         extraField6: document.getElementById("extraLabel6").value.trim()
     }
     freeNote = document.getElementById("freeNoteConfigInput").value
+    formUrl = document.getElementById("formUrlConfigInput").value.trim()
+    formPrefillMap = collectFormPrefillRows()
     FILTER_KEYS.forEach((key,i)=>{
         filterIsPercent[key] = document.getElementById("filterPercent"+(i+1)).checked
         filterHidePanel[key] = document.getElementById("filterHidePanel"+(i+1)).checked
@@ -994,6 +1039,8 @@ document.getElementById("saveConfig").onclick = ()=>{
     grist.setOption("filterHideColumn", filterHideColumn)
     grist.setOption("extraFieldLabels", extraFieldLabels)
     grist.setOption("freeNote", freeNote)
+    grist.setOption("formUrl", formUrl)
+    grist.setOption("formPrefillMap", formPrefillMap)
     grist.setOption("filterIsPercent", filterIsPercent)
     FILTER_KEYS.forEach(key=> grist.setOption("selectedFilterValue_"+key, ""))
     updateFreeNoteDisplay()
@@ -1032,6 +1079,45 @@ function collectConfigFromRows(){
     return result
 }
 
+// ===== Lignes de pré-remplissage du formulaire =====
+const formPrefillRowsEl = document.getElementById("formPrefillRows")
+
+function renderFormPrefillRows(map){
+    formPrefillRowsEl.innerHTML = ""
+    map.forEach(item=>addFormPrefillRow(item))
+}
+
+function addFormPrefillRow(item){
+    item = item || {columnId:"", source:"task"}
+    const row = document.createElement("div")
+    row.className = "config-row"
+    let options = PREFILL_SOURCES.map(s=>
+        `<option value="${s.value}"${s.value===item.source?" selected":""}>${s.label}</option>`
+    ).join("")
+    row.innerHTML = `
+        <input type="text" class="prefill-column" placeholder="ID colonne du formulaire" value="${escapeAttr(item.columnId||"")}">
+        <select class="prefill-source">${options}</select>
+        <button type="button" class="cfg-remove" title="Supprimer">✕</button>
+    `
+    row.querySelector(".cfg-remove").onclick = ()=> row.remove()
+    formPrefillRowsEl.appendChild(row)
+}
+
+function collectFormPrefillRows(){
+    const rows = formPrefillRowsEl.querySelectorAll(".config-row")
+    const result = []
+    rows.forEach(row=>{
+        let columnId = row.querySelector(".prefill-column").value.trim()
+        let source = row.querySelector(".prefill-source").value
+        if(columnId) result.push({columnId, source})
+    })
+    return result
+}
+
+document.getElementById("addFormPrefillRow").onclick = ()=>{
+    addFormPrefillRow()
+}
+
 function escapeAttr(s){
     return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;")
 }
@@ -1053,6 +1139,12 @@ grist.onOptions((options)=>{
         if(typeof options.freeNote === "string"){
             freeNote = options.freeNote
             updateFreeNoteDisplay()
+        }
+        if(typeof options.formUrl === "string"){
+            formUrl = options.formUrl
+        }
+        if(Array.isArray(options.formPrefillMap)){
+            formPrefillMap = options.formPrefillMap
         }
         if(Array.isArray(options.taskStates) && options.taskStates.length>0){
             stateConfig = options.taskStates
@@ -1628,6 +1720,46 @@ function detailRow(label, valueHtml){
     return `<div class="detail-row"><div class="detail-label">${escapeHtml(label)}</div><div class="detail-value">${valueHtml}</div></div>`
 }
 
+// Récupère la valeur d'une tâche pour une "source" donnée (utilisé pour le pré-remplissage du formulaire)
+function resolvePrefillValue(source, record, mappings){
+    switch(source){
+        case "task":
+            return record[mappings.task] || ""
+        case "start":
+            return formatDateFr(record[mappings.start])
+        case "end":
+            return formatDateFr(record[mappings.end])
+        case "state": {
+            if(!mappings.state) return ""
+            let rule = stateRule(record[mappings.state])
+            return (rule.label && rule.label.trim()) ? rule.label.trim() : (rule.match || "")
+        }
+        case "progress": {
+            let p = getProgress(record, mappings)
+            return p===null ? "" : String(p)
+        }
+        case "comment":
+            return mappings.comment ? displayValueMultiline(record[mappings.comment]) : ""
+        default:
+            // filterField, filterField2...7, extraField1...6
+            return mappings[source] ? displayValue(record[mappings[source]]) : ""
+    }
+}
+
+// Construit l'URL du formulaire, avec les paramètres de pré-remplissage pour la tâche cliquée
+function buildFormUrl(record, mappings){
+    if(!formUrl) return null
+    let params = (formPrefillMap||[])
+        .filter(m => m.columnId && m.columnId.trim())
+        .map(m => {
+            let val = resolvePrefillValue(m.source, record, mappings)
+            return `${encodeURIComponent(m.columnId.trim())}=${encodeURIComponent(val)}`
+        })
+    if(params.length === 0) return formUrl
+    let separator = formUrl.includes("?") ? "&" : "?"
+    return formUrl + separator + params.join("&")
+}
+
 function openDetailPanel(record, mappings){
     let taskName = record[mappings.task] || ""
     let isJalon = mappings.jalon && record[mappings.jalon]
@@ -1704,6 +1836,15 @@ function openDetailPanel(record, mappings){
         attachmentBlock.innerHTML = `<div class="detail-label">Pièce jointe</div><div class="detail-value" id="detailAttachments"><span class="detail-empty">Chargement...</span></div>`
         detailPanelBody.appendChild(attachmentBlock)
         loadAttachments(record[mappings.attachment])
+    }
+
+    // Lien vers le formulaire Grist (si configuré dans ⚙), avec pré-remplissage
+    if(formUrl){
+        let formBlock = document.createElement("div")
+        formBlock.className = "detail-row"
+        let url = buildFormUrl(record, mappings)
+        formBlock.innerHTML = `<a class="detail-attachment" href="${escapeAttr(url)}" target="_blank" rel="noopener">📝 Ouvrir le formulaire</a>`
+        detailPanelBody.appendChild(formBlock)
     }
 
     detailPanel.classList.add("open")
