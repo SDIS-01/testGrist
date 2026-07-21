@@ -547,13 +547,13 @@ body{font-family:sans-serif;margin:0}
     </select>
   </span>
 
-  <label style="display:flex;align-items:center;gap:6px;white-space:nowrap;">
+  <label class="admin-control" style="display:none;align-items:center;gap:6px;white-space:nowrap;">
     Largeur colonne Tâche :
     <input type="number" id="taskColWidthInput" min="120" max="2000" step="10" style="width:70px;padding:5px 6px;font-size:13px;border:1px solid #ccc;border-radius:4px;">
     px
   </label>
 
-  <button id="configBtn" type="button">⚙ Statuts &amp; couleurs</button>
+  <button id="configBtn" class="admin-control" type="button" style="display:none;">⚙ Statuts &amp; couleurs</button>
 
   <div id="freeNoteDisplay" style="display:none;"></div>
 </div>
@@ -1747,6 +1747,17 @@ async function loadAttachments(rawValue){
         container.innerHTML = `<span class="detail-empty">Impossible de charger la pièce jointe</span>`
     }
 }
+
+// Raccourci discret (Ctrl+Alt+G) pour afficher/masquer les réglages sensibles
+// (largeur de la colonne Tâche, bouton Statuts & couleurs), cachés du grand public par défaut.
+document.addEventListener("keydown", e=>{
+    if(e.ctrlKey && e.altKey && (e.key === "g" || e.key === "G")){
+        document.querySelectorAll(".admin-control").forEach(el=>{
+            const isHidden = el.style.display === "none"
+            el.style.display = isHidden ? (el.tagName === "BUTTON" ? "inline-block" : "flex") : "none"
+        })
+    }
+})
 
 grist.onRecords((r,m)=>draw(r,m))
 </script>
