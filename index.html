@@ -698,7 +698,7 @@ body{font-family:sans-serif;margin:0}
   <div style="margin-top:10px;">
     <label style="font-size:12px;display:flex;align-items:center;gap:6px;">
       Largeur de la colonne Tâche :
-      <input type="number" id="taskColWidthConfigInput" min="120" max="2000" step="10" style="width:80px;padding:4px 6px;font-size:12px;border:1px solid #ccc;border-radius:4px;">
+      <input type="number" id="taskColWidthConfigInput" min="120" max="6000" step="10" style="width:80px;padding:4px 6px;font-size:12px;border:1px solid #ccc;border-radius:4px;">
       px
     </label>
   </div>
@@ -932,7 +932,7 @@ onEditOptions: ()=> openConfigPanel()
 let scale="month"
 let taskColWidth=600
 const TASK_COL_MIN=120
-const TASK_COL_MAX=2000
+const TASK_COL_MAX=6000
 let currentRecords=[]
 let currentMappings={}
 let highlightToday=false
