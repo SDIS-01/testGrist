@@ -99,21 +99,14 @@ body{font-family:sans-serif;margin:0}
     text-align:left;
     box-shadow:2px 0 4px rgba(0,0,0,.08);
 }
-#colResizeHandleWrap{
-    height:0;
-    overflow:visible;
-    position:relative;
-    z-index:50;
-}
 .col-resize-handle{
-    position:sticky;
-    left:var(--task-col-width);
+    position:absolute;
     top:0;
     width:12px;
     height:32px;
     margin-left:-6px;
     cursor:col-resize;
-    display:block;
+    z-index:50;
     touch-action:none;
     pointer-events:auto;
     background:transparent;
@@ -686,7 +679,7 @@ body{font-family:sans-serif;margin:0}
 <div id="legend"></div>
 
 <div id="gantt-container">
-<div id="colResizeHandleWrap"><div id="colResizeHandle" class="col-resize-handle" title="Glisser pour redimensionner"></div></div>
+<div id="colResizeHandle" class="col-resize-handle" title="Glisser pour redimensionner"></div>
 <table id="gantt-table"></table>
 <div id="today-line" class="today-line" style="display:none;"></div>
 </div>
@@ -807,6 +800,15 @@ let resizeStartWidth = 0
 function applyTaskColWidth(px){
     taskColWidth = Math.min(TASK_COL_MAX, Math.max(TASK_COL_MIN, Math.round(px)))
     document.documentElement.style.setProperty("--task-col-width", taskColWidth+"px")
+    positionResizeHandle()
+}
+
+// Calcule et applique la position réelle de la poignée : largeur de colonne + défilement horizontal en cours
+function positionResizeHandle(){
+    const handle = document.getElementById("colResizeHandle")
+    const container = document.getElementById("gantt-container")
+    if(!handle || !container) return
+    handle.style.left = (container.scrollLeft + taskColWidth) + "px"
 }
 
 function startResize(clientX, handleEl){
@@ -845,6 +847,10 @@ document.addEventListener("touchmove", e=>{
     moveResize(e.touches[0].clientX)
 }, {passive:true})
 document.addEventListener("touchend", endResize)
+
+// La poignée doit suivre le défilement horizontal du planning
+document.getElementById("gantt-container").addEventListener("scroll", positionResizeHandle)
+window.addEventListener("resize", positionResizeHandle)
 
 // ===== Gestion du tri combiné (jusqu'à 3 niveaux) =====
 document.querySelectorAll(".sort-select").forEach(select=>{
@@ -1295,6 +1301,8 @@ function draw(records,mappings){
     currentRecords = records;
     currentMappings = mappings;
 
+    positionResizeHandle()
+
     if(!records || records.length===0) return
 
     updateFilterLabelsUI()
@@ -1534,7 +1542,10 @@ document.getElementById("gantt-container").addEventListener("click", e=>{
 function formatDateFr(v){
     let d = parseDate(v)
     if(!d) return ""
-    return d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit', year:'numeric'})
+    let day = String(d.getDate()).padStart(2,'0')
+    let month = String(d.getMonth()+1).padStart(2,'0')
+    let year = d.getFullYear()
+    return `${day}/${month}/${year}`
 }
 
 function detailRow(label, valueHtml){
