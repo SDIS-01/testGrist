@@ -44,9 +44,6 @@ body{font-family:sans-serif;margin:0}
 .task-cell.clickable-mark:hover{
     filter:brightness(0.93);
 }
-.jalon-cell .clickable-mark:hover{
-    filter:brightness(0.85);
-}
 
 .task-cell{
     color:white;
@@ -149,10 +146,6 @@ body{font-family:sans-serif;margin:0}
     overflow-wrap:break-word;
     line-height:1.3;
 }
-
-/* Jalons */
-.jalon-cell { position: relative; height: 26px; text-align: center; vertical-align: middle; }
-.jalon-cell div:last-child { width:14px; height:14px; transform:rotate(45deg); margin:auto; margin-top:4px; }
 
 .day-label{
     writing-mode: vertical-rl;
@@ -1057,7 +1050,6 @@ columns:[
 {name:'task',title:'Nom de la tâche ou jalon'},
 {name:'start',title:'Date de début'},
 {name:'end',title:'Date de fin'},
-{name:'jalon',title:'Est un Jalon', optional:true},
 {name:'state',title:'Etat', optional:true},
 {name:'filterField',title:'Champ de filtre 1 (optionnel)', optional:true},
 {name:'filterField2',title:'Champ de filtre 2 (optionnel)', optional:true},
@@ -2077,12 +2069,8 @@ function draw(records,mappings){
     let dates=[]
     visibleRecords.forEach(r=>{
         let s=parseDate(r[mappings.start]), e=parseDate(r[mappings.end]);
-        if(r[mappings.jalon]){
-            if(s) dates.push(s)
-        }else{
-            if(s) dates.push(s)
-            if(e) dates.push(e)
-        }
+        if(s) dates.push(s)
+        if(e) dates.push(e)
     })
 
     if(dates.length===0){
@@ -2114,7 +2102,6 @@ function draw(records,mappings){
     visibleRecords.forEach(r=>{
         html+="<tr>"
         let s=parseDate(r[mappings.start]), e=parseDate(r[mappings.end])
-        let isJalon=r[mappings.jalon]
         let taskName = r[mappings.task]||""
 
         let filterValue = key => {
@@ -2155,14 +2142,7 @@ function draw(records,mappings){
                 ${linesHtml}
               </td>`
 
-        if(isJalon){
-            let col=findCol(units,s||e)
-            for(let i=0;i<units.length;i++){
-                if(i===col){
-                    html+=`<td class="jalon-cell"><div class="clickable-mark" data-row-id="${r.id}" style="background:${milestoneColor}"></div></td>`
-                } else html+="<td></td>"
-            }
-        } else {
+        {
             let startCol=findCol(units,s)
             let colspan=countCols(units,s,e)
             let rule = stateRule(r[mappings.state])
@@ -2273,9 +2253,9 @@ function renderLegend(){
         html += `<span class="legend-item"><span class="legend-swatch" style="background:${rule.color}"></span>${label}</span>`
     })
 
-    let hasJalon = currentMappings.jalon &&
+    let hasJalon = currentMappings.jalonDate &&
         Array.isArray(currentRecords) &&
-        currentRecords.some(r => r[currentMappings.jalon])
+        currentRecords.some(r => parseDate(r[currentMappings.jalonDate]))
 
     if(hasJalon){
         html += `<span class="legend-item"><span class="legend-swatch" style="background:${milestoneColor};transform:rotate(45deg);"></span>Jalon</span>`
@@ -2376,33 +2356,27 @@ function buildFormUrl(record, mappings){
 
 function openDetailPanel(record, mappings){
     let taskName = record[mappings.task] || ""
-    let isJalon = mappings.jalon && record[mappings.jalon]
 
-    detailPanelTitle.textContent = taskName || (isJalon ? "Jalon" : "Tâche")
+    detailPanelTitle.textContent = taskName || "Tâche"
 
     let parts = []
 
     // Dates
-    if(isJalon){
-        let d = formatDateFr(record[mappings.start] || record[mappings.end])
-        if(d) parts.push(detailRow("Date", escapeHtml(d)))
-    } else {
-        let dStart = formatDateFr(record[mappings.start])
-        let dEnd = formatDateFr(record[mappings.end])
-        if(dStart || dEnd){
-            parts.push(detailRow("Période", escapeHtml(`${dStart || '?'} → ${dEnd || '?'}`)))
-        }
+    let dStart = formatDateFr(record[mappings.start])
+    let dEnd = formatDateFr(record[mappings.end])
+    if(dStart || dEnd){
+        parts.push(detailRow("Période", escapeHtml(`${dStart || '?'} → ${dEnd || '?'}`)))
     }
 
     // Statut (masqué par défaut dans le panneau, réactivable via ⚙)
-    if(showStatusInPanel && !isJalon && mappings.state){
+    if(showStatusInPanel && mappings.state){
         let rule = stateRule(record[mappings.state])
         let label = rule.label && rule.label.trim() !== "" ? rule.label : (rule.match || "Autre")
         parts.push(detailRow("Statut", `<span class="detail-status-badge"><span class="detail-status-dot" style="background:${rule.color}"></span>${escapeHtml(label)}</span>`))
     }
 
     // Avancement
-    if(!isJalon && mappings.progress){
+    if(mappings.progress){
         let progress = getProgress(record, mappings)
         if(progress !== null){
             parts.push(detailRow("Avancement", `${progress}%`))
