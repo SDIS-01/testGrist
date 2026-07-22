@@ -86,6 +86,18 @@ body{font-family:sans-serif;margin:0}
     white-space:nowrap;
 }
 
+.jalon-overlay-mark{
+    position:absolute;
+    top:50%;
+    width:13px;
+    height:13px;
+    transform:translate(-50%,-50%) rotate(45deg);
+    z-index:2;
+    border:2px solid #fff;
+    box-sizing:border-box;
+    cursor:default;
+}
+
 /* Colonne des noms de tâches, figée pendant le défilement horizontal */
 :root{
     --task-col-width: 600px;
@@ -1062,7 +1074,9 @@ columns:[
 {name:'extraField3',title:'Champ supplémentaire 3 (optionnel, panneau détail)', optional:true},
 {name:'extraField4',title:'Champ supplémentaire 4 (optionnel, panneau détail)', optional:true},
 {name:'extraField5',title:'Champ supplémentaire 5 (optionnel, panneau détail)', optional:true},
-{name:'extraField6',title:'Champ supplémentaire 6 (optionnel, panneau détail)', optional:true}
+{name:'extraField6',title:'Champ supplémentaire 6 (optionnel, panneau détail)', optional:true},
+{name:'jalonDate',title:'Date du Jalon superposé sur la barre (optionnel)', optional:true},
+{name:'jalonLabel',title:'Texte du Jalon superposé, infobulle (optionnel)', optional:true}
 ],
 onEditOptions: ()=> openConfigPanel()
 })
@@ -1704,6 +1718,28 @@ function countCols(units,start,end){
     return findCol(units,end)-findCol(units,start)+1;
 }
 
+// Calcule, pour une date donnée, l'index de colonne et la position relative (0 à 1) à l'intérieur
+// de cette colonne. Utilisé pour la ligne "Aujourd'hui" et pour le losange de jalon superposé.
+function computeDateRatio(units, date){
+    let col = findCol(units, date)
+    let ratio
+    if(scale === "year"){
+        let yearStart = new Date(date.getFullYear(),0,1);
+        let yearEnd = new Date(date.getFullYear()+1,0,1);
+        let dayOfYear = Math.floor((date - yearStart)/86400000);
+        let totalDays = Math.floor((yearEnd - yearStart)/86400000);
+        ratio = dayOfYear / totalDays;
+    } else if(scale === "day"){
+        ratio = 0.5;
+    } else {
+        let start = units[col].date
+        let end = (col+1<units.length)?units[col+1].date:new Date(start.getTime()+86400000)
+        ratio = (date - start) / (end - start)
+    }
+    ratio = Math.max(0, Math.min(1, ratio))
+    return {col, ratio}
+}
+
 // Retourne la règle de statut (label + couleur) correspondant à l'état d'une tâche
 function stateRule(state){
     let s = displayValue(state).toLowerCase();
@@ -2141,12 +2177,29 @@ function draw(records,mappings){
                 progressBadge = `<span class="progress-badge">${progress}%</span>`
             }
 
+            // Losange de jalon superposé sur la barre de la tâche, positionné à la date exacte
+            // de la colonne optionnelle "jalonDate", avec le texte de "jalonLabel" en infobulle.
+            let jalonOverlayHtml = ""
+            if(mappings.jalonDate){
+                let jd = parseDate(r[mappings.jalonDate])
+                if(jd){
+                    let {col:jCol, ratio:jRatio} = computeDateRatio(units, jd)
+                    let relCol = jCol - startCol + jRatio
+                    let leftPct = colspan>0 ? (relCol / colspan) * 100 : 50
+                    leftPct = Math.max(0, Math.min(100, leftPct))
+                    let jalonText = mappings.jalonLabel ? displayValue(r[mappings.jalonLabel]) : ""
+                    let jalonTitleAttr = jalonText ? ` title="${escapeAttr(jalonText)}"` : ""
+                    jalonOverlayHtml = `<div class="jalon-overlay-mark"${jalonTitleAttr} style="left:${leftPct}%;background:${milestoneColor}"></div>`
+                }
+            }
+
             for(let i=0;i<startCol;i++) html+="<td></td>"
 
             html+=`<td colspan="${colspan}">
                     <div class="task-cell clickable-mark" data-row-id="${r.id}" style="background:${cellBg}" title="${escapeAttr(taskName)}${progress!==null?' - '+progress+'%':''}">
                     ${progressOverlay}
                     ${progressBadge}
+                    ${jalonOverlayHtml}
                     </div>
                   </td>`
 
