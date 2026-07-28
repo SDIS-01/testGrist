@@ -7,12 +7,242 @@
 
 <style>
 body{font-family:sans-serif;margin:0}
-#controls{padding:8px;background:#f4f4f4;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
-#controls select, #controls input[type=text], #controls button{min-height:34px;box-sizing:border-box;}
+
+/* ===== BANDEAU ===== */
+#controls{
+    background:#f4f4f4;
+    padding:8px 10px;
+    display:flex;
+    flex-direction:column;
+    gap:0;
+}
+#toolbarMain{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+}
+#toolbarMain select{
+    min-height:32px;
+    padding:4px 6px;
+    font-size:13px;
+    border:1px solid #ccc;
+    border-radius:4px;
+    background:#fff;
+}
+#toggleChips{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+}
+.chip{
+    cursor:pointer;
+    font-size:13px;
+    padding:6px 12px;
+    border-radius:16px;
+    border:1px solid #ccc;
+    background:#fff;
+    color:#555;
+    line-height:1.2;
+    white-space:nowrap;
+}
+.chip:hover{background:#eee;}
+.chip.on{
+    border-color:rgba(0,0,145,.45);
+    background:rgba(0,0,145,.12);
+    color:#00008f;
+    font-weight:600;
+}
+#toolbarActions{
+    margin-left:auto;
+    display:flex;
+    gap:6px;
+    align-items:center;
+}
+.tool-btn{
+    cursor:pointer;
+    font-size:13px;
+    padding:6px 12px;
+    border:1px solid #ccc;
+    background:#fff;
+    border-radius:6px;
+    color:#333;
+    line-height:1.2;
+    white-space:nowrap;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+}
+.tool-btn:hover{background:#eee;}
+.tool-btn.open{
+    border-color:rgba(0,0,145,.45);
+    background:rgba(0,0,145,.12);
+    color:#00008f;
+}
+.tool-badge{
+    background:#00008f;
+    color:#fff;
+    border-radius:10px;
+    padding:1px 7px;
+    font-size:11px;
+    font-weight:700;
+}
+#tasksStatus{
+    font-size:11px;
+    color:#c0504d;
+    flex:1 1 100%;
+}
+
+/* Panneaux repliables */
+.panel{
+    display:none;
+    margin-top:10px;
+    padding-top:10px;
+    border-top:1px solid #e2e2e2;
+}
+.panel.open{display:block;}
+#filtersGrid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+    gap:10px;
+}
+.filter-cell{
+    display:none;
+    flex-direction:column;
+    gap:4px;
+    min-width:0;
+}
+.filter-cell-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:6px;
+}
+.filter-label-text{
+    font-size:12px;
+    color:#666;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+.filter-clear{
+    cursor:pointer;
+    border:none;
+    background:none;
+    color:#999;
+    font-size:12px;
+    line-height:1;
+    padding:2px 4px;
+    border-radius:3px;
+}
+.filter-clear:hover{background:#e6e6e6;color:#c0392b;}
+.filter-cell input[type=text],
+.filter-cell select,
+.filter-cell input[type=date]{
+    width:100%;
+    box-sizing:border-box;
+    padding:6px 8px;
+    font-size:13px;
+    border:1px solid #ccc;
+    border-radius:4px;
+    background:#fff;
+    min-height:32px;
+}
+.filter-date-controls{
+    width:100%;
+    gap:4px;
+}
+.filter-date-op{flex:0 0 56px;}
+.filter-date-1,.filter-date-2{flex:1;min-width:0;}
+.filter-date-and{font-size:12px;color:#666;}
+.filter-multi-controls{width:100%;}
+.filter-multi-toggle{
+    cursor:pointer;
+    width:100%;
+    box-sizing:border-box;
+    text-align:left;
+    border:1px solid #ccc;
+    background:#fff;
+    border-radius:4px;
+    padding:6px 8px;
+    font-size:13px;
+    min-height:32px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+.filter-multi-toggle:hover{background:#f5f5f5;}
+.filter-multi-dropdown{
+    position:absolute;
+    top:100%;
+    left:0;
+    margin-top:4px;
+    background:#fff;
+    border:1px solid #ccc;
+    border-radius:6px;
+    box-shadow:0 4px 14px rgba(0,0,0,.15);
+    padding:8px;
+    z-index:60;
+    max-height:220px;
+    overflow-y:auto;
+    min-width:100%;
+}
+.filter-multi-dropdown label{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:13px;
+    padding:3px 2px;
+    white-space:nowrap;
+}
+.filter-multi-dropdown label:hover{background:#f5f5f5;}
+.filter-multi-actions{
+    display:flex;
+    justify-content:space-between;
+    font-size:11px;
+    color:#1e88e5;
+    margin-bottom:6px;
+    border-bottom:1px solid #eee;
+    padding-bottom:6px;
+}
+.filter-multi-actions span{cursor:pointer;}
+.filter-multi-actions span:hover{text-decoration:underline;}
+
+#panelFooter{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-top:10px;
+}
+.link-btn{
+    cursor:pointer;
+    border:none;
+    background:none;
+    color:#1e5fa5;
+    font-size:12px;
+    padding:2px 0;
+}
+.link-btn:hover{text-decoration:underline;}
+
+#sortPanel .sort-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+    font-size:13px;
+    color:#555;
+}
+#sortPanel select{
+    padding:6px 8px;
+    font-size:13px;
+    border:1px solid #ccc;
+    border-radius:4px;
+    background:#fff;
+    min-height:32px;
+}
+
 #freeNoteDisplay{
-    flex:1 1 180px;
-    min-width:150px;
-    padding:6px 10px;
+    margin-top:8px;
     font-size:13px;
     color:#C0504D;
     font-weight:600;
@@ -20,10 +250,27 @@ body{font-family:sans-serif;margin:0}
     overflow-wrap:break-word;
     line-height:1.4;
 }
-#tasksStatus{
+
+/* Legende */
+#legend{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    align-items:center;
+    padding:6px 10px;
     font-size:11px;
-    color:#c0504d;
+    color:#333;
 }
+.legend-item{display:flex;align-items:center;gap:5px;}
+.legend-swatch{width:12px;height:12px;border-radius:3px;display:inline-block;}
+.legend-toggle{
+    cursor:pointer;
+    color:#1e5fa5;
+    font-size:11px;
+}
+.legend-toggle:hover{text-decoration:underline;}
+
+/* ===== GANTT ===== */
 #gantt-container{overflow-x:auto;position:relative;-webkit-overflow-scrolling:touch;}
 
 #gantt-table{
@@ -99,7 +346,7 @@ body{font-family:sans-serif;margin:0}
     cursor:default;
 }
 
-/* ===== Lignes de tâches (table liée), indentées sous leur action ===== */
+/* Lignes de tâches (table liée), indentées sous leur action */
 tr.task-row-sub td{
     height:26px;
 }
@@ -203,126 +450,6 @@ tr.task-row-sub td{
     z-index:10;
 }
 
-/* Bouton config */
-#configBtn{
-    cursor:pointer;
-    border:1px solid #ccc;
-    background:#fff;
-    border-radius:4px;
-    padding:4px 10px;
-    font-size:12px;
-}
-#configBtn:hover{background:#eee;}
-#printBtn,
-#resetAllFiltersBtn{
-    cursor:pointer;
-    border:1px solid rgba(0,0,145,.35);
-    background:rgba(0,0,145,.12);
-    border-radius:14px;
-    padding:5px 12px;
-    font-size:12px;
-    font-weight:600;
-    color:#000;
-}
-#printBtn:hover,
-#resetAllFiltersBtn:hover{background:rgba(0,0,145,.22);}
-
-/* Filtre */
-.filter-block{
-    display:none;
-    align-items:center;
-    gap:6px;
-}
-.sort-block{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    flex-wrap:wrap;
-    font-size:13px;
-}
-.filter-block input[type=text]{
-    padding:6px 8px;
-    font-size:13px;
-    border:1px solid #ccc;
-    border-radius:4px;
-    width:150px;
-    max-width:40vw;
-}
-.filter-date-op,
-.filter-date-1,
-.filter-date-2{
-    padding:5px 6px;
-    font-size:13px;
-    border:1px solid #ccc;
-    border-radius:4px;
-}
-.filter-date-1,
-.filter-date-2{
-    width:140px;
-}
-.filter-date-and{
-    font-size:12px;
-    color:#666;
-}
-.filter-multi-toggle{
-    cursor:pointer;
-    border:1px solid #ccc;
-    background:#fff;
-    border-radius:4px;
-    padding:6px 10px;
-    font-size:13px;
-    max-width:180px;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-}
-.filter-multi-toggle:hover{background:#f5f5f5;}
-.filter-multi-dropdown{
-    position:absolute;
-    top:100%;
-    left:0;
-    margin-top:4px;
-    background:#fff;
-    border:1px solid #ccc;
-    border-radius:6px;
-    box-shadow:0 4px 14px rgba(0,0,0,.15);
-    padding:8px;
-    z-index:60;
-    max-height:220px;
-    overflow-y:auto;
-    min-width:180px;
-}
-.filter-multi-dropdown label{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    font-size:13px;
-    padding:3px 2px;
-    white-space:nowrap;
-}
-.filter-multi-dropdown label:hover{background:#f5f5f5;}
-.filter-multi-actions{
-    display:flex;
-    justify-content:space-between;
-    font-size:11px;
-    color:#1e88e5;
-    margin-bottom:6px;
-    border-bottom:1px solid #eee;
-    padding-bottom:6px;
-}
-.filter-multi-actions span{cursor:pointer;}
-.filter-multi-actions span:hover{text-decoration:underline;}
-.filter-clear{
-    cursor:pointer;
-    border:1px solid #ccc;
-    background:#fff;
-    border-radius:4px;
-    padding:5px 10px;
-    font-size:13px;
-    line-height:1;
-}
-.filter-clear:hover{background:#eee;}
-
 /* Panneau config */
 #configPanel{
     display:none;
@@ -342,6 +469,7 @@ tr.task-row-sub td{
 #configRows{max-height:260px;overflow-y:auto;margin-bottom:8px;}
 .config-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
 .config-row input[type=text]{flex:1;padding:4px 6px;font-size:12px;border:1px solid #ccc;border-radius:3px;}
+.config-row select{padding:4px 6px;font-size:12px;border:1px solid #ccc;border-radius:3px;}
 .config-row input[type=color]{width:34px;height:28px;border:none;padding:0;cursor:pointer;}
 .cfg-remove{cursor:pointer;border:none;background:none;color:#c0392b;font-size:15px;padding:2px 6px;}
 .cfg-remove:hover{background:#fdecea;border-radius:3px;}
@@ -352,12 +480,6 @@ tr.task-row-sub td{
 #saveConfig{background:#2e7d32;color:white;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;min-height:36px;}
 #cancelConfig{background:none;border:1px solid #ccc;padding:8px 16px;border-radius:4px;cursor:pointer;min-height:36px;}
 
-/* Legende */
-#legend{display:flex;gap:12px;flex-wrap:wrap;padding:6px 10px;font-size:11px;color:#333;}
-.legend-item{display:flex;align-items:center;gap:5px;}
-.legend-swatch{width:12px;height:12px;border-radius:3px;display:inline-block;}
-
-/* ===== MOBILE ===== */
 /* ===== Panneau latéral de détail ===== */
 #detailOverlay{
     position:fixed;
@@ -486,13 +608,11 @@ tr.task-row-sub td{
     font-style:italic;
 }
 
+/* ===== MOBILE ===== */
 @media (max-width:600px){
-    #controls{flex-direction:column;align-items:stretch;gap:10px;padding:10px;}
-    #controls > *{width:100%;}
-    #controls label, #controls > span{display:flex;align-items:center;gap:6px;}
-    #filterInput{width:100%;max-width:none;flex:1;}
-    .filter-block input[type=text]{width:100%;max-width:none;flex:1;}
-    #configBtn{padding:8px 10px;}
+    #toolbarActions{margin-left:0;width:100%;}
+    .tool-btn{flex:1;justify-content:center;}
+    #filtersGrid{grid-template-columns:1fr;}
     #configPanel{width:94vw;max-width:94vw;left:3vw;max-height:80vh;overflow-y:auto;top:10px;}
     #gantt-table td{width:min(var(--timeline-col-width),64px);max-width:min(var(--timeline-col-width),64px);font-size:11px;}
     .task-cell{font-size:11px;}
@@ -516,6 +636,7 @@ tr.task-row-sub td{
         transform:translateY(0);
     }
 }
+
 /* ===== Impression / Export PDF ===== */
 @page{
     size: landscape;
@@ -550,298 +671,313 @@ tr.task-row-sub td{
 <body>
 
 <div id="controls">
-  <span>
-    Echelle :
-    <select id="scale">
+
+  <div id="toolbarMain">
+    <select id="scale" title="Echelle de la frise">
       <option value="year">Année</option>
       <option value="quarter">Trimestre</option>
       <option value="month" selected>Mois</option>
       <option value="week">Semaine</option>
       <option value="day">Jour</option>
     </select>
-  </span>
 
-  <label>
-    <input type="checkbox" id="todayHighlight">
-    Aujourd'hui
-  </label>
+    <div id="toggleChips">
+      <button type="button" class="chip" id="chipToday" aria-pressed="false">Aujourd'hui</button>
+      <button type="button" class="chip on" id="chipProgress" aria-pressed="true">Avancement</button>
+      <button type="button" class="chip" id="chipNature" aria-pressed="false" style="display:none;">Actions MEO</button>
+      <button type="button" class="chip" id="chipTasks" aria-pressed="false">Tâches</button>
+    </div>
 
-  <label>
-    <input type="checkbox" id="showProgressToggle" checked>
-    Avancement
-  </label>
+    <div id="toolbarActions">
+      <button type="button" class="tool-btn" id="filtersBtn">Filtres <span class="tool-badge" id="filtersBadge" style="display:none;">0</span></button>
+      <button type="button" class="tool-btn" id="sortBtn">Tri</button>
+      <button type="button" class="tool-btn" id="printBtn" title="Imprimer / Exporter en PDF">Imprimer</button>
+    </div>
 
-  <label id="natureOptionalBlock" style="display:none;">
-    <input type="checkbox" id="natureOptionalToggle">
-    <span id="natureOptionalLabel">Ajouter les actions MEO</span>
-  </label>
+    <span id="tasksStatus"></span>
+  </div>
 
-  <label id="showTasksBlock">
-    <input type="checkbox" id="showTasksToggle">
-    Ajouter les tâches
-  </label>
+  <div class="panel" id="filtersPanel">
+    <div id="filtersGrid">
 
-  <span id="tasksStatus"></span>
+      <div class="filter-cell" id="filterControls-filterField">
+        <div class="filter-cell-head">
+          <span class="filter-label-text" data-key="filterField">Filtre 1</span>
+          <button type="button" class="filter-clear" data-key="filterField" title="Effacer ce filtre" style="display:none;">✕</button>
+        </div>
+        <input type="text" class="filter-input" data-key="filterField" list="filterOptions-filterField" placeholder="Tous" autocomplete="off">
+        <datalist id="filterOptions-filterField"></datalist>
+        <select class="filter-percent-select" data-key="filterField" style="display:none;">
+          <option value="">Tous</option>
+          <option value="0-25">0 – 25%</option>
+          <option value="25-50">25 – 50%</option>
+          <option value="50-75">50 – 75%</option>
+          <option value="75-100">75 – 100%</option>
+        </select>
+        <span class="filter-date-controls" data-key="filterField" style="display:none;align-items:center;">
+          <select class="filter-date-op" data-key="filterField">
+            <option value="lt">&lt;</option>
+            <option value="lte">≤</option>
+            <option value="eq">=</option>
+            <option value="gte">≥</option>
+            <option value="gt">&gt;</option>
+            <option value="between">Entre</option>
+          </select>
+          <input type="date" class="filter-date-1" data-key="filterField">
+          <span class="filter-date-and" data-key="filterField" style="display:none;">et</span>
+          <input type="date" class="filter-date-2" data-key="filterField" style="display:none;">
+        </span>
+        <span class="filter-multi-controls" data-key="filterField" style="display:none;position:relative;">
+          <button type="button" class="filter-multi-toggle" data-key="filterField">Tous</button>
+          <div class="filter-multi-dropdown" data-key="filterField" style="display:none;"></div>
+        </span>
+      </div>
 
-  <span class="filter-block" id="filterControls-filterField">
-    <span class="filter-label-text" data-key="filterField">Filtre 1</span> :
-    <input type="text" class="filter-input" data-key="filterField" list="filterOptions-filterField" placeholder="Tous (ou rechercher...)" autocomplete="off">
-    <datalist id="filterOptions-filterField"></datalist>
-    <select class="filter-percent-select" data-key="filterField" style="display:none;">
-      <option value="">Tous</option>
-      <option value="0-25">0 – 25%</option>
-      <option value="25-50">25 – 50%</option>
-      <option value="50-75">50 – 75%</option>
-      <option value="75-100">75 – 100%</option>
-    </select>
-    <span class="filter-date-controls" data-key="filterField" style="display:none;align-items:center;gap:4px;">
-      <select class="filter-date-op" data-key="filterField">
-        <option value="lt">&lt;</option>
-        <option value="lte">≤</option>
-        <option value="eq">=</option>
-        <option value="gte">≥</option>
-        <option value="gt">&gt;</option>
-        <option value="between">Entre</option>
+      <div class="filter-cell" id="filterControls-filterField2">
+        <div class="filter-cell-head">
+          <span class="filter-label-text" data-key="filterField2">Filtre 2</span>
+          <button type="button" class="filter-clear" data-key="filterField2" title="Effacer ce filtre" style="display:none;">✕</button>
+        </div>
+        <input type="text" class="filter-input" data-key="filterField2" list="filterOptions-filterField2" placeholder="Tous" autocomplete="off">
+        <datalist id="filterOptions-filterField2"></datalist>
+        <select class="filter-percent-select" data-key="filterField2" style="display:none;">
+          <option value="">Tous</option>
+          <option value="0-25">0 – 25%</option>
+          <option value="25-50">25 – 50%</option>
+          <option value="50-75">50 – 75%</option>
+          <option value="75-100">75 – 100%</option>
+        </select>
+        <span class="filter-date-controls" data-key="filterField2" style="display:none;align-items:center;">
+          <select class="filter-date-op" data-key="filterField2">
+            <option value="lt">&lt;</option>
+            <option value="lte">≤</option>
+            <option value="eq">=</option>
+            <option value="gte">≥</option>
+            <option value="gt">&gt;</option>
+            <option value="between">Entre</option>
+          </select>
+          <input type="date" class="filter-date-1" data-key="filterField2">
+          <span class="filter-date-and" data-key="filterField2" style="display:none;">et</span>
+          <input type="date" class="filter-date-2" data-key="filterField2" style="display:none;">
+        </span>
+        <span class="filter-multi-controls" data-key="filterField2" style="display:none;position:relative;">
+          <button type="button" class="filter-multi-toggle" data-key="filterField2">Tous</button>
+          <div class="filter-multi-dropdown" data-key="filterField2" style="display:none;"></div>
+        </span>
+      </div>
+
+      <div class="filter-cell" id="filterControls-filterField3">
+        <div class="filter-cell-head">
+          <span class="filter-label-text" data-key="filterField3">Filtre 3</span>
+          <button type="button" class="filter-clear" data-key="filterField3" title="Effacer ce filtre" style="display:none;">✕</button>
+        </div>
+        <input type="text" class="filter-input" data-key="filterField3" list="filterOptions-filterField3" placeholder="Tous" autocomplete="off">
+        <datalist id="filterOptions-filterField3"></datalist>
+        <select class="filter-percent-select" data-key="filterField3" style="display:none;">
+          <option value="">Tous</option>
+          <option value="0-25">0 – 25%</option>
+          <option value="25-50">25 – 50%</option>
+          <option value="50-75">50 – 75%</option>
+          <option value="75-100">75 – 100%</option>
+        </select>
+        <span class="filter-date-controls" data-key="filterField3" style="display:none;align-items:center;">
+          <select class="filter-date-op" data-key="filterField3">
+            <option value="lt">&lt;</option>
+            <option value="lte">≤</option>
+            <option value="eq">=</option>
+            <option value="gte">≥</option>
+            <option value="gt">&gt;</option>
+            <option value="between">Entre</option>
+          </select>
+          <input type="date" class="filter-date-1" data-key="filterField3">
+          <span class="filter-date-and" data-key="filterField3" style="display:none;">et</span>
+          <input type="date" class="filter-date-2" data-key="filterField3" style="display:none;">
+        </span>
+        <span class="filter-multi-controls" data-key="filterField3" style="display:none;position:relative;">
+          <button type="button" class="filter-multi-toggle" data-key="filterField3">Tous</button>
+          <div class="filter-multi-dropdown" data-key="filterField3" style="display:none;"></div>
+        </span>
+      </div>
+
+      <div class="filter-cell" id="filterControls-filterField4">
+        <div class="filter-cell-head">
+          <span class="filter-label-text" data-key="filterField4">Filtre 4</span>
+          <button type="button" class="filter-clear" data-key="filterField4" title="Effacer ce filtre" style="display:none;">✕</button>
+        </div>
+        <input type="text" class="filter-input" data-key="filterField4" list="filterOptions-filterField4" placeholder="Tous" autocomplete="off">
+        <datalist id="filterOptions-filterField4"></datalist>
+        <select class="filter-percent-select" data-key="filterField4" style="display:none;">
+          <option value="">Tous</option>
+          <option value="0-25">0 – 25%</option>
+          <option value="25-50">25 – 50%</option>
+          <option value="50-75">50 – 75%</option>
+          <option value="75-100">75 – 100%</option>
+        </select>
+        <span class="filter-date-controls" data-key="filterField4" style="display:none;align-items:center;">
+          <select class="filter-date-op" data-key="filterField4">
+            <option value="lt">&lt;</option>
+            <option value="lte">≤</option>
+            <option value="eq">=</option>
+            <option value="gte">≥</option>
+            <option value="gt">&gt;</option>
+            <option value="between">Entre</option>
+          </select>
+          <input type="date" class="filter-date-1" data-key="filterField4">
+          <span class="filter-date-and" data-key="filterField4" style="display:none;">et</span>
+          <input type="date" class="filter-date-2" data-key="filterField4" style="display:none;">
+        </span>
+        <span class="filter-multi-controls" data-key="filterField4" style="display:none;position:relative;">
+          <button type="button" class="filter-multi-toggle" data-key="filterField4">Tous</button>
+          <div class="filter-multi-dropdown" data-key="filterField4" style="display:none;"></div>
+        </span>
+      </div>
+
+      <div class="filter-cell" id="filterControls-filterField5">
+        <div class="filter-cell-head">
+          <span class="filter-label-text" data-key="filterField5">Filtre 5</span>
+          <button type="button" class="filter-clear" data-key="filterField5" title="Effacer ce filtre" style="display:none;">✕</button>
+        </div>
+        <input type="text" class="filter-input" data-key="filterField5" list="filterOptions-filterField5" placeholder="Tous" autocomplete="off">
+        <datalist id="filterOptions-filterField5"></datalist>
+        <select class="filter-percent-select" data-key="filterField5" style="display:none;">
+          <option value="">Tous</option>
+          <option value="0-25">0 – 25%</option>
+          <option value="25-50">25 – 50%</option>
+          <option value="50-75">50 – 75%</option>
+          <option value="75-100">75 – 100%</option>
+        </select>
+        <span class="filter-date-controls" data-key="filterField5" style="display:none;align-items:center;">
+          <select class="filter-date-op" data-key="filterField5">
+            <option value="lt">&lt;</option>
+            <option value="lte">≤</option>
+            <option value="eq">=</option>
+            <option value="gte">≥</option>
+            <option value="gt">&gt;</option>
+            <option value="between">Entre</option>
+          </select>
+          <input type="date" class="filter-date-1" data-key="filterField5">
+          <span class="filter-date-and" data-key="filterField5" style="display:none;">et</span>
+          <input type="date" class="filter-date-2" data-key="filterField5" style="display:none;">
+        </span>
+        <span class="filter-multi-controls" data-key="filterField5" style="display:none;position:relative;">
+          <button type="button" class="filter-multi-toggle" data-key="filterField5">Tous</button>
+          <div class="filter-multi-dropdown" data-key="filterField5" style="display:none;"></div>
+        </span>
+      </div>
+
+      <div class="filter-cell" id="filterControls-filterField6">
+        <div class="filter-cell-head">
+          <span class="filter-label-text" data-key="filterField6">Filtre 6</span>
+          <button type="button" class="filter-clear" data-key="filterField6" title="Effacer ce filtre" style="display:none;">✕</button>
+        </div>
+        <input type="text" class="filter-input" data-key="filterField6" list="filterOptions-filterField6" placeholder="Tous" autocomplete="off">
+        <datalist id="filterOptions-filterField6"></datalist>
+        <select class="filter-percent-select" data-key="filterField6" style="display:none;">
+          <option value="">Tous</option>
+          <option value="0-25">0 – 25%</option>
+          <option value="25-50">25 – 50%</option>
+          <option value="50-75">50 – 75%</option>
+          <option value="75-100">75 – 100%</option>
+        </select>
+        <span class="filter-date-controls" data-key="filterField6" style="display:none;align-items:center;">
+          <select class="filter-date-op" data-key="filterField6">
+            <option value="lt">&lt;</option>
+            <option value="lte">≤</option>
+            <option value="eq">=</option>
+            <option value="gte">≥</option>
+            <option value="gt">&gt;</option>
+            <option value="between">Entre</option>
+          </select>
+          <input type="date" class="filter-date-1" data-key="filterField6">
+          <span class="filter-date-and" data-key="filterField6" style="display:none;">et</span>
+          <input type="date" class="filter-date-2" data-key="filterField6" style="display:none;">
+        </span>
+        <span class="filter-multi-controls" data-key="filterField6" style="display:none;position:relative;">
+          <button type="button" class="filter-multi-toggle" data-key="filterField6">Tous</button>
+          <div class="filter-multi-dropdown" data-key="filterField6" style="display:none;"></div>
+        </span>
+      </div>
+
+      <div class="filter-cell" id="filterControls-filterField7">
+        <div class="filter-cell-head">
+          <span class="filter-label-text" data-key="filterField7">Filtre 7</span>
+          <button type="button" class="filter-clear" data-key="filterField7" title="Effacer ce filtre" style="display:none;">✕</button>
+        </div>
+        <input type="text" class="filter-input" data-key="filterField7" list="filterOptions-filterField7" placeholder="Tous" autocomplete="off">
+        <datalist id="filterOptions-filterField7"></datalist>
+        <select class="filter-percent-select" data-key="filterField7" style="display:none;">
+          <option value="">Tous</option>
+          <option value="0-25">0 – 25%</option>
+          <option value="25-50">25 – 50%</option>
+          <option value="50-75">50 – 75%</option>
+          <option value="75-100">75 – 100%</option>
+        </select>
+        <span class="filter-date-controls" data-key="filterField7" style="display:none;align-items:center;">
+          <select class="filter-date-op" data-key="filterField7">
+            <option value="lt">&lt;</option>
+            <option value="lte">≤</option>
+            <option value="eq">=</option>
+            <option value="gte">≥</option>
+            <option value="gt">&gt;</option>
+            <option value="between">Entre</option>
+          </select>
+          <input type="date" class="filter-date-1" data-key="filterField7">
+          <span class="filter-date-and" data-key="filterField7" style="display:none;">et</span>
+          <input type="date" class="filter-date-2" data-key="filterField7" style="display:none;">
+        </span>
+        <span class="filter-multi-controls" data-key="filterField7" style="display:none;position:relative;">
+          <button type="button" class="filter-multi-toggle" data-key="filterField7">Tous</button>
+          <div class="filter-multi-dropdown" data-key="filterField7" style="display:none;"></div>
+        </span>
+      </div>
+
+    </div>
+
+    <div id="panelFooter">
+      <button type="button" class="link-btn" id="resetAllFiltersBtn">↺ Réinitialiser les filtres</button>
+    </div>
+  </div>
+
+  <div class="panel" id="sortPanel">
+    <div class="sort-row">
+      Trier par :
+      <select class="sort-select" data-level="1">
+        <option value="">Aucun tri</option>
+        <option value="task">Nom de tâche (A→Z)</option>
+        <option value="filterField" class="sort-opt" data-key="filterField">Filtre 1 (A→Z)</option>
+        <option value="filterField2" class="sort-opt" data-key="filterField2">Filtre 2 (A→Z)</option>
+        <option value="filterField3" class="sort-opt" data-key="filterField3">Filtre 3 (A→Z)</option>
+        <option value="filterField4" class="sort-opt" data-key="filterField4">Filtre 4 (A→Z)</option>
+        <option value="filterField5" class="sort-opt" data-key="filterField5">Filtre 5 (A→Z)</option>
+        <option value="filterField6" class="sort-opt" data-key="filterField6">Filtre 6 (A→Z)</option>
+        <option value="filterField7" class="sort-opt" data-key="filterField7">Filtre 7 (A→Z)</option>
       </select>
-      <input type="date" class="filter-date-1" data-key="filterField">
-      <span class="filter-date-and" data-key="filterField" style="display:none;">et</span>
-      <input type="date" class="filter-date-2" data-key="filterField" style="display:none;">
-    </span>
-    <span class="filter-multi-controls" data-key="filterField" style="display:none;position:relative;">
-      <button type="button" class="filter-multi-toggle" data-key="filterField">Tous</button>
-      <div class="filter-multi-dropdown" data-key="filterField" style="display:none;"></div>
-    </span>
-    <button type="button" class="filter-clear" data-key="filterField" title="Effacer ce filtre">✕</button>
-  </span>
-
-  <span class="filter-block" id="filterControls-filterField2">
-    <span class="filter-label-text" data-key="filterField2">Filtre 2</span> :
-    <input type="text" class="filter-input" data-key="filterField2" list="filterOptions-filterField2" placeholder="Tous (ou rechercher...)" autocomplete="off">
-    <datalist id="filterOptions-filterField2"></datalist>
-    <select class="filter-percent-select" data-key="filterField2" style="display:none;">
-      <option value="">Tous</option>
-      <option value="0-25">0 – 25%</option>
-      <option value="25-50">25 – 50%</option>
-      <option value="50-75">50 – 75%</option>
-      <option value="75-100">75 – 100%</option>
-    </select>
-    <span class="filter-date-controls" data-key="filterField2" style="display:none;align-items:center;gap:4px;">
-      <select class="filter-date-op" data-key="filterField2">
-        <option value="lt">&lt;</option>
-        <option value="lte">≤</option>
-        <option value="eq">=</option>
-        <option value="gte">≥</option>
-        <option value="gt">&gt;</option>
-        <option value="between">Entre</option>
+      puis
+      <select class="sort-select" data-level="2">
+        <option value="">Aucun tri</option>
+        <option value="task">Nom de tâche (A→Z)</option>
+        <option value="filterField" class="sort-opt" data-key="filterField">Filtre 1 (A→Z)</option>
+        <option value="filterField2" class="sort-opt" data-key="filterField2">Filtre 2 (A→Z)</option>
+        <option value="filterField3" class="sort-opt" data-key="filterField3">Filtre 3 (A→Z)</option>
+        <option value="filterField4" class="sort-opt" data-key="filterField4">Filtre 4 (A→Z)</option>
+        <option value="filterField5" class="sort-opt" data-key="filterField5">Filtre 5 (A→Z)</option>
+        <option value="filterField6" class="sort-opt" data-key="filterField6">Filtre 6 (A→Z)</option>
+        <option value="filterField7" class="sort-opt" data-key="filterField7">Filtre 7 (A→Z)</option>
       </select>
-      <input type="date" class="filter-date-1" data-key="filterField2">
-      <span class="filter-date-and" data-key="filterField2" style="display:none;">et</span>
-      <input type="date" class="filter-date-2" data-key="filterField2" style="display:none;">
-    </span>
-    <span class="filter-multi-controls" data-key="filterField2" style="display:none;position:relative;">
-      <button type="button" class="filter-multi-toggle" data-key="filterField2">Tous</button>
-      <div class="filter-multi-dropdown" data-key="filterField2" style="display:none;"></div>
-    </span>
-    <button type="button" class="filter-clear" data-key="filterField2" title="Effacer ce filtre">✕</button>
-  </span>
-
-  <span class="filter-block" id="filterControls-filterField3">
-    <span class="filter-label-text" data-key="filterField3">Filtre 3</span> :
-    <input type="text" class="filter-input" data-key="filterField3" list="filterOptions-filterField3" placeholder="Tous (ou rechercher...)" autocomplete="off">
-    <datalist id="filterOptions-filterField3"></datalist>
-    <select class="filter-percent-select" data-key="filterField3" style="display:none;">
-      <option value="">Tous</option>
-      <option value="0-25">0 – 25%</option>
-      <option value="25-50">25 – 50%</option>
-      <option value="50-75">50 – 75%</option>
-      <option value="75-100">75 – 100%</option>
-    </select>
-    <span class="filter-date-controls" data-key="filterField3" style="display:none;align-items:center;gap:4px;">
-      <select class="filter-date-op" data-key="filterField3">
-        <option value="lt">&lt;</option>
-        <option value="lte">≤</option>
-        <option value="eq">=</option>
-        <option value="gte">≥</option>
-        <option value="gt">&gt;</option>
-        <option value="between">Entre</option>
+      puis
+      <select class="sort-select" data-level="3">
+        <option value="">Aucun tri</option>
+        <option value="task">Nom de tâche (A→Z)</option>
+        <option value="filterField" class="sort-opt" data-key="filterField">Filtre 1 (A→Z)</option>
+        <option value="filterField2" class="sort-opt" data-key="filterField2">Filtre 2 (A→Z)</option>
+        <option value="filterField3" class="sort-opt" data-key="filterField3">Filtre 3 (A→Z)</option>
+        <option value="filterField4" class="sort-opt" data-key="filterField4">Filtre 4 (A→Z)</option>
+        <option value="filterField5" class="sort-opt" data-key="filterField5">Filtre 5 (A→Z)</option>
+        <option value="filterField6" class="sort-opt" data-key="filterField6">Filtre 6 (A→Z)</option>
+        <option value="filterField7" class="sort-opt" data-key="filterField7">Filtre 7 (A→Z)</option>
       </select>
-      <input type="date" class="filter-date-1" data-key="filterField3">
-      <span class="filter-date-and" data-key="filterField3" style="display:none;">et</span>
-      <input type="date" class="filter-date-2" data-key="filterField3" style="display:none;">
-    </span>
-    <span class="filter-multi-controls" data-key="filterField3" style="display:none;position:relative;">
-      <button type="button" class="filter-multi-toggle" data-key="filterField3">Tous</button>
-      <div class="filter-multi-dropdown" data-key="filterField3" style="display:none;"></div>
-    </span>
-    <button type="button" class="filter-clear" data-key="filterField3" title="Effacer ce filtre">✕</button>
-  </span>
-
-  <span class="filter-block" id="filterControls-filterField4">
-    <span class="filter-label-text" data-key="filterField4">Filtre 4</span> :
-    <input type="text" class="filter-input" data-key="filterField4" list="filterOptions-filterField4" placeholder="Tous (ou rechercher...)" autocomplete="off">
-    <datalist id="filterOptions-filterField4"></datalist>
-    <select class="filter-percent-select" data-key="filterField4" style="display:none;">
-      <option value="">Tous</option>
-      <option value="0-25">0 – 25%</option>
-      <option value="25-50">25 – 50%</option>
-      <option value="50-75">50 – 75%</option>
-      <option value="75-100">75 – 100%</option>
-    </select>
-    <span class="filter-date-controls" data-key="filterField4" style="display:none;align-items:center;gap:4px;">
-      <select class="filter-date-op" data-key="filterField4">
-        <option value="lt">&lt;</option>
-        <option value="lte">≤</option>
-        <option value="eq">=</option>
-        <option value="gte">≥</option>
-        <option value="gt">&gt;</option>
-        <option value="between">Entre</option>
-      </select>
-      <input type="date" class="filter-date-1" data-key="filterField4">
-      <span class="filter-date-and" data-key="filterField4" style="display:none;">et</span>
-      <input type="date" class="filter-date-2" data-key="filterField4" style="display:none;">
-    </span>
-    <span class="filter-multi-controls" data-key="filterField4" style="display:none;position:relative;">
-      <button type="button" class="filter-multi-toggle" data-key="filterField4">Tous</button>
-      <div class="filter-multi-dropdown" data-key="filterField4" style="display:none;"></div>
-    </span>
-    <button type="button" class="filter-clear" data-key="filterField4" title="Effacer ce filtre">✕</button>
-  </span>
-
-  <span class="filter-block" id="filterControls-filterField5">
-    <span class="filter-label-text" data-key="filterField5">Filtre 5</span> :
-    <input type="text" class="filter-input" data-key="filterField5" list="filterOptions-filterField5" placeholder="Tous (ou rechercher...)" autocomplete="off">
-    <datalist id="filterOptions-filterField5"></datalist>
-    <select class="filter-percent-select" data-key="filterField5" style="display:none;">
-      <option value="">Tous</option>
-      <option value="0-25">0 – 25%</option>
-      <option value="25-50">25 – 50%</option>
-      <option value="50-75">50 – 75%</option>
-      <option value="75-100">75 – 100%</option>
-    </select>
-    <span class="filter-date-controls" data-key="filterField5" style="display:none;align-items:center;gap:4px;">
-      <select class="filter-date-op" data-key="filterField5">
-        <option value="lt">&lt;</option>
-        <option value="lte">≤</option>
-        <option value="eq">=</option>
-        <option value="gte">≥</option>
-        <option value="gt">&gt;</option>
-        <option value="between">Entre</option>
-      </select>
-      <input type="date" class="filter-date-1" data-key="filterField5">
-      <span class="filter-date-and" data-key="filterField5" style="display:none;">et</span>
-      <input type="date" class="filter-date-2" data-key="filterField5" style="display:none;">
-    </span>
-    <span class="filter-multi-controls" data-key="filterField5" style="display:none;position:relative;">
-      <button type="button" class="filter-multi-toggle" data-key="filterField5">Tous</button>
-      <div class="filter-multi-dropdown" data-key="filterField5" style="display:none;"></div>
-    </span>
-    <button type="button" class="filter-clear" data-key="filterField5" title="Effacer ce filtre">✕</button>
-  </span>
-
-  <span class="filter-block" id="filterControls-filterField6">
-    <span class="filter-label-text" data-key="filterField6">Filtre 6</span> :
-    <input type="text" class="filter-input" data-key="filterField6" list="filterOptions-filterField6" placeholder="Tous (ou rechercher...)" autocomplete="off">
-    <datalist id="filterOptions-filterField6"></datalist>
-    <select class="filter-percent-select" data-key="filterField6" style="display:none;">
-      <option value="">Tous</option>
-      <option value="0-25">0 – 25%</option>
-      <option value="25-50">25 – 50%</option>
-      <option value="50-75">50 – 75%</option>
-      <option value="75-100">75 – 100%</option>
-    </select>
-    <span class="filter-date-controls" data-key="filterField6" style="display:none;align-items:center;gap:4px;">
-      <select class="filter-date-op" data-key="filterField6">
-        <option value="lt">&lt;</option>
-        <option value="lte">≤</option>
-        <option value="eq">=</option>
-        <option value="gte">≥</option>
-        <option value="gt">&gt;</option>
-        <option value="between">Entre</option>
-      </select>
-      <input type="date" class="filter-date-1" data-key="filterField6">
-      <span class="filter-date-and" data-key="filterField6" style="display:none;">et</span>
-      <input type="date" class="filter-date-2" data-key="filterField6" style="display:none;">
-    </span>
-    <span class="filter-multi-controls" data-key="filterField6" style="display:none;position:relative;">
-      <button type="button" class="filter-multi-toggle" data-key="filterField6">Tous</button>
-      <div class="filter-multi-dropdown" data-key="filterField6" style="display:none;"></div>
-    </span>
-    <button type="button" class="filter-clear" data-key="filterField6" title="Effacer ce filtre">✕</button>
-  </span>
-
-  <span class="filter-block" id="filterControls-filterField7">
-    <span class="filter-label-text" data-key="filterField7">Filtre 7</span> :
-    <input type="text" class="filter-input" data-key="filterField7" list="filterOptions-filterField7" placeholder="Tous (ou rechercher...)" autocomplete="off">
-    <datalist id="filterOptions-filterField7"></datalist>
-    <select class="filter-percent-select" data-key="filterField7" style="display:none;">
-      <option value="">Tous</option>
-      <option value="0-25">0 – 25%</option>
-      <option value="25-50">25 – 50%</option>
-      <option value="50-75">50 – 75%</option>
-      <option value="75-100">75 – 100%</option>
-    </select>
-    <span class="filter-date-controls" data-key="filterField7" style="display:none;align-items:center;gap:4px;">
-      <select class="filter-date-op" data-key="filterField7">
-        <option value="lt">&lt;</option>
-        <option value="lte">≤</option>
-        <option value="eq">=</option>
-        <option value="gte">≥</option>
-        <option value="gt">&gt;</option>
-        <option value="between">Entre</option>
-      </select>
-      <input type="date" class="filter-date-1" data-key="filterField7">
-      <span class="filter-date-and" data-key="filterField7" style="display:none;">et</span>
-      <input type="date" class="filter-date-2" data-key="filterField7" style="display:none;">
-    </span>
-    <span class="filter-multi-controls" data-key="filterField7" style="display:none;position:relative;">
-      <button type="button" class="filter-multi-toggle" data-key="filterField7">Tous</button>
-      <div class="filter-multi-dropdown" data-key="filterField7" style="display:none;"></div>
-    </span>
-    <button type="button" class="filter-clear" data-key="filterField7" title="Effacer ce filtre">✕</button>
-  </span>
-
-  <button id="resetAllFiltersBtn" type="button" title="Réinitialiser tous les filtres">↺ Réinitialiser les filtres</button>
-
-  <button id="printBtn" type="button" title="Imprimer ou exporter en PDF">🖨️ Imprimer / Exporter en PDF</button>
-
-  <span class="sort-block">
-    Trier par :
-    <select class="sort-select" data-level="1">
-      <option value="">Aucun tri</option>
-      <option value="task">Nom de tâche (A→Z)</option>
-      <option value="filterField" class="sort-opt" data-key="filterField">Filtre 1 (A→Z)</option>
-      <option value="filterField2" class="sort-opt" data-key="filterField2">Filtre 2 (A→Z)</option>
-      <option value="filterField3" class="sort-opt" data-key="filterField3">Filtre 3 (A→Z)</option>
-      <option value="filterField4" class="sort-opt" data-key="filterField4">Filtre 4 (A→Z)</option>
-      <option value="filterField5" class="sort-opt" data-key="filterField5">Filtre 5 (A→Z)</option>
-      <option value="filterField6" class="sort-opt" data-key="filterField6">Filtre 6 (A→Z)</option>
-      <option value="filterField7" class="sort-opt" data-key="filterField7">Filtre 7 (A→Z)</option>
-    </select>
-    puis
-    <select class="sort-select" data-level="2">
-      <option value="">Aucun tri</option>
-      <option value="task">Nom de tâche (A→Z)</option>
-      <option value="filterField" class="sort-opt" data-key="filterField">Filtre 1 (A→Z)</option>
-      <option value="filterField2" class="sort-opt" data-key="filterField2">Filtre 2 (A→Z)</option>
-      <option value="filterField3" class="sort-opt" data-key="filterField3">Filtre 3 (A→Z)</option>
-      <option value="filterField4" class="sort-opt" data-key="filterField4">Filtre 4 (A→Z)</option>
-      <option value="filterField5" class="sort-opt" data-key="filterField5">Filtre 5 (A→Z)</option>
-      <option value="filterField6" class="sort-opt" data-key="filterField6">Filtre 6 (A→Z)</option>
-      <option value="filterField7" class="sort-opt" data-key="filterField7">Filtre 7 (A→Z)</option>
-    </select>
-    puis
-    <select class="sort-select" data-level="3">
-      <option value="">Aucun tri</option>
-      <option value="task">Nom de tâche (A→Z)</option>
-      <option value="filterField" class="sort-opt" data-key="filterField">Filtre 1 (A→Z)</option>
-      <option value="filterField2" class="sort-opt" data-key="filterField2">Filtre 2 (A→Z)</option>
-      <option value="filterField3" class="sort-opt" data-key="filterField3">Filtre 3 (A→Z)</option>
-      <option value="filterField4" class="sort-opt" data-key="filterField4">Filtre 4 (A→Z)</option>
-      <option value="filterField5" class="sort-opt" data-key="filterField5">Filtre 5 (A→Z)</option>
-      <option value="filterField6" class="sort-opt" data-key="filterField6">Filtre 6 (A→Z)</option>
-      <option value="filterField7" class="sort-opt" data-key="filterField7">Filtre 7 (A→Z)</option>
-    </select>
-  </span>
+    </div>
+  </div>
 
   <div id="freeNoteDisplay" style="display:none;"></div>
 </div>
@@ -888,8 +1024,8 @@ tr.task-row-sub td{
   <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
     <h3>Nature des actions</h3>
     <div class="config-hint">
-      Valeurs affichées d'office à l'ouverture, et valeurs ajoutées uniquement si la case correspondante est cochée
-      dans la barre d'outils. Séparez par des virgules. Nécessite d'associer la colonne
+      Valeurs affichées d'office à l'ouverture, et valeurs ajoutées uniquement si la puce correspondante est activée
+      dans le bandeau. Séparez par des virgules. Nécessite d'associer la colonne
       "Nature de l'action" dans le panneau de droite (association des colonnes).
     </div>
     <div class="config-row">
@@ -897,8 +1033,18 @@ tr.task-row-sub td{
       <input type="text" id="natureDefaultsInput" placeholder="PEPS, AV">
     </div>
     <div class="config-row">
-      <span style="width:150px;font-size:12px;color:#555;">Ajoutées via la case :</span>
+      <span style="width:150px;font-size:12px;color:#555;">Ajoutées via la puce :</span>
       <input type="text" id="natureOptionalInput" placeholder="MEO">
+    </div>
+    <div class="config-row">
+      <label style="font-size:12px;color:#555;display:flex;align-items:center;gap:6px;">
+        <input type="checkbox" id="natureSortEnabledInput">
+        Classer les lignes selon cet ordre de natures (PEPS/AV avant MEO)
+      </label>
+    </div>
+    <div class="config-row">
+      <span style="width:150px;font-size:12px;color:#555;">à l'intérieur de :</span>
+      <select id="natureGroupFieldInput"></select>
     </div>
   </div>
 
@@ -906,8 +1052,8 @@ tr.task-row-sub td{
     <h3>Table des tâches liée</h3>
     <div class="config-hint">
       Identifiants (IDs techniques) de la table des tâches et de ses colonnes. Les tâches s'affichent en lignes
-      indentées sous leur action parente quand la case "Ajouter les tâches" est cochée.
-      Le widget doit disposer de l'accès "Table complète du document" (Full document access).
+      indentées sous leur action parente quand la puce "Tâches" est activée.
+      Le widget doit disposer de l'accès complet au document.
     </div>
     <div class="config-row">
       <span style="width:150px;font-size:12px;color:#555;">Table :</span>
@@ -1113,7 +1259,7 @@ tr.task-row-sub td{
   <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
     <h3>Note libre</h3>
     <div class="config-hint">
-      Texte affiché dans la barre de contrôles (lecture seule pour les autres utilisateurs, modifiable uniquement ici).
+      Texte affiché dans le bandeau (lecture seule pour les autres utilisateurs, modifiable uniquement ici).
     </div>
     <textarea id="freeNoteConfigInput" placeholder="Écrire une note..." style="width:100%;box-sizing:border-box;min-height:70px;padding:8px;font-size:13px;font-family:inherit;border:1px solid #ccc;border-radius:4px;resize:vertical;"></textarea>
   </div>
@@ -1204,11 +1350,16 @@ let selectedFilterValue={filterField:"", filterField2:"", filterField3:"", filte
 const FILTER_KEYS = ["filterField","filterField2","filterField3","filterField4","filterField5","filterField6","filterField7"]
 let sortLevels=["","",""]
 let showProgress=true
+let filtersPanelOpen=false
+let sortPanelOpen=false
+let legendExpanded=false
 
-// ===== NATURE DES ACTIONS (PEPS / AV affichés d'office, MEO via la case à cocher) =====
+// ===== NATURE DES ACTIONS (PEPS / AV affichés d'office, MEO via la puce) =====
 let natureDefaults = ["PEPS","AV"]
 let natureOptional = ["MEO"]
 let includeOptionalNature = false   // volontairement non mémorisé : on repart sur PEPS+AV à chaque ouverture
+let natureSortEnabled = true
+let natureGroupField = "filterField"   // "" = pas de regroupement
 
 // ===== TABLE DES TÂCHES LIÉE =====
 let taskCfg = {
@@ -1246,34 +1397,92 @@ let filterHidePanel = {filterField:false, filterField2:false, filterField3:false
 let filterHideColumn = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
 let showStatusInPanel = false
 
+// ===== Bandeau : puces et panneaux =====
+
+function setChip(id, on){
+    let btn = document.getElementById(id)
+    btn.classList.toggle("on", !!on)
+    btn.setAttribute("aria-pressed", on ? "true" : "false")
+}
+
 document.getElementById("scale").onchange = e=>{
     scale = e.target.value
     grist.setOption("scale", scale)
     draw(currentRecords,currentMappings)
 }
 
-document.getElementById("todayHighlight").onchange = e=>{
-    highlightToday = e.target.checked
+document.getElementById("chipToday").onclick = ()=>{
+    highlightToday = !highlightToday
+    setChip("chipToday", highlightToday)
     draw(currentRecords,currentMappings)
 }
 
-document.getElementById("showProgressToggle").onchange = e=>{
-    showProgress = e.target.checked
+document.getElementById("chipProgress").onclick = ()=>{
+    showProgress = !showProgress
+    setChip("chipProgress", showProgress)
     draw(currentRecords,currentMappings)
 }
 
-document.getElementById("natureOptionalToggle").onchange = e=>{
-    includeOptionalNature = e.target.checked
+document.getElementById("chipNature").onclick = ()=>{
+    includeOptionalNature = !includeOptionalNature
+    setChip("chipNature", includeOptionalNature)
     draw(currentRecords,currentMappings)
 }
 
-document.getElementById("showTasksToggle").onchange = e=>{
-    showTasks = e.target.checked
+document.getElementById("chipTasks").onclick = ()=>{
+    showTasks = !showTasks
+    setChip("chipTasks", showTasks)
     if(showTasks){
         loadTasks()   // rechargement à chaque activation, pour avoir des données à jour
     } else {
         setTasksStatus("")
         draw(currentRecords,currentMappings)
+    }
+}
+
+function applyPanelState(){
+    document.getElementById("filtersPanel").classList.toggle("open", filtersPanelOpen)
+    document.getElementById("filtersBtn").classList.toggle("open", filtersPanelOpen)
+    document.getElementById("sortPanel").classList.toggle("open", sortPanelOpen)
+    document.getElementById("sortBtn").classList.toggle("open", sortPanelOpen)
+}
+
+document.getElementById("filtersBtn").onclick = ()=>{
+    filtersPanelOpen = !filtersPanelOpen
+    grist.setOption("filtersPanelOpen", filtersPanelOpen)
+    applyPanelState()
+}
+
+document.getElementById("sortBtn").onclick = ()=>{
+    sortPanelOpen = !sortPanelOpen
+    grist.setOption("sortPanelOpen", sortPanelOpen)
+    applyPanelState()
+}
+
+document.getElementById("printBtn").onclick = ()=>{
+    window.print()
+}
+
+// Indique si un filtre est réellement actif (utilisé pour le badge et pour la croix d'effacement)
+function isFilterActive(key, mappings){
+    if(!mappings[key]) return false
+    let val = (selectedFilterValue[key]||"").trim()
+    if(!val || val.toLowerCase()==="tous") return false
+    if(filterIsDate[key]){
+        let parts = val.split("|")
+        return !!parts[1]
+    }
+    return true
+}
+
+function updateFiltersBadge(mappings){
+    let n = FILTER_KEYS.filter(k=>isFilterActive(k, mappings)).length
+    const badge = document.getElementById("filtersBadge")
+    if(n > 0){
+        badge.textContent = n
+        badge.style.display = ""
+    } else {
+        badge.style.display = "none"
     }
 }
 
@@ -1297,15 +1506,50 @@ function applyNatureFilter(records, mappings){
     return records.filter(r => natureValues(r[mappings.natureAction]).some(v => allowed.includes(v)))
 }
 
+// Rang d'une action selon l'ordre des natures configuré (PEPS, AV, puis MEO)
+function natureRank(r, mappings){
+    let order = natureDefaults.concat(natureOptional).map(v=>v.toLowerCase())
+    let best = order.length
+    natureValues(r[mappings.natureAction]).forEach(v=>{
+        let i = order.indexOf(v)
+        if(i >= 0 && i < best) best = i
+    })
+    return best
+}
+
+// Réordonne les actions par nature, à l'intérieur de chaque groupe (l'ordre des groupes est conservé)
+function applyNatureOrder(records, mappings){
+    if(!natureSortEnabled || !mappings.natureAction) return records
+    let groupField = (natureGroupField && mappings[natureGroupField]) ? mappings[natureGroupField] : null
+    let groupOrder = new Map()
+    records.forEach(r=>{
+        let g = groupField ? displayValue(r[groupField]) : ""
+        if(!groupOrder.has(g)) groupOrder.set(g, groupOrder.size)
+    })
+    return records
+        .map((r,i)=>({r,i}))
+        .sort((a,b)=>{
+            if(groupField){
+                let ga = groupOrder.get(displayValue(a.r[groupField]))
+                let gb = groupOrder.get(displayValue(b.r[groupField]))
+                if(ga !== gb) return ga - gb
+            }
+            let na = natureRank(a.r, mappings), nb = natureRank(b.r, mappings)
+            if(na !== nb) return na - nb
+            return a.i - b.i
+        })
+        .map(x=>x.r)
+}
+
 function updateNatureUI(mappings){
-    const block = document.getElementById("natureOptionalBlock")
+    const chip = document.getElementById("chipNature")
     if(!mappings.natureAction || natureOptional.length === 0){
-        block.style.display = "none"
+        chip.style.display = "none"
         return
     }
-    block.style.display = ""
-    document.getElementById("natureOptionalLabel").textContent = "Ajouter les actions " + natureOptional.join(", ")
-    document.getElementById("natureOptionalToggle").checked = includeOptionalNature
+    chip.style.display = ""
+    chip.textContent = "Actions " + natureOptional.join(", ")
+    setChip("chipNature", includeOptionalNature)
 }
 
 // ===== Table des tâches liée =====
@@ -1528,11 +1772,7 @@ document.getElementById("resetAllFiltersBtn").onclick = ()=>{
     draw(currentRecords, currentMappings)
 }
 
-document.getElementById("printBtn").onclick = ()=>{
-    window.print()
-}
-
-// ===== Largeur de la colonne "Tâche" (réglable dans le panneau ⚙, via "Open configuration") =====
+// ===== Largeur de la colonne "Tâche" (réglable dans le panneau ⚙) =====
 
 function applyTaskColWidth(px){
     taskColWidth = Math.min(TASK_COL_MAX, Math.max(TASK_COL_MIN, Math.round(px)))
@@ -1558,7 +1798,7 @@ document.querySelectorAll(".sort-select").forEach(select=>{
 const configPanel = document.getElementById("configPanel")
 const configRowsEl = document.getElementById("configRows")
 
-// ===== Note libre (lecture seule dans la barre, éditée via ⚙) =====
+// ===== Note libre (lecture seule dans le bandeau, éditée via ⚙) =====
 let freeNote = ""
 let formUrl = ""
 let formPrefillMap = []
@@ -1596,7 +1836,7 @@ function updateFreeNoteDisplay(){
     }
 }
 
-// % et Date sont mutuellement exclusifs pour un même filtre (cocher l'un décoche l'autre)
+// % , Date et sélection multiple sont mutuellement exclusifs pour un même filtre
 document.querySelectorAll(".filter-percent-checkbox").forEach(cb=>{
     cb.onchange = ()=>{
         if(cb.checked){
@@ -1622,6 +1862,16 @@ document.querySelectorAll(".filter-multi-checkbox").forEach(cb=>{
     }
 })
 
+// Menu déroulant "à l'intérieur de" : liste des filtres, avec leur libellé personnalisé
+function renderNatureGroupOptions(selected){
+    let opts = `<option value="">Aucun regroupement</option>`
+    FILTER_KEYS.forEach((key, idx)=>{
+        let label = (filterLabels[key] && filterLabels[key].trim()) ? filterLabels[key].trim() : `Filtre ${idx+1}`
+        opts += `<option value="${key}"${key===selected?" selected":""}>${escapeHtml(label)}</option>`
+    })
+    document.getElementById("natureGroupFieldInput").innerHTML = opts
+}
+
 function openConfigPanel(){
     renderConfigRows(stateConfig)
     document.getElementById("milestoneColorInput").value = milestoneColor
@@ -1630,6 +1880,8 @@ function openConfigPanel(){
     document.getElementById("timelineColWidthConfigInput").value = timelineColWidth
     document.getElementById("natureDefaultsInput").value = natureDefaults.join(", ")
     document.getElementById("natureOptionalInput").value = natureOptional.join(", ")
+    document.getElementById("natureSortEnabledInput").checked = natureSortEnabled
+    renderNatureGroupOptions(natureGroupField)
     document.getElementById("taskTableInput").value = taskCfg.table || ""
     document.getElementById("taskLabelInput").value = taskCfg.label || ""
     document.getElementById("taskStartInput").value = taskCfg.start || ""
@@ -1679,6 +1931,8 @@ document.getElementById("resetConfig").onclick = ()=>{
     document.getElementById("timelineColWidthConfigInput").value = 80
     document.getElementById("natureDefaultsInput").value = "PEPS, AV"
     document.getElementById("natureOptionalInput").value = "MEO"
+    document.getElementById("natureSortEnabledInput").checked = true
+    renderNatureGroupOptions("filterField")
     document.getElementById("taskTableInput").value = "Liste_Tache"
     document.getElementById("taskLabelInput").value = "ID_Tache"
     document.getElementById("taskStartInput").value = "Date_Debut"
@@ -1719,8 +1973,10 @@ document.getElementById("saveConfig").onclick = ()=>{
     applyTimelineColWidth(parseInt(document.getElementById("timelineColWidthConfigInput").value, 10) || timelineColWidth)
     natureDefaults = parseNatureList(document.getElementById("natureDefaultsInput").value)
     natureOptional = parseNatureList(document.getElementById("natureOptionalInput").value)
+    natureSortEnabled = document.getElementById("natureSortEnabledInput").checked
+    natureGroupField = document.getElementById("natureGroupFieldInput").value
     includeOptionalNature = false
-    document.getElementById("natureOptionalToggle").checked = false
+    setChip("chipNature", false)
     taskCfg = {
         table: document.getElementById("taskTableInput").value.trim(),
         label: document.getElementById("taskLabelInput").value.trim(),
@@ -1759,7 +2015,7 @@ document.getElementById("saveConfig").onclick = ()=>{
         filterIsMulti[key] = document.getElementById("filterMulti"+(i+1)).checked
         filterHidePanel[key] = document.getElementById("filterHidePanel"+(i+1)).checked
         filterHideColumn[key] = document.getElementById("filterHideColumn"+(i+1)).checked
-        // Si on active/désactive le mode %, on réinitialise ce filtre pour éviter une valeur incohérente
+        // Si on change le mode d'un filtre, on le réinitialise pour éviter une valeur incohérente
         selectedFilterValue[key] = ""
     })
     grist.setOption("taskStates", stateConfig)
@@ -1769,6 +2025,8 @@ document.getElementById("saveConfig").onclick = ()=>{
     grist.setOption("timelineColWidth", timelineColWidth)
     grist.setOption("natureDefaults", natureDefaults)
     grist.setOption("natureOptional", natureOptional)
+    grist.setOption("natureSortEnabled", natureSortEnabled)
+    grist.setOption("natureGroupField", natureGroupField)
     grist.setOption("taskCfg", taskCfg)
     grist.setOption("filterLabels", filterLabels)
     grist.setOption("filterHidePanel", filterHidePanel)
@@ -1887,8 +2145,20 @@ grist.onOptions((options)=>{
         if(Array.isArray(options.natureOptional)){
             natureOptional = options.natureOptional
         }
+        if(typeof options.natureSortEnabled === "boolean"){
+            natureSortEnabled = options.natureSortEnabled
+        }
+        if(typeof options.natureGroupField === "string"){
+            natureGroupField = options.natureGroupField
+        }
         if(options.taskCfg && typeof options.taskCfg === "object"){
             taskCfg = Object.assign({}, taskCfg, options.taskCfg)
+        }
+        if(typeof options.filtersPanelOpen === "boolean"){
+            filtersPanelOpen = options.filtersPanelOpen
+        }
+        if(typeof options.sortPanelOpen === "boolean"){
+            sortPanelOpen = options.sortPanelOpen
         }
         if(typeof options.freeNote === "string"){
             freeNote = options.freeNote
@@ -1961,6 +2231,7 @@ grist.onOptions((options)=>{
             sortLevels = ["task","",""]
         }
     }
+    applyPanelState()
     draw(currentRecords, currentMappings)
 })
 
@@ -2018,7 +2289,6 @@ function generateUnits(min,max){
         }
         else if(scale==="day"){
             let shortYear = String(y).slice(-2);
-            // Ajouter &nbsp; pour ne pas coller aux bords
             label = `&nbsp;${String(current.getDate()).padStart(2,'0')}/${String(m+1).padStart(2,'0')}/${shortYear}&nbsp;`;
             next = new Date(y,m,current.getDate()+1);
         }
@@ -2108,7 +2378,7 @@ function getPercentValue(v){
     return Math.round(n)
 }
 
-// Détermine dans quelle tranche de 25% se situe une valeur (retourne "0-25","25-50","50-75","75-100" ou null)
+// Détermine dans quelle tranche de 25% se situe une valeur
 function percentBracket(v){
     let p = getPercentValue(v)
     if(p===null) return null
@@ -2136,9 +2406,7 @@ function displayValue(v){
     return String(v)
 }
 
-// Variante utilisée uniquement dans le panneau latéral : si un champ contient plusieurs valeurs
-// (liste, choix multiples...), chacune apparaît sur sa propre ligne au lieu d'être séparée par une virgule.
-// Les retours à la ligne déjà présents dans le texte d'origine sont conservés tels quels.
+// Variante utilisée uniquement dans le panneau latéral : chaque valeur d'une liste sur sa propre ligne
 function displayValueMultiline(v){
     if(v===null || v===undefined) return ""
     if(v instanceof Date){
@@ -2155,14 +2423,17 @@ function displayValueMultiline(v){
     return String(v)
 }
 
-// Renomme "Filtre 1/2/3/4" partout (barre d'outils + menu de tri) selon les libellés configurés dans ⚙
+// Renomme "Filtre 1/2/3..." partout (panneau filtres + menu de tri) selon les libellés configurés
 function updateFilterLabelsUI(){
     FILTER_KEYS.forEach((key, idx)=>{
         let custom = (filterLabels[key]||"").trim()
         let label = custom || `Filtre ${idx+1}`
 
         let labelEl = document.querySelector(`.filter-label-text[data-key="${key}"]`)
-        if(labelEl) labelEl.textContent = label
+        if(labelEl){
+            labelEl.textContent = label
+            labelEl.title = label
+        }
 
         document.querySelectorAll(`.sort-opt[data-key="${key}"]`).forEach(opt=>{
             opt.textContent = `${label} (A→Z)`
@@ -2205,6 +2476,7 @@ function updateFilterUI(allRecords, mappings){
         const multiControls = document.querySelector(`.filter-multi-controls[data-key="${key}"]`)
         const multiToggle = document.querySelector(`.filter-multi-toggle[data-key="${key}"]`)
         const multiDropdown = document.querySelector(`.filter-multi-dropdown[data-key="${key}"]`)
+        const clearBtn = document.querySelector(`.filter-clear[data-key="${key}"]`)
 
         if(!mappings[key]){
             container.style.display = "none"
@@ -2212,13 +2484,14 @@ function updateFilterUI(allRecords, mappings){
         }
 
         container.style.display = "flex"
+        if(clearBtn) clearBtn.style.display = isFilterActive(key, mappings) ? "" : "none"
 
         if(filterIsDate[key]){
-            // Mode date : on masque la recherche texte et le mode %, on affiche opérateur + date(s)
+            // Mode date : opérateur + date(s)
             input.style.display = "none"
             percentSelect.style.display = "none"
             if(multiControls) multiControls.style.display = "none"
-            dateControls.style.display = "inline-flex"
+            dateControls.style.display = "flex"
 
             let parts = (selectedFilterValue[key]||"").split("|")
             let op = parts[0] || "lt"
@@ -2238,7 +2511,7 @@ function updateFilterUI(allRecords, mappings){
         if(dateControls) dateControls.style.display = "none"
 
         if(filterIsPercent[key]){
-            // Mode pourcentage par tranches de 25% : on masque la recherche texte, on affiche le menu de tranches
+            // Mode pourcentage par tranches de 25%
             input.style.display = "none"
             if(multiControls) multiControls.style.display = "none"
             percentSelect.style.display = ""
@@ -2252,7 +2525,7 @@ function updateFilterUI(allRecords, mappings){
             // Mode sélection multiple : liste à cocher des valeurs distinctes
             input.style.display = "none"
             percentSelect.style.display = "none"
-            multiControls.style.display = "inline-flex"
+            multiControls.style.display = "block"
 
             let values = [...new Set(
                 allRecords
@@ -2309,7 +2582,7 @@ function updateFilterUI(allRecords, mappings){
     })
 }
 
-// Applique les filtres actifs de façon combinée (ET logique) : une tâche doit correspondre à TOUS les filtres renseignés
+// Applique les filtres actifs de façon combinée (ET logique)
 function applyFilter(records, mappings){
     let result = records
     FILTER_KEYS.forEach(key=>{
@@ -2363,7 +2636,7 @@ function applyFilter(records, mappings){
     return result
 }
 
-// Construit la liste des lignes à afficher : chaque action, suivie de ses tâches si la case est cochée
+// Construit la liste des lignes à afficher : chaque action, suivie de ses tâches si la puce est active
 function buildDisplayRows(actions, mappings){
     let rows = []
     let withTasks = showTasks && tasksLoaded
@@ -2441,6 +2714,8 @@ function draw(records,mappings){
     updateFilterUI(records, mappings)
     updateSortUI(mappings)
     updateNatureUI(mappings)
+    updateFiltersBadge(mappings)
+
     let visibleRecords = applyNatureFilter(applyFilter(records, mappings), mappings)
 
     let sortFields = sortLevels
@@ -2467,6 +2742,9 @@ function draw(records,mappings){
             return 0
         })
     }
+
+    // PEPS/AV avant MEO, à l'intérieur de chaque groupe
+    visibleRecords = applyNatureOrder(visibleRecords, mappings)
 
     // Lignes affichées : actions + éventuellement leurs tâches
     let displayRows = buildDisplayRows(visibleRecords, mappings)
@@ -2568,8 +2846,7 @@ function draw(records,mappings){
                 progressBadge = `<span class="progress-badge">${progress}%</span>`
             }
 
-            // Losange de jalon superposé sur la barre de la tâche, positionné à la date exacte
-            // de la colonne optionnelle "jalonDate", avec le texte de "jalonLabel" en infobulle.
+            // Losange de jalon superposé sur la barre, positionné à la date exacte de "jalonDate"
             let jalonOverlayHtml = ""
             if(mappings.jalonDate){
                 let jd = parseDate(r[mappings.jalonDate])
@@ -2604,9 +2881,7 @@ function draw(records,mappings){
     const ganttTableEl = document.getElementById("gantt-table")
     ganttTableEl.innerHTML=html
 
-    // Fixe la largeur exacte du tableau (colonne Tâche + colonnes de la frise) pour que le
-    // navigateur ne redistribue jamais d'espace excédentaire entre les colonnes, quel que
-    // soit le nombre de colonnes affiché (ex: après un filtrage qui réduit la période).
+    // Largeur exacte du tableau, pour que le navigateur ne redistribue pas l'espace excédentaire
     let unitColWidth = window.innerWidth <= 600 ? Math.min(timelineColWidth, 64) : timelineColWidth
     ganttTableEl.style.width = (taskColWidth + units.length * unitColWidth) + "px"
 
@@ -2625,7 +2900,6 @@ function draw(records,mappings){
 
     let col = findCol(units, today)
 
-    // Ratio selon échelle
     let ratio;
     if(scale === "year"){
         let yearStart = new Date(today.getFullYear(),0,1);
@@ -2634,7 +2908,7 @@ function draw(records,mappings){
         let totalDays = Math.floor((yearEnd - yearStart)/86400000);
         ratio = dayOfYear / totalDays;
     } else if(scale === "day"){
-        ratio = 0.5;  // centré dans la cellule
+        ratio = 0.5;
     } else {
         let start = units[col].date
         let end = (col+1<units.length)?units[col+1].date:new Date(start.getTime()+86400000)
@@ -2642,8 +2916,7 @@ function draw(records,mappings){
     }
     ratio = Math.max(0, Math.min(1, ratio))
 
-    // Position réelle
-    // +1 car la colonne 0 est la colonne "Tâche" figée, les colonnes de dates commencent à l'index 1
+    // +1 car la colonne 0 est la colonne "Tâche" figée
     let table = document.getElementById("gantt-table")
     let cell = table.rows[0].cells[col + 1]
     let realWidth = cell.getBoundingClientRect().width
@@ -2652,16 +2925,15 @@ function draw(records,mappings){
     line.style.left = left + "px"
     line.style.display = "block"
 
-    // Scroll automatique
     document.getElementById("gantt-container").scrollLeft = left - 200
 }
 
+// Légende compacte : 3 entrées + lien pour tout déplier
 function renderLegend(){
     const legend = document.getElementById("legend")
-    let html = ""
-    stateConfig.forEach(rule=>{
+    let items = stateConfig.map(rule=>{
         let label = rule.label && rule.label.trim() !== "" ? rule.label : (rule.match || "Autre")
-        html += `<span class="legend-item"><span class="legend-swatch" style="background:${rule.color}"></span>${label}</span>`
+        return `<span class="legend-item"><span class="legend-swatch" style="background:${rule.color}"></span>${escapeHtml(label)}</span>`
     })
 
     let hasJalon = currentMappings.jalonDate &&
@@ -2669,15 +2941,34 @@ function renderLegend(){
         currentRecords.some(r => parseDate(r[currentMappings.jalonDate]))
 
     if(hasJalon){
-        html += `<span class="legend-item"><span class="legend-swatch" style="background:${milestoneColor};transform:rotate(45deg);"></span>Jalon</span>`
+        items.push(`<span class="legend-item"><span class="legend-swatch" style="background:${milestoneColor};transform:rotate(45deg);"></span>Jalon</span>`)
     }
 
     if(showTasks && tasksLoaded){
-        html += `<span class="legend-item">↳ Tâche (${taskCfg.table})</span>`
+        items.push(`<span class="legend-item">↳ Tâche</span>`)
+    }
+
+    const LIMIT = 3
+    let html
+    if(!legendExpanded && items.length > LIMIT + 1){
+        html = items.slice(0, LIMIT).join("") +
+            `<span class="legend-toggle">Légende complète (${items.length})</span>`
+    } else {
+        html = items.join("")
+        if(items.length > LIMIT + 1){
+            html += `<span class="legend-toggle">Réduire</span>`
+        }
     }
 
     legend.innerHTML = html
 }
+
+document.getElementById("legend").addEventListener("click", e=>{
+    if(e.target.classList.contains("legend-toggle")){
+        legendExpanded = !legendExpanded
+        renderLegend()
+    }
+})
 
 // ===== Panneau latéral de détail =====
 const detailPanel = document.getElementById("detailPanel")
@@ -2696,7 +2987,7 @@ document.addEventListener("keydown", e=>{
     if(e.key === "Escape") closeDetailPanel()
 })
 
-// Délégation d'événements car les barres/jalons sont régénérés à chaque draw()
+// Délégation d'événements car les barres sont régénérées à chaque draw()
 document.getElementById("gantt-container").addEventListener("click", e=>{
     const mark = e.target.closest(".clickable-mark")
     if(!mark) return
@@ -2762,7 +3053,7 @@ function openTaskDetailPanel(task){
     detailOverlay.classList.add("open")
 }
 
-// Récupère la valeur d'une tâche pour une "source" donnée (utilisé pour le pré-remplissage du formulaire)
+// Récupère la valeur d'une action pour une "source" donnée (pré-remplissage du formulaire)
 function resolvePrefillValue(source, record, mappings){
     switch(source){
         case "task":
@@ -2788,7 +3079,7 @@ function resolvePrefillValue(source, record, mappings){
     }
 }
 
-// Construit l'URL du formulaire, avec les paramètres de pré-remplissage pour la tâche cliquée
+// Construit l'URL du formulaire, avec les paramètres de pré-remplissage
 function buildFormUrl(record, mappings){
     if(!formUrl) return null
     let params = (formPrefillMap||[])
@@ -2809,7 +3100,6 @@ function openDetailPanel(record, mappings){
 
     let parts = []
 
-    // Dates
     let dStart = formatDateFr(record[mappings.start])
     let dEnd = formatDateFr(record[mappings.end])
     if(dStart || dEnd){
@@ -2823,7 +3113,6 @@ function openDetailPanel(record, mappings){
         parts.push(detailRow("Statut", `<span class="detail-status-badge"><span class="detail-status-dot" style="background:${rule.color}"></span>${escapeHtml(label)}</span>`))
     }
 
-    // Avancement
     if(mappings.progress){
         let progress = getProgress(record, mappings)
         if(progress !== null){
@@ -2831,13 +3120,12 @@ function openDetailPanel(record, mappings){
         }
     }
 
-    // Nature de l'action
     if(mappings.natureAction){
         let nat = displayValue(record[mappings.natureAction])
         if(nat) parts.push(detailRow("Nature de l'action", escapeHtml(nat)))
     }
 
-    // Filtres 1 à 7 (avec leur libellé personnalisé, ou un nom générique si non renseigné)
+    // Filtres 1 à 7 (avec leur libellé personnalisé)
     FILTER_KEYS.forEach((key, idx)=>{
         if(!mappings[key] || filterHidePanel[key]) return
         let val
@@ -2851,7 +3139,7 @@ function openDetailPanel(record, mappings){
         if(val) parts.push(detailRow(label, escapeHtml(val)))
     })
 
-    // Champs supplémentaires (génériques, configurables dans ⚙)
+    // Champs supplémentaires
     EXTRA_KEYS.forEach(key=>{
         if(!mappings[key]) return
         let val = displayValueMultiline(record[mappings[key]])
@@ -2861,7 +3149,6 @@ function openDetailPanel(record, mappings){
         parts.push(detailRow(label, escapeHtml(val)))
     })
 
-    // Commentaire
     if(mappings.comment){
         let comment = displayValueMultiline(record[mappings.comment])
         if(comment){
@@ -2871,7 +3158,7 @@ function openDetailPanel(record, mappings){
 
     detailPanelBody.innerHTML = parts.join("")
 
-    // Pièce jointe (chargement asynchrone, avec lien de téléchargement)
+    // Pièce jointe (chargement asynchrone)
     if(mappings.attachment){
         let attachmentBlock = document.createElement("div")
         attachmentBlock.className = "detail-row"
@@ -2880,7 +3167,7 @@ function openDetailPanel(record, mappings){
         loadAttachments(record[mappings.attachment])
     }
 
-    // Lien vers le formulaire Grist (si configuré dans ⚙), avec pré-remplissage
+    // Lien vers le formulaire Grist (si configuré dans ⚙)
     if(formUrl){
         let formBlock = document.createElement("div")
         formBlock.className = "detail-row"
@@ -2893,7 +3180,7 @@ function openDetailPanel(record, mappings){
     detailOverlay.classList.add("open")
 }
 
-// Normalise la valeur d'une cellule Pièce Jointe Grist en tableau d'identifiants numériques
+// Normalise la valeur d'une cellule Pièce Jointe Grist en tableau d'identifiants
 function extractAttachmentIds(value){
     if(!value) return []
     let arr = Array.isArray(value) ? value : [value]
@@ -2936,6 +3223,7 @@ async function loadAttachments(rawValue){
     }
 }
 
+applyPanelState()
 grist.onRecords((r,m)=>draw(r,m))
 </script>
 </body>
