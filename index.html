@@ -438,6 +438,9 @@ tr.task-row-sub td{
 
 .weekend{background:#fafafa;}
 
+/* Echelle mixte : colonnes annuelles (granularité plus large) légèrement grisées */
+#gantt-table col.unit-wide{background:#f0f0f0;}
+
 /* Ligne aujourd'hui */
 .today-line {
     position:absolute;
@@ -675,6 +678,7 @@ tr.task-row-sub td{
     <select id="scale" title="Echelle de la frise">
       <option value="year">Année</option>
       <option value="quarter">Trimestre</option>
+      <option value="mixed">Mixte (trimestres + années)</option>
       <option value="month" selected>Mois</option>
       <option value="week">Semaine</option>
       <option value="day">Jour</option>
@@ -2231,7 +2235,7 @@ function getMonday(d){
 function generateUnits(min,max){
     let units=[],current=new Date(min)
     while(current<=max){
-        let label="",next,y=current.getFullYear(),m=current.getMonth()
+        let label="",next,wide=false,y=current.getFullYear(),m=current.getMonth()
 
         if(scale==="year"){
             label=y;
@@ -2241,6 +2245,19 @@ function generateUnits(min,max){
             let q=Math.floor(m/3)+1;
             label="T"+q+" "+y;
             next=new Date(y,q*3,1);
+        }
+        else if(scale==="mixed"){
+            // Trimestres pour l'année en cours et la suivante, années pour le reste
+            let yNow=new Date().getFullYear();
+            if(y>=yNow && y<=yNow+1){
+                let q=Math.floor(m/3)+1;
+                label="T"+q+" "+y;
+                next=new Date(y,q*3,1);
+            } else {
+                label=y;
+                next=new Date(y+1,0,1);
+                wide=true;
+            }
         }
         else if(scale==="month"){
             label=current.toLocaleString("fr-FR",{month:"long",year:"numeric"});
@@ -2262,7 +2279,7 @@ function generateUnits(min,max){
             next = new Date(y,m,current.getDate()+1);
         }
 
-        units.push({date:new Date(current),label})
+        units.push({date:new Date(current),label,wide})
         current=next
     }
     return units
@@ -2741,6 +2758,13 @@ function draw(records,mappings){
 
     let units=generateUnits(min,max)
     let html=""
+
+    // Colonnes : sert à griser les colonnes annuelles de l'échelle mixte
+    html+="<colgroup><col>"
+    units.forEach(u=>{
+        html+=`<col${u.wide?' class="unit-wide"':''}>`
+    })
+    html+="</colgroup>"
 
     // HEADER
     html+="<thead><tr>"
