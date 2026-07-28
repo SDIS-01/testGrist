@@ -20,6 +20,10 @@ body{font-family:sans-serif;margin:0}
     overflow-wrap:break-word;
     line-height:1.4;
 }
+#tasksStatus{
+    font-size:11px;
+    color:#c0504d;
+}
 #gantt-container{overflow-x:auto;position:relative;-webkit-overflow-scrolling:touch;}
 
 #gantt-table{
@@ -93,6 +97,33 @@ body{font-family:sans-serif;margin:0}
     border:2px solid #fff;
     box-sizing:border-box;
     cursor:default;
+}
+
+/* ===== Lignes de tâches (table liée), indentées sous leur action ===== */
+tr.task-row-sub td{
+    height:26px;
+}
+.task-name-cell.task-name-sub-cell{
+    background:#fbfcfe;
+    padding-left:34px;
+}
+.task-name-task{
+    font-size:12.5px;
+    font-weight:500;
+    color:#444;
+    white-space:normal;
+    overflow-wrap:break-word;
+    line-height:1.3;
+}
+.task-cell.task-cell-sub{
+    height:calc(100% - 10px);
+    min-height:16px;
+    border-radius:3px;
+    padding:2px 6px;
+}
+.progress-badge.progress-badge-sm{
+    font-size:11px;
+    padding:1px 6px;
 }
 
 /* Colonne des noms de tâches, figée pendant le défilement horizontal */
@@ -466,6 +497,7 @@ body{font-family:sans-serif;margin:0}
     #gantt-table td{width:min(var(--timeline-col-width),64px);max-width:min(var(--timeline-col-width),64px);font-size:11px;}
     .task-cell{font-size:11px;}
     #gantt-table .task-name-header,#gantt-table .task-name-cell{width:min(var(--task-col-width),85vw);max-width:min(var(--task-col-width),85vw);padding:4px 6px;}
+    .task-name-cell.task-name-sub-cell{padding-left:22px;}
     .task-name-filter1{font-size:12.5px;}
     .task-name-main{font-size:12.5px;}
     .task-name-sub{font-size:12.5px;}
@@ -538,6 +570,18 @@ body{font-family:sans-serif;margin:0}
     <input type="checkbox" id="showProgressToggle" checked>
     Avancement
   </label>
+
+  <label id="natureOptionalBlock" style="display:none;">
+    <input type="checkbox" id="natureOptionalToggle">
+    <span id="natureOptionalLabel">Ajouter les actions MEO</span>
+  </label>
+
+  <label id="showTasksBlock">
+    <input type="checkbox" id="showTasksToggle">
+    Ajouter les tâches
+  </label>
+
+  <span id="tasksStatus"></span>
 
   <span class="filter-block" id="filterControls-filterField">
     <span class="filter-label-text" data-key="filterField">Filtre 1</span> :
@@ -842,6 +886,60 @@ body{font-family:sans-serif;margin:0}
   </div>
 
   <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
+    <h3>Nature des actions</h3>
+    <div class="config-hint">
+      Valeurs affichées d'office à l'ouverture, et valeurs ajoutées uniquement si la case correspondante est cochée
+      dans la barre d'outils. Séparez par des virgules. Nécessite d'associer la colonne
+      "Nature de l'action" dans le panneau de droite (association des colonnes).
+    </div>
+    <div class="config-row">
+      <span style="width:150px;font-size:12px;color:#555;">Affichées d'office :</span>
+      <input type="text" id="natureDefaultsInput" placeholder="PEPS, AV">
+    </div>
+    <div class="config-row">
+      <span style="width:150px;font-size:12px;color:#555;">Ajoutées via la case :</span>
+      <input type="text" id="natureOptionalInput" placeholder="MEO">
+    </div>
+  </div>
+
+  <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
+    <h3>Table des tâches liée</h3>
+    <div class="config-hint">
+      Identifiants (IDs techniques) de la table des tâches et de ses colonnes. Les tâches s'affichent en lignes
+      indentées sous leur action parente quand la case "Ajouter les tâches" est cochée.
+      Le widget doit disposer de l'accès "Table complète du document" (Full document access).
+    </div>
+    <div class="config-row">
+      <span style="width:150px;font-size:12px;color:#555;">Table :</span>
+      <input type="text" id="taskTableInput" placeholder="Liste_Tache">
+    </div>
+    <div class="config-row">
+      <span style="width:150px;font-size:12px;color:#555;">Libellé :</span>
+      <input type="text" id="taskLabelInput" placeholder="ID_Tache">
+    </div>
+    <div class="config-row">
+      <span style="width:150px;font-size:12px;color:#555;">Date de début :</span>
+      <input type="text" id="taskStartInput" placeholder="Date_Debut">
+    </div>
+    <div class="config-row">
+      <span style="width:150px;font-size:12px;color:#555;">Date de fin :</span>
+      <input type="text" id="taskEndInput" placeholder="Ech_Prev">
+    </div>
+    <div class="config-row">
+      <span style="width:150px;font-size:12px;color:#555;">Statut :</span>
+      <input type="text" id="taskStateInput" placeholder="Satut">
+    </div>
+    <div class="config-row">
+      <span style="width:150px;font-size:12px;color:#555;">Avancement :</span>
+      <input type="text" id="taskProgressInput" placeholder="Avancement">
+    </div>
+    <div class="config-row">
+      <span style="width:150px;font-size:12px;color:#555;">Référence action :</span>
+      <input type="text" id="taskParentInput" placeholder="ID_Action_MEO">
+    </div>
+  </div>
+
+  <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
     <h3>Libellés affichés sous le nom de tâche</h3>
     <div class="config-hint">
       Texte affiché devant la valeur de chaque champ de filtre, dans la colonne de gauche (ex: "Porteur"). Laissez vide pour ne pas afficher ce champ dans la colonne de gauche.
@@ -1060,13 +1158,16 @@ body{font-family:sans-serif;margin:0}
 </div>
 
 <script>
+// L'accès complet au document est nécessaire pour lire la table des tâches (Liste_Tache)
 grist.ready({
-requiredAccess:'read table',
+requiredAccess:'full',
 columns:[
 {name:'task',title:'Nom de la tâche ou jalon'},
 {name:'start',title:'Date de début'},
 {name:'end',title:'Date de fin'},
 {name:'state',title:'Etat', optional:true},
+{name:'natureAction',title:"Nature de l'action (PEPS/AV/MEO)", optional:true},
+{name:'actionKey',title:'Clé de liaison des tâches (optionnel, si la référence n\'est pas un Ref)', optional:true},
 {name:'filterField',title:'Champ de filtre 1 (optionnel)', optional:true},
 {name:'filterField2',title:'Champ de filtre 2 (optionnel)', optional:true},
 {name:'filterField3',title:'Champ de filtre 3 (optionnel)', optional:true},
@@ -1104,6 +1205,27 @@ const FILTER_KEYS = ["filterField","filterField2","filterField3","filterField4",
 let sortLevels=["","",""]
 let showProgress=true
 
+// ===== NATURE DES ACTIONS (PEPS / AV affichés d'office, MEO via la case à cocher) =====
+let natureDefaults = ["PEPS","AV"]
+let natureOptional = ["MEO"]
+let includeOptionalNature = false   // volontairement non mémorisé : on repart sur PEPS+AV à chaque ouverture
+
+// ===== TABLE DES TÂCHES LIÉE =====
+let taskCfg = {
+    table:"Liste_Tache",
+    label:"ID_Tache",
+    start:"Date_Debut",
+    end:"Ech_Prev",
+    state:"Satut",
+    progress:"Avancement",
+    parent:"ID_Action_MEO"
+}
+let showTasks = false
+let tasksRecords = []
+let tasksByParent = {}
+let tasksLoaded = false
+let tasksLoading = false
+
 // ===== CONFIGURATION DES STATUTS (personnalisable) =====
 const defaultStateConfig = [
     {match:"1-", label:"À faire",        color:"#2e7d32"},
@@ -1138,6 +1260,151 @@ document.getElementById("todayHighlight").onchange = e=>{
 document.getElementById("showProgressToggle").onchange = e=>{
     showProgress = e.target.checked
     draw(currentRecords,currentMappings)
+}
+
+document.getElementById("natureOptionalToggle").onchange = e=>{
+    includeOptionalNature = e.target.checked
+    draw(currentRecords,currentMappings)
+}
+
+document.getElementById("showTasksToggle").onchange = e=>{
+    showTasks = e.target.checked
+    if(showTasks){
+        loadTasks()   // rechargement à chaque activation, pour avoir des données à jour
+    } else {
+        setTasksStatus("")
+        draw(currentRecords,currentMappings)
+    }
+}
+
+// ===== Nature des actions =====
+
+function parseNatureList(s){
+    return String(s||"").split(/[,;]/).map(v=>v.trim()).filter(Boolean)
+}
+
+// Une cellule peut contenir plusieurs valeurs (liste de choix) : on compare chacune séparément
+function natureValues(v){
+    return displayValue(v).split(",").map(x=>x.trim().toLowerCase()).filter(Boolean)
+}
+
+function applyNatureFilter(records, mappings){
+    if(!mappings.natureAction) return records
+    let allowed = natureDefaults
+        .concat(includeOptionalNature ? natureOptional : [])
+        .map(v=>v.toLowerCase())
+    if(allowed.length === 0) return records
+    return records.filter(r => natureValues(r[mappings.natureAction]).some(v => allowed.includes(v)))
+}
+
+function updateNatureUI(mappings){
+    const block = document.getElementById("natureOptionalBlock")
+    if(!mappings.natureAction || natureOptional.length === 0){
+        block.style.display = "none"
+        return
+    }
+    block.style.display = ""
+    document.getElementById("natureOptionalLabel").textContent = "Ajouter les actions " + natureOptional.join(", ")
+    document.getElementById("natureOptionalToggle").checked = includeOptionalNature
+}
+
+// ===== Table des tâches liée =====
+
+function setTasksStatus(msg){
+    document.getElementById("tasksStatus").textContent = msg || ""
+}
+
+// fetchTable renvoie des colonnes ({id:[...], Col:[...]}) : on reconstruit des enregistrements
+function columnarToRecords(data){
+    let ids = data && data.id ? data.id : []
+    let cols = Object.keys(data || {})
+    return ids.map((id,i)=>{
+        let rec = {id}
+        cols.forEach(col=>{
+            if(col !== "id") rec[col] = data[col][i]
+        })
+        return rec
+    })
+}
+
+// Normalise une valeur de référence (Ref, RefList, texte, nombre) en clé de rapprochement
+function parentKeyOf(v){
+    if(v===null || v===undefined || v==="") return ""
+    if(typeof v === "number") return String(v)
+    if(Array.isArray(v)){
+        if(v[0]==="R" && v.length>=3) return String(v[2])          // ['R','Table',rowId]
+        if(v[0]==="L" && v.length>=2) return parentKeyOf(v[1])     // ['L',id,...] : on prend le 1er
+        return parentKeyOf(v[0])
+    }
+    if(typeof v === "object"){
+        if('rowId' in v) return String(v.rowId)
+        if('value' in v) return parentKeyOf(v.value)
+        return ""
+    }
+    return String(v).trim().toLowerCase()
+}
+
+// Clés possibles côté action : son rowId, et éventuellement une colonne "clé de liaison"
+function actionKeys(action, mappings){
+    let keys = [String(action.id)]
+    if(mappings.actionKey){
+        let k = displayValue(action[mappings.actionKey]).trim().toLowerCase()
+        if(k) keys.push(k)
+    }
+    return keys
+}
+
+function buildTasksIndex(){
+    tasksByParent = {}
+    tasksRecords.forEach(t=>{
+        let key = parentKeyOf(t[taskCfg.parent])
+        if(!key) return
+        if(!tasksByParent[key]) tasksByParent[key] = []
+        tasksByParent[key].push(t)
+    })
+    // Tri chronologique des tâches à l'intérieur de chaque action
+    Object.keys(tasksByParent).forEach(k=>{
+        tasksByParent[k].sort((a,b)=>{
+            let da = parseDate(a[taskCfg.start]), db = parseDate(b[taskCfg.start])
+            if(da && db) return da - db
+            if(da) return -1
+            if(db) return 1
+            return displayValue(a[taskCfg.label]).localeCompare(displayValue(b[taskCfg.label]),'fr',{sensitivity:'base'})
+        })
+    })
+}
+
+function tasksForAction(action, mappings){
+    let result = []
+    actionKeys(action, mappings).forEach(k=>{
+        if(tasksByParent[k]) result = result.concat(tasksByParent[k])
+    })
+    return result
+}
+
+async function loadTasks(){
+    if(!taskCfg.table){
+        setTasksStatus("Table des tâches non configurée (⚙)")
+        return
+    }
+    if(tasksLoading) return
+    tasksLoading = true
+    setTasksStatus("Chargement des tâches...")
+    try{
+        let data = await grist.docApi.fetchTable(taskCfg.table)
+        tasksRecords = columnarToRecords(data)
+        buildTasksIndex()
+        tasksLoaded = true
+        setTasksStatus("")
+    }catch(err){
+        tasksRecords = []
+        tasksByParent = {}
+        tasksLoaded = false
+        setTasksStatus("Tâches non chargées : vérifiez le nom de la table et l'accès complet au document")
+    }finally{
+        tasksLoading = false
+        draw(currentRecords, currentMappings)
+    }
 }
 
 // ===== Gestion des filtres (recherche, combinables) =====
@@ -1361,6 +1628,15 @@ function openConfigPanel(){
     document.getElementById("showStatusInPanelInput").checked = showStatusInPanel
     document.getElementById("taskColWidthConfigInput").value = taskColWidth
     document.getElementById("timelineColWidthConfigInput").value = timelineColWidth
+    document.getElementById("natureDefaultsInput").value = natureDefaults.join(", ")
+    document.getElementById("natureOptionalInput").value = natureOptional.join(", ")
+    document.getElementById("taskTableInput").value = taskCfg.table || ""
+    document.getElementById("taskLabelInput").value = taskCfg.label || ""
+    document.getElementById("taskStartInput").value = taskCfg.start || ""
+    document.getElementById("taskEndInput").value = taskCfg.end || ""
+    document.getElementById("taskStateInput").value = taskCfg.state || ""
+    document.getElementById("taskProgressInput").value = taskCfg.progress || ""
+    document.getElementById("taskParentInput").value = taskCfg.parent || ""
     document.getElementById("filterLabel1").value = filterLabels.filterField || ""
     document.getElementById("filterLabel2").value = filterLabels.filterField2 || ""
     document.getElementById("filterLabel3").value = filterLabels.filterField3 || ""
@@ -1401,6 +1677,15 @@ document.getElementById("resetConfig").onclick = ()=>{
     document.getElementById("showStatusInPanelInput").checked = false
     document.getElementById("taskColWidthConfigInput").value = 600
     document.getElementById("timelineColWidthConfigInput").value = 80
+    document.getElementById("natureDefaultsInput").value = "PEPS, AV"
+    document.getElementById("natureOptionalInput").value = "MEO"
+    document.getElementById("taskTableInput").value = "Liste_Tache"
+    document.getElementById("taskLabelInput").value = "ID_Tache"
+    document.getElementById("taskStartInput").value = "Date_Debut"
+    document.getElementById("taskEndInput").value = "Ech_Prev"
+    document.getElementById("taskStateInput").value = "Satut"
+    document.getElementById("taskProgressInput").value = "Avancement"
+    document.getElementById("taskParentInput").value = "ID_Action_MEO"
     document.getElementById("filterLabel1").value = ""
     document.getElementById("filterLabel2").value = ""
     document.getElementById("filterLabel3").value = ""
@@ -1432,6 +1717,22 @@ document.getElementById("saveConfig").onclick = ()=>{
     showStatusInPanel = document.getElementById("showStatusInPanelInput").checked
     applyTaskColWidth(parseInt(document.getElementById("taskColWidthConfigInput").value, 10) || taskColWidth)
     applyTimelineColWidth(parseInt(document.getElementById("timelineColWidthConfigInput").value, 10) || timelineColWidth)
+    natureDefaults = parseNatureList(document.getElementById("natureDefaultsInput").value)
+    natureOptional = parseNatureList(document.getElementById("natureOptionalInput").value)
+    includeOptionalNature = false
+    document.getElementById("natureOptionalToggle").checked = false
+    taskCfg = {
+        table: document.getElementById("taskTableInput").value.trim(),
+        label: document.getElementById("taskLabelInput").value.trim(),
+        start: document.getElementById("taskStartInput").value.trim(),
+        end: document.getElementById("taskEndInput").value.trim(),
+        state: document.getElementById("taskStateInput").value.trim(),
+        progress: document.getElementById("taskProgressInput").value.trim(),
+        parent: document.getElementById("taskParentInput").value.trim()
+    }
+    tasksLoaded = false
+    tasksRecords = []
+    tasksByParent = {}
     filterLabels = {
         filterField: document.getElementById("filterLabel1").value.trim(),
         filterField2: document.getElementById("filterLabel2").value.trim(),
@@ -1466,6 +1767,9 @@ document.getElementById("saveConfig").onclick = ()=>{
     grist.setOption("showStatusInPanel", showStatusInPanel)
     grist.setOption("taskColWidth", taskColWidth)
     grist.setOption("timelineColWidth", timelineColWidth)
+    grist.setOption("natureDefaults", natureDefaults)
+    grist.setOption("natureOptional", natureOptional)
+    grist.setOption("taskCfg", taskCfg)
     grist.setOption("filterLabels", filterLabels)
     grist.setOption("filterHidePanel", filterHidePanel)
     grist.setOption("filterHideColumn", filterHideColumn)
@@ -1479,7 +1783,11 @@ document.getElementById("saveConfig").onclick = ()=>{
     FILTER_KEYS.forEach(key=> grist.setOption("selectedFilterValue_"+key, ""))
     updateFreeNoteDisplay()
     configPanel.style.display = "none"
-    draw(currentRecords, currentMappings)
+    if(showTasks){
+        loadTasks()
+    } else {
+        draw(currentRecords, currentMappings)
+    }
 }
 
 function renderConfigRows(config){
@@ -1572,6 +1880,15 @@ grist.onOptions((options)=>{
         }
         if(typeof options.timelineColWidth === "number" && options.timelineColWidth > 0){
             applyTimelineColWidth(options.timelineColWidth)
+        }
+        if(Array.isArray(options.natureDefaults)){
+            natureDefaults = options.natureDefaults
+        }
+        if(Array.isArray(options.natureOptional)){
+            natureOptional = options.natureOptional
+        }
+        if(options.taskCfg && typeof options.taskCfg === "object"){
+            taskCfg = Object.assign({}, taskCfg, options.taskCfg)
         }
         if(typeof options.freeNote === "string"){
             freeNote = options.freeNote
@@ -2046,6 +2363,74 @@ function applyFilter(records, mappings){
     return result
 }
 
+// Construit la liste des lignes à afficher : chaque action, suivie de ses tâches si la case est cochée
+function buildDisplayRows(actions, mappings){
+    let rows = []
+    let withTasks = showTasks && tasksLoaded
+    actions.forEach(a=>{
+        rows.push({type:"action", rec:a})
+        if(withTasks){
+            tasksForAction(a, mappings).forEach(t=> rows.push({type:"task", rec:t}))
+        }
+    })
+    return rows
+}
+
+function rowStart(row, mappings){
+    return row.type === "action" ? parseDate(row.rec[mappings.start]) : parseDate(row.rec[taskCfg.start])
+}
+
+function rowEnd(row, mappings){
+    return row.type === "action" ? parseDate(row.rec[mappings.end]) : parseDate(row.rec[taskCfg.end])
+}
+
+// Rendu d'une ligne de tâche (table liée), indentée sous son action parente
+function renderTaskRow(t, units){
+    let name = displayValue(t[taskCfg.label]) || "(sans libellé)"
+    let s = parseDate(t[taskCfg.start])
+    let e = parseDate(t[taskCfg.end])
+    if(!s && e) s = e
+    if(!e && s) e = s
+
+    let html = `<tr class="task-row-sub">`
+    html += `<td class="task-name-cell task-name-sub-cell" title="${escapeAttr(name)}">
+                <div class="task-name-task">↳ ${escapeHtml(name)}</div>
+             </td>`
+
+    if(!s || !e){
+        html += `<td colspan="${units.length}"></td></tr>`
+        return html
+    }
+
+    let startCol = findCol(units, s)
+    let colspan = countCols(units, s, e)
+    let rule = stateRule(taskCfg.state ? t[taskCfg.state] : "")
+    let progress = taskCfg.progress ? getPercentValue(t[taskCfg.progress]) : null
+
+    let cellBg = rule.color
+    let progressOverlay = ""
+    let progressBadge = ""
+    if(showProgress && progress!==null){
+        cellBg = lightenColor(rule.color, 0.6)
+        progressOverlay = `<div class="progress-overlay" style="width:${progress}%;background:${rule.color}"></div>`
+        progressBadge = `<span class="progress-badge progress-badge-sm">${progress}%</span>`
+    }
+
+    for(let i=0;i<startCol;i++) html+="<td></td>"
+
+    html += `<td colspan="${colspan}">
+                <div class="task-cell task-cell-sub clickable-mark" data-task-id="${t.id}" style="background:${cellBg}" title="${escapeAttr(name)}${progress!==null?' - '+progress+'%':''}">
+                ${progressOverlay}
+                ${progressBadge}
+                </div>
+             </td>`
+
+    for(let i=startCol+colspan;i<units.length;i++) html+="<td></td>"
+
+    html += "</tr>"
+    return html
+}
+
 function draw(records,mappings){
     currentRecords = records;
     currentMappings = mappings;
@@ -2055,7 +2440,8 @@ function draw(records,mappings){
     updateFilterLabelsUI()
     updateFilterUI(records, mappings)
     updateSortUI(mappings)
-    let visibleRecords = applyFilter(records, mappings)
+    updateNatureUI(mappings)
+    let visibleRecords = applyNatureFilter(applyFilter(records, mappings), mappings)
 
     let sortFields = sortLevels
         .filter(Boolean)
@@ -2082,9 +2468,12 @@ function draw(records,mappings){
         })
     }
 
+    // Lignes affichées : actions + éventuellement leurs tâches
+    let displayRows = buildDisplayRows(visibleRecords, mappings)
+
     let dates=[]
-    visibleRecords.forEach(r=>{
-        let s=parseDate(r[mappings.start]), e=parseDate(r[mappings.end]);
+    displayRows.forEach(row=>{
+        let s = rowStart(row, mappings), e = rowEnd(row, mappings)
         if(s) dates.push(s)
         if(e) dates.push(e)
     })
@@ -2115,7 +2504,13 @@ function draw(records,mappings){
     html+="</tr></thead><tbody>"
 
     // ROWS
-    visibleRecords.forEach(r=>{
+    displayRows.forEach(row=>{
+        if(row.type === "task"){
+            html += renderTaskRow(row.rec, units)
+            return
+        }
+
+        let r = row.rec
         html+="<tr>"
         let s=parseDate(r[mappings.start]), e=parseDate(r[mappings.end])
         let taskName = r[mappings.task]||""
@@ -2277,6 +2672,10 @@ function renderLegend(){
         html += `<span class="legend-item"><span class="legend-swatch" style="background:${milestoneColor};transform:rotate(45deg);"></span>Jalon</span>`
     }
 
+    if(showTasks && tasksLoaded){
+        html += `<span class="legend-item">↳ Tâche (${taskCfg.table})</span>`
+    }
+
     legend.innerHTML = html
 }
 
@@ -2301,6 +2700,14 @@ document.addEventListener("keydown", e=>{
 document.getElementById("gantt-container").addEventListener("click", e=>{
     const mark = e.target.closest(".clickable-mark")
     if(!mark) return
+
+    let taskId = mark.dataset.taskId
+    if(taskId !== undefined && taskId !== ""){
+        let task = (tasksRecords||[]).find(t => String(t.id) === String(taskId))
+        if(task) openTaskDetailPanel(task)
+        return
+    }
+
     let rowId = mark.dataset.rowId
     if(rowId === undefined || rowId === "") return
     let record = (currentRecords||[]).find(r => String(r.id) === String(rowId))
@@ -2328,6 +2735,31 @@ function formatDateISO(v){
 
 function detailRow(label, valueHtml){
     return `<div class="detail-row"><div class="detail-label">${escapeHtml(label)}</div><div class="detail-value">${valueHtml}</div></div>`
+}
+
+// Panneau latéral pour une ligne de tâche (table liée)
+function openTaskDetailPanel(task){
+    detailPanelTitle.textContent = displayValue(task[taskCfg.label]) || "Tâche"
+
+    let parts = []
+    let dStart = formatDateFr(task[taskCfg.start])
+    let dEnd = formatDateFr(task[taskCfg.end])
+    if(dStart || dEnd){
+        parts.push(detailRow("Période", escapeHtml(`${dStart || '?'} → ${dEnd || '?'}`)))
+    }
+    if(taskCfg.state){
+        let rule = stateRule(task[taskCfg.state])
+        let label = rule.label && rule.label.trim() !== "" ? rule.label : (rule.match || "Autre")
+        parts.push(detailRow("Statut", `<span class="detail-status-badge"><span class="detail-status-dot" style="background:${rule.color}"></span>${escapeHtml(label)}</span>`))
+    }
+    if(taskCfg.progress){
+        let p = getPercentValue(task[taskCfg.progress])
+        if(p !== null) parts.push(detailRow("Avancement", `${p}%`))
+    }
+
+    detailPanelBody.innerHTML = parts.join("")
+    detailPanel.classList.add("open")
+    detailOverlay.classList.add("open")
 }
 
 // Récupère la valeur d'une tâche pour une "source" donnée (utilisé pour le pré-remplissage du formulaire)
@@ -2397,6 +2829,12 @@ function openDetailPanel(record, mappings){
         if(progress !== null){
             parts.push(detailRow("Avancement", `${progress}%`))
         }
+    }
+
+    // Nature de l'action
+    if(mappings.natureAction){
+        let nat = displayValue(record[mappings.natureAction])
+        if(nat) parts.push(detailRow("Nature de l'action", escapeHtml(nat)))
     }
 
     // Filtres 1 à 7 (avec leur libellé personnalisé, ou un nom générique si non renseigné)
