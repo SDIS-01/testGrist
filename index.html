@@ -93,14 +93,13 @@ body{font-family:sans-serif;margin:0}
     flex:1 1 100%;
 }
 
-/* Panneaux repliables */
+/* Panneaux (toujours dépliés) */
 .panel{
-    display:none;
+    display:block;
     margin-top:10px;
     padding-top:10px;
     border-top:1px solid #e2e2e2;
 }
-.panel.open{display:block;}
 #filtersGrid{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
@@ -682,15 +681,13 @@ tr.task-row-sub td{
     </select>
 
     <div id="toggleChips">
-      <button type="button" class="chip" id="chipToday" aria-pressed="false">Aujourd'hui</button>
+      <button type="button" class="chip on" id="chipToday" aria-pressed="true">Aujourd'hui</button>
       <button type="button" class="chip on" id="chipProgress" aria-pressed="true">Avancement</button>
       <button type="button" class="chip" id="chipNature" aria-pressed="false" style="display:none;">Actions MEO</button>
       <button type="button" class="chip" id="chipTasks" aria-pressed="false">Tâches</button>
     </div>
 
     <div id="toolbarActions">
-      <button type="button" class="tool-btn" id="filtersBtn">Filtres <span class="tool-badge" id="filtersBadge" style="display:none;">0</span></button>
-      <button type="button" class="tool-btn" id="sortBtn">Tri</button>
       <button type="button" class="tool-btn" id="printBtn" title="Imprimer / Exporter en PDF">Imprimer</button>
     </div>
 
@@ -935,6 +932,7 @@ tr.task-row-sub td{
 
     <div id="panelFooter">
       <button type="button" class="link-btn" id="resetAllFiltersBtn">↺ Réinitialiser les filtres</button>
+      <span class="tool-badge" id="filtersBadge" style="display:none;">0</span>
     </div>
   </div>
 
@@ -1345,14 +1343,11 @@ const TIMELINE_COL_MIN=30
 const TIMELINE_COL_MAX=300
 let currentRecords=[]
 let currentMappings={}
-let highlightToday=false
+let highlightToday=true   // actif à l'ouverture, désactivable via la puce
 let selectedFilterValue={filterField:"", filterField2:"", filterField3:"", filterField4:"", filterField5:"", filterField6:"", filterField7:""}
 const FILTER_KEYS = ["filterField","filterField2","filterField3","filterField4","filterField5","filterField6","filterField7"]
 let sortLevels=["","",""]
 let showProgress=true
-let filtersPanelOpen=false
-let sortPanelOpen=false
-let legendExpanded=false
 
 // ===== NATURE DES ACTIONS (PEPS / AV affichés d'office, MEO via la puce) =====
 let natureDefaults = ["PEPS","AV"]
@@ -1440,25 +1435,6 @@ document.getElementById("chipTasks").onclick = ()=>{
     }
 }
 
-function applyPanelState(){
-    document.getElementById("filtersPanel").classList.toggle("open", filtersPanelOpen)
-    document.getElementById("filtersBtn").classList.toggle("open", filtersPanelOpen)
-    document.getElementById("sortPanel").classList.toggle("open", sortPanelOpen)
-    document.getElementById("sortBtn").classList.toggle("open", sortPanelOpen)
-}
-
-document.getElementById("filtersBtn").onclick = ()=>{
-    filtersPanelOpen = !filtersPanelOpen
-    grist.setOption("filtersPanelOpen", filtersPanelOpen)
-    applyPanelState()
-}
-
-document.getElementById("sortBtn").onclick = ()=>{
-    sortPanelOpen = !sortPanelOpen
-    grist.setOption("sortPanelOpen", sortPanelOpen)
-    applyPanelState()
-}
-
 document.getElementById("printBtn").onclick = ()=>{
     window.print()
 }
@@ -1479,7 +1455,7 @@ function updateFiltersBadge(mappings){
     let n = FILTER_KEYS.filter(k=>isFilterActive(k, mappings)).length
     const badge = document.getElementById("filtersBadge")
     if(n > 0){
-        badge.textContent = n
+        badge.textContent = n > 1 ? `${n} filtres actifs` : "1 filtre actif"
         badge.style.display = ""
     } else {
         badge.style.display = "none"
@@ -2154,12 +2130,6 @@ grist.onOptions((options)=>{
         if(options.taskCfg && typeof options.taskCfg === "object"){
             taskCfg = Object.assign({}, taskCfg, options.taskCfg)
         }
-        if(typeof options.filtersPanelOpen === "boolean"){
-            filtersPanelOpen = options.filtersPanelOpen
-        }
-        if(typeof options.sortPanelOpen === "boolean"){
-            sortPanelOpen = options.sortPanelOpen
-        }
         if(typeof options.freeNote === "string"){
             freeNote = options.freeNote
             updateFreeNoteDisplay()
@@ -2231,7 +2201,6 @@ grist.onOptions((options)=>{
             sortLevels = ["task","",""]
         }
     }
-    applyPanelState()
     draw(currentRecords, currentMappings)
 })
 
@@ -2928,7 +2897,7 @@ function draw(records,mappings){
     document.getElementById("gantt-container").scrollLeft = left - 200
 }
 
-// Légende compacte : 3 entrées + lien pour tout déplier
+// Légende toujours intégrale
 function renderLegend(){
     const legend = document.getElementById("legend")
     let items = stateConfig.map(rule=>{
@@ -2948,27 +2917,8 @@ function renderLegend(){
         items.push(`<span class="legend-item">↳ Tâche</span>`)
     }
 
-    const LIMIT = 3
-    let html
-    if(!legendExpanded && items.length > LIMIT + 1){
-        html = items.slice(0, LIMIT).join("") +
-            `<span class="legend-toggle">Légende complète (${items.length})</span>`
-    } else {
-        html = items.join("")
-        if(items.length > LIMIT + 1){
-            html += `<span class="legend-toggle">Réduire</span>`
-        }
-    }
-
-    legend.innerHTML = html
+    legend.innerHTML = items.join("")
 }
-
-document.getElementById("legend").addEventListener("click", e=>{
-    if(e.target.classList.contains("legend-toggle")){
-        legendExpanded = !legendExpanded
-        renderLegend()
-    }
-})
 
 // ===== Panneau latéral de détail =====
 const detailPanel = document.getElementById("detailPanel")
@@ -3223,7 +3173,6 @@ async function loadAttachments(rawValue){
     }
 }
 
-applyPanelState()
 grist.onRecords((r,m)=>draw(r,m))
 </script>
 </body>
