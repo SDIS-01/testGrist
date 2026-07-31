@@ -932,39 +932,6 @@ tr.task-row-sub td{
         </span>
       </div>
 
-      <div class="filter-cell" id="filterControls-filterField8">
-        <div class="filter-cell-head">
-          <span class="filter-label-text" data-key="filterField8">Filtre 8</span>
-          <button type="button" class="filter-clear" data-key="filterField8" title="Effacer ce filtre" style="display:none;">✕</button>
-        </div>
-        <input type="text" class="filter-input" data-key="filterField8" list="filterOptions-filterField8" placeholder="Tous" autocomplete="off">
-        <datalist id="filterOptions-filterField8"></datalist>
-        <select class="filter-percent-select" data-key="filterField8" style="display:none;">
-          <option value="">Tous</option>
-          <option value="0-25">0 – 25%</option>
-          <option value="25-50">25 – 50%</option>
-          <option value="50-75">50 – 75%</option>
-          <option value="75-100">75 – 100%</option>
-        </select>
-        <span class="filter-date-controls" data-key="filterField8" style="display:none;align-items:center;">
-          <select class="filter-date-op" data-key="filterField8">
-            <option value="lt">&lt;</option>
-            <option value="lte">≤</option>
-            <option value="eq">=</option>
-            <option value="gte">≥</option>
-            <option value="gt">&gt;</option>
-            <option value="between">Entre</option>
-          </select>
-          <input type="date" class="filter-date-1" data-key="filterField8">
-          <span class="filter-date-and" data-key="filterField8" style="display:none;">et</span>
-          <input type="date" class="filter-date-2" data-key="filterField8" style="display:none;">
-        </span>
-        <span class="filter-multi-controls" data-key="filterField8" style="display:none;position:relative;">
-          <button type="button" class="filter-multi-toggle" data-key="filterField8">Tous</button>
-          <div class="filter-multi-dropdown" data-key="filterField8" style="display:none;"></div>
-        </span>
-      </div>
-
     </div>
 
     <div id="panelFooter">
@@ -986,7 +953,6 @@ tr.task-row-sub td{
         <option value="filterField5" class="sort-opt" data-key="filterField5">Filtre 5 (A→Z)</option>
         <option value="filterField6" class="sort-opt" data-key="filterField6">Filtre 6 (A→Z)</option>
         <option value="filterField7" class="sort-opt" data-key="filterField7">Filtre 7 (A→Z)</option>
-        <option value="filterField8" class="sort-opt" data-key="filterField8">Filtre 8 (A→Z)</option>
       </select>
       puis
       <select class="sort-select" data-level="2">
@@ -999,7 +965,6 @@ tr.task-row-sub td{
         <option value="filterField5" class="sort-opt" data-key="filterField5">Filtre 5 (A→Z)</option>
         <option value="filterField6" class="sort-opt" data-key="filterField6">Filtre 6 (A→Z)</option>
         <option value="filterField7" class="sort-opt" data-key="filterField7">Filtre 7 (A→Z)</option>
-        <option value="filterField8" class="sort-opt" data-key="filterField8">Filtre 8 (A→Z)</option>
       </select>
       puis
       <select class="sort-select" data-level="3">
@@ -1012,7 +977,6 @@ tr.task-row-sub td{
         <option value="filterField5" class="sort-opt" data-key="filterField5">Filtre 5 (A→Z)</option>
         <option value="filterField6" class="sort-opt" data-key="filterField6">Filtre 6 (A→Z)</option>
         <option value="filterField7" class="sort-opt" data-key="filterField7">Filtre 7 (A→Z)</option>
-        <option value="filterField8" class="sort-opt" data-key="filterField8">Filtre 8 (A→Z)</option>
       </select>
     </div>
   </div>
@@ -1262,26 +1226,6 @@ tr.task-row-sub td{
       </label>
     </div>
   </div>
-    <div class="config-row">
-      <span style="width:70px;font-size:12px;color:#555;">Filtre 8 :</span>
-      <input type="text" id="filterLabel8" placeholder="ex: ..." style="flex:1;">
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterPercent8" class="filter-percent-checkbox" data-idx="8"> %  (tranches de 25)
-      </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterDate8" class="filter-date-checkbox" data-idx="8"> c'est une date
-      </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterMulti8" class="filter-multi-checkbox" data-idx="8"> sélection multiple
-      </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterHidePanel8"> masquer du panneau
-      </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterHideColumn8"> masquer colonne Tâche
-      </label>
-    </div>
-  </div>
 
   <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
     <h3>Champs supplémentaires (panneau détail uniquement)</h3>
@@ -1379,7 +1323,6 @@ columns:[
 {name:'filterField5',title:'Champ de filtre 5 (optionnel)', optional:true},
 {name:'filterField6',title:'Champ de filtre 6 (optionnel)', optional:true},
 {name:'filterField7',title:'Champ de filtre 7 (optionnel)', optional:true},
-{name:'filterField8',title:'Champ de filtre 8 (optionnel)', optional:true},
 {name:'progress',title:'% Avancement (optionnel)', optional:true},
 {name:'comment',title:'Commentaire (optionnel, panneau détail)', optional:true},
 {name:'attachment',title:'Pièce jointe (optionnel, panneau détail)', optional:true},
@@ -1405,8 +1348,8 @@ const TIMELINE_COL_MAX=300
 let currentRecords=[]
 let currentMappings={}
 let highlightToday=true   // actif à l'ouverture, désactivable via la puce
-let selectedFilterValue={filterField:"", filterField2:"", filterField3:"", filterField4:"", filterField5:"", filterField6:"", filterField7:"", filterField8:""}
-const FILTER_KEYS = ["filterField","filterField2","filterField3","filterField4","filterField5","filterField6","filterField7","filterField8"]
+let selectedFilterValue={filterField:"", filterField2:"", filterField3:"", filterField4:"", filterField5:"", filterField6:"", filterField7:""}
+const FILTER_KEYS = ["filterField","filterField2","filterField3","filterField4","filterField5","filterField6","filterField7"]
 let sortLevels=["","",""]
 let showProgress=true
 
@@ -1442,15 +1385,15 @@ const defaultStateConfig = [
 ]
 let stateConfig = JSON.parse(JSON.stringify(defaultStateConfig))
 let milestoneColor = "#e74c3c"
-let filterLabels = {filterField:"", filterField2:"", filterField3:"", filterField4:"", filterField5:"", filterField6:"", filterField7:"", filterField8:""}
+let filterLabels = {filterField:"", filterField2:"", filterField3:"", filterField4:"", filterField5:"", filterField6:"", filterField7:""}
 const EXTRA_KEYS = ["extraField1","extraField2","extraField3","extraField4","extraField5","extraField6"]
 let extraFieldLabels = {extraField1:"", extraField2:"", extraField3:"", extraField4:"", extraField5:"", extraField6:""}
-let filterIsPercent = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false}
-let filterIsDate = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false}
-let filterIsMulti = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false}
+let filterIsPercent = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
+let filterIsDate = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
+let filterIsMulti = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
 const MULTI_SEP = "\u001F"
-let filterHidePanel = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false}
-let filterHideColumn = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false}
+let filterHidePanel = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
+let filterHideColumn = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false}
 let showStatusInPanel = false
 
 // ===== Bandeau : puces et panneaux =====
@@ -1854,7 +1797,6 @@ const PREFILL_SOURCES = [
     {value:"filterField5", label:"Filtre 5"},
     {value:"filterField6", label:"Filtre 6"},
     {value:"filterField7", label:"Filtre 7"},
-    {value:"filterField8", label:"Filtre 8"},
     {value:"extraField1", label:"Champ supplémentaire 1"},
     {value:"extraField2", label:"Champ supplémentaire 2"},
     {value:"extraField3", label:"Champ supplémentaire 3"},
@@ -1934,7 +1876,6 @@ function openConfigPanel(){
     document.getElementById("filterLabel5").value = filterLabels.filterField5 || ""
     document.getElementById("filterLabel6").value = filterLabels.filterField6 || ""
     document.getElementById("filterLabel7").value = filterLabels.filterField7 || ""
-    document.getElementById("filterLabel8").value = filterLabels.filterField8 || ""
     document.getElementById("extraLabel1").value = extraFieldLabels.extraField1 || ""
     document.getElementById("extraLabel2").value = extraFieldLabels.extraField2 || ""
     document.getElementById("extraLabel3").value = extraFieldLabels.extraField3 || ""
@@ -1986,7 +1927,6 @@ document.getElementById("resetConfig").onclick = ()=>{
     document.getElementById("filterLabel5").value = ""
     document.getElementById("filterLabel6").value = ""
     document.getElementById("filterLabel7").value = ""
-    document.getElementById("filterLabel8").value = ""
     document.getElementById("extraLabel1").value = ""
     document.getElementById("extraLabel2").value = ""
     document.getElementById("extraLabel3").value = ""
@@ -2036,8 +1976,7 @@ document.getElementById("saveConfig").onclick = ()=>{
         filterField4: document.getElementById("filterLabel4").value.trim(),
         filterField5: document.getElementById("filterLabel5").value.trim(),
         filterField6: document.getElementById("filterLabel6").value.trim(),
-        filterField7: document.getElementById("filterLabel7").value.trim(),
-        filterField8: document.getElementById("filterLabel8").value.trim()
+        filterField7: document.getElementById("filterLabel7").value.trim()
     }
     extraFieldLabels = {
         extraField1: document.getElementById("extraLabel1").value.trim(),
@@ -2215,38 +2154,38 @@ grist.onOptions((options)=>{
             showStatusInPanel = options.showStatusInPanel
         }
         if(options.filterLabels && typeof options.filterLabels === "object"){
-            filterLabels = Object.assign({filterField:"", filterField2:"", filterField3:"", filterField4:"", filterField5:"", filterField6:"", filterField7:"", filterField8:""}, options.filterLabels)
+            filterLabels = Object.assign({filterField:"", filterField2:"", filterField3:"", filterField4:"", filterField5:"", filterField6:"", filterField7:""}, options.filterLabels)
         }
         if(options.extraFieldLabels && typeof options.extraFieldLabels === "object"){
             extraFieldLabels = Object.assign({extraField1:"", extraField2:"", extraField3:"", extraField4:"", extraField5:"", extraField6:""}, options.extraFieldLabels)
         }
         if(options.filterIsPercent && typeof options.filterIsPercent === "object"){
             filterIsPercent = Object.assign(
-                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false},
+                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false},
                 options.filterIsPercent
             )
         }
         if(options.filterIsDate && typeof options.filterIsDate === "object"){
             filterIsDate = Object.assign(
-                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false},
+                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false},
                 options.filterIsDate
             )
         }
         if(options.filterIsMulti && typeof options.filterIsMulti === "object"){
             filterIsMulti = Object.assign(
-                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false},
+                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false},
                 options.filterIsMulti
             )
         }
         if(options.filterHidePanel && typeof options.filterHidePanel === "object"){
             filterHidePanel = Object.assign(
-                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false},
+                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false},
                 options.filterHidePanel
             )
         }
         if(options.filterHideColumn && typeof options.filterHideColumn === "object"){
             filterHideColumn = Object.assign(
-                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false},
+                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false},
                 options.filterHideColumn
             )
         }
@@ -2864,7 +2803,6 @@ function draw(records,mappings){
         let filter5Val = filterValue("filterField5")
         let filter6Val = filterValue("filterField6")
         let filter7Val = filterValue("filterField7")
-        let filter8Val = filterValue("filterField8")
 
         let lines = []
         if(filter1Val) lines.push({cls:"task-name-filter1", text:`${filterLabelOrDefault("filterField",1)} : ${filter1Val}`})
@@ -2875,7 +2813,6 @@ function draw(records,mappings){
         if(filter5Val) lines.push({cls:"task-name-sub", text:`${filterLabelOrDefault("filterField5",5)} : ${filter5Val}`})
         if(filter6Val) lines.push({cls:"task-name-sub", text:`${filterLabelOrDefault("filterField6",6)} : ${filter6Val}`})
         if(filter7Val) lines.push({cls:"task-name-sub", text:`${filterLabelOrDefault("filterField7",7)} : ${filter7Val}`})
-        if(filter8Val) lines.push({cls:"task-name-sub", text:`${filterLabelOrDefault("filterField8",8)} : ${filter8Val}`})
 
         let tooltipParts = lines.map(l=>l.text)
         let linesHtml = lines.map(l=>{
