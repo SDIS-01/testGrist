@@ -585,12 +585,18 @@ tr.task-row-sub td{
     gap:8px;
     flex-wrap:wrap;
 }
+.detail-badge.stacked{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:2px;
+}
 .detail-badge .k{color:#5f5e5a;flex:0 0 auto;}
 .detail-badge .v{
     font-weight:700;
     color:var(--bleu-france);
     white-space:pre-wrap;
     overflow-wrap:break-word;
+    min-width:0;
 }
 .detail-pill{
     padding:2px 10px;
@@ -3152,9 +3158,12 @@ function detailRow(label, valueHtml){
 
 // --- Charte reprise du widget PDF récap ---
 
-// Badge "clé / valeur" pour les champs courts
+// Badge "clé / valeur". Si l'intitulé et la valeur ne tiennent pas sur une ligne,
+// le badge s'empile : intitulé au-dessus, valeur en dessous.
 function detailBadge(label, valueHtml){
-    return `<div class="detail-badge"><span class="k">${escapeHtml(label)}</span><span class="v">${valueHtml}</span></div>`
+    let plain = String(valueHtml).replace(/<[^>]*>/g,"").replace(/&[a-z#0-9]+;/gi,"x")
+    let stacked = (String(label||"").length + plain.length) > 50
+    return `<div class="detail-badge${stacked ? " stacked" : ""}"><span class="k">${escapeHtml(label)}</span><span class="v">${valueHtml}</span></div>`
 }
 
 // Pastille colorée selon l'avancement (mêmes seuils que le PDF récap)
@@ -3180,10 +3189,10 @@ function pillHtml(text, style){
     return `<span class="detail-pill" style="background:${style.bg};color:${style.color};">${escapeHtml(text)}</span>`
 }
 
-// Un champ court tient dans un badge ; un texte long ou multiligne passe en rubrique
-function isShortValue(v){
-    let s = String(v||"")
-    return s.indexOf("\n") === -1 && s.length <= 70
+// Une valeur d'une seule ligne part toujours en badge, quelle que soit sa longueur ;
+// seuls les textes multilignes (journal de bord, commentaire...) passent en rubrique
+function isSingleLine(v){
+    return String(v||"").indexOf("\n") === -1
 }
 
 // Découpe un texte type "journal de bord" en entrées : toute ligne commençant par
@@ -3324,11 +3333,21 @@ function openDetailPanel(record, mappings){
         if(nat) badges.push(detailBadge("Nature de l'action", escapeHtml(nat)))
     }
 
+    // Sur une ligne PEPS/AV, le champ Projet_Action répète le titre du panneau :
+    // on ne l'affiche que sur les actions de nature MEO.
+    // Si la colonne Nature n'est pas mappée dans le ⚙, on n'applique pas la règle.
+    let isMeoRow = mappings.natureAction
+        ? natureValues(record[mappings.natureAction]).some(v => v.indexOf("meo") !== -1)
+        : true
+
     // Filtres 1 à 8 (avec leur libellé personnalisé)
     FILTER_KEYS.forEach((key, idx)=>{
         if(!mappings[key] || filterHidePanel[key]) return
         let label = (filterLabels[key] && filterLabels[key].trim()) ? filterLabels[key].trim() : `Filtre ${idx+1}`
         let normLabel = label.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()
+
+        // Champ "Projet_Action" : réservé aux actions MEO
+        if(normLabel.indexOf("projet") !== -1 && !isMeoRow) return
 
         if(filterIsPercent[key]){
             let p = getPercentValue(record[mappings[key]])
@@ -3340,7 +3359,7 @@ function openDetailPanel(record, mappings){
         if(!val) return
         if(normLabel.indexOf("priorit") !== -1){
             badges.push(detailBadge(label, pillHtml(val, priorityPillStyle(val))))
-        } else if(isShortValue(val)){
+        } else if(isSingleLine(val)){
             badges.push(detailBadge(label, escapeHtml(val)))
         } else {
             parts.push(detailRow(label, renderJournal(val)))
@@ -3354,7 +3373,7 @@ function openDetailPanel(record, mappings){
         if(!val) return
         let idx = EXTRA_KEYS.indexOf(key) + 1
         let label = (extraFieldLabels[key] && extraFieldLabels[key].trim()) ? extraFieldLabels[key].trim() : `Champ ${idx}`
-        if(isShortValue(val)){
+        if(isSingleLine(val)){
             badges.push(detailBadge(label, escapeHtml(val)))
         } else {
             parts.push(detailRow(label, renderJournal(val)))
