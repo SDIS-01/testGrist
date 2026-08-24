@@ -376,6 +376,12 @@ tr.task-row-sub td{
 :root{
     --task-col-width: 600px;
     --timeline-col-width: 80px;
+    /* Palette du widget PDF récap — utilisée uniquement par le panneau de détail */
+    --bleu-france:#002395;
+    --green:#9BBB59; --green-pale:#EDF3DF; --green-text:#5E7A34;
+    --yellow:#FFCC00; --yellow-pale:#FFF6D6; --yellow-text:#8C6D00;
+    --orange:#F79646; --orange-pale:#FDEEE1; --orange-text:#B35D15;
+    --red:#C0504D; --red-pale:#F6E1E0; --red-text:#8C3A38;
 }
 #gantt-table .task-name-header,
 #gantt-table .task-name-cell{
@@ -497,6 +503,7 @@ tr.task-row-sub td{
     pointer-events:auto;
 }
 #detailPanel{
+    font-family:Tahoma,Geneva,sans-serif;
     position:fixed;
     top:0;
     right:0;
@@ -525,7 +532,7 @@ tr.task-row-sub td{
 #detailPanelTitle{
     font-size:15px;
     font-weight:700;
-    color:#222;
+    color:var(--bleu-france);
     overflow-wrap:break-word;
     padding-right:10px;
 }
@@ -549,18 +556,96 @@ tr.task-row-sub td{
     margin-bottom:14px;
 }
 .detail-label{
-    font-size:11px;
+    font-size:12px;
     font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:.03em;
-    color:#888;
-    margin-bottom:3px;
+    color:var(--bleu-france);
+    margin-bottom:6px;
 }
 .detail-value{
-    font-size:13.5px;
+    font-size:12px;
     color:#222;
     overflow-wrap:break-word;
     white-space:pre-wrap;
+}
+/* ===== Charte du panneau de détail (alignée sur le widget PDF récap) ===== */
+/* Liste de badges pour les champs courts */
+.detail-badges{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+    margin-bottom:16px;
+}
+.detail-badge{
+    background:#eef2f8;
+    border-radius:6px;
+    padding:7px 11px;
+    font-size:12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+}
+.detail-badge .k{color:#5f5e5a;flex:0 0 auto;}
+.detail-badge .v{
+    font-weight:700;
+    color:var(--bleu-france);
+    white-space:pre-wrap;
+    overflow-wrap:break-word;
+}
+.detail-pill{
+    padding:2px 10px;
+    border-radius:8px;
+    font-weight:700;
+    display:inline-block;
+    font-size:12px;
+}
+/* Encadré commentaire */
+.detail-comment-box{
+    font-size:12px;
+    color:#333;
+    background:#fafaf8;
+    border-radius:6px;
+    padding:9px 11px;
+    line-height:1.45;
+    border-left:3px solid var(--bleu-france);
+    white-space:pre-wrap;
+    overflow-wrap:break-word;
+}
+/* Rendu "journal de bord" : une entrée datée = un bloc distinct */
+.detail-journal{white-space:normal;}
+.detail-entry{
+    border-left:2px solid #b9c6dc;
+    padding-left:10px;
+    margin-bottom:10px;
+}
+.detail-entry:last-child{margin-bottom:0;}
+.detail-entry-head{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:6px;
+    margin-bottom:2px;
+}
+.detail-entry-date{
+    font-weight:700;
+    font-size:12px;
+    color:var(--bleu-france);
+}
+.detail-entry-type{
+    font-size:10.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    background:#eef2f8;
+    color:#5f5e5a;
+    border-radius:3px;
+    padding:1px 6px;
+}
+.detail-entry-body{
+    font-size:11.5px;
+    line-height:1.7;
+    white-space:pre-wrap;
+    overflow-wrap:break-word;
 }
 .detail-status-badge{
     display:inline-flex;
@@ -585,9 +670,9 @@ tr.task-row-sub td{
     margin-bottom:8px;
     font-size:13px;
     text-decoration:none;
-    color:#1e88e5;
+    color:var(--bleu-france);
 }
-.detail-attachment:hover{background:#f5f9ff;}
+.detail-attachment:hover{background:#eef2f8;}
 .detail-form-button{
     display:flex;
     align-items:center;
@@ -600,10 +685,10 @@ tr.task-row-sub td{
     font-weight:700;
     text-decoration:none;
     color:#fff;
-    background:#1565c0;
+    background:var(--bleu-france);
     box-shadow:0 1px 3px rgba(0,0,0,.25);
 }
-.detail-form-button:hover{background:#0d4d94;}
+.detail-form-button:hover{background:#001c73;}
 .detail-empty{
     color:#999;
     font-size:12.5px;
@@ -3060,31 +3145,107 @@ function formatDateISO(v){
     return `${year}-${month}-${day}`
 }
 
+// Couleur du libellé selon son intitulé : "journal..." en bleu, "commentaire..." en rouge
 function detailRow(label, valueHtml){
     return `<div class="detail-row"><div class="detail-label">${escapeHtml(label)}</div><div class="detail-value">${valueHtml}</div></div>`
+}
+
+// --- Charte reprise du widget PDF récap ---
+
+// Badge "clé / valeur" pour les champs courts
+function detailBadge(label, valueHtml){
+    return `<div class="detail-badge"><span class="k">${escapeHtml(label)}</span><span class="v">${valueHtml}</span></div>`
+}
+
+// Pastille colorée selon l'avancement (mêmes seuils que le PDF récap)
+function pctPillStyle(pct){
+    if(pct >= 100) return {bg:"var(--green-pale)", color:"var(--green-text)"}
+    if(pct >= 50)  return {bg:"var(--yellow-pale)", color:"var(--yellow-text)"}
+    if(pct >= 1)   return {bg:"var(--orange-pale)", color:"var(--orange-text)"}
+    return {bg:"var(--red-pale)", color:"var(--red-text)"}
+}
+
+// Pastille colorée pour la priorité (mêmes règles que le PDF récap)
+function priorityPillStyle(label){
+    let s = String(label||"").toLowerCase()
+    if(s.startsWith("p1")) return {bg:"var(--red)", color:"#fff"}
+    if(s.startsWith("p2")) return {bg:"var(--orange)", color:"#fff"}
+    if(s.startsWith("p3")) return {bg:"var(--yellow)", color:"#4d3d00"}
+    if(s.startsWith("interrompu")) return {bg:"#595959", color:"#fff"}
+    if(s.startsWith("termin")) return {bg:"var(--green)", color:"#fff"}
+    return {bg:"var(--bleu-france)", color:"#fff"}
+}
+
+function pillHtml(text, style){
+    return `<span class="detail-pill" style="background:${style.bg};color:${style.color};">${escapeHtml(text)}</span>`
+}
+
+// Un champ court tient dans un badge ; un texte long ou multiligne passe en rubrique
+function isShortValue(v){
+    let s = String(v||"")
+    return s.indexOf("\n") === -1 && s.length <= 70
+}
+
+// Découpe un texte type "journal de bord" en entrées : toute ligne commençant par
+// une date JJ/MM/AAAA ouvre une nouvelle entrée, les lignes suivantes lui sont rattachées.
+// Si aucune date n'est trouvée, on retombe sur le rendu texte classique.
+function renderJournal(text){
+    let val = String(text===null || text===undefined ? "" : text)
+    if(!val.trim()) return ""
+    let dateRe = /^\s*(\d{1,2}\/\d{1,2}\/\d{2,4})\s*(?:[-–—:.]\s*)?(.*)$/
+    let typeRe = /^([A-ZÀ-ÖØ-Þ0-9][A-ZÀ-ÖØ-Þ0-9 _''-]{1,24})\s*[-–—:]\s*(.*)$/
+    let entries = []
+    val.split(/\r?\n/).forEach(line=>{
+        let m = line.match(dateRe)
+        if(m){
+            entries.push({date:m[1], head:m[2]||"", rest:[]})
+        } else if(entries.length){
+            entries[entries.length-1].rest.push(line)
+        } else {
+            entries.push({date:null, head:line, rest:[]})
+        }
+    })
+    if(!entries.some(e=>e.date)) return escapeHtml(val)
+
+    let html = entries.map(e=>{
+        if(!e.date){
+            let txt = [e.head].concat(e.rest).join("\n").trim()
+            return txt ? `<div class="detail-entry-body">${escapeHtml(txt)}</div>` : ""
+        }
+        let type = "", body = e.head
+        let t = e.head.match(typeRe)
+        if(t){ type = t[1].trim(); body = t[2] }
+        let full = [body].concat(e.rest).join("\n").replace(/\s+$/,"")
+        let headHtml = `<span class="detail-entry-date">${escapeHtml(e.date)}</span>`
+        if(type) headHtml += `<span class="detail-entry-type">${escapeHtml(type)}</span>`
+        let bodyHtml = full.trim() ? `<div class="detail-entry-body">${escapeHtml(full)}</div>` : ""
+        return `<div class="detail-entry"><div class="detail-entry-head">${headHtml}</div>${bodyHtml}</div>`
+    }).join("")
+
+    return `<div class="detail-journal">${html}</div>`
 }
 
 // Panneau latéral pour une ligne de tâche (table liée)
 function openTaskDetailPanel(task){
     detailPanelTitle.textContent = displayValue(task[taskCfg.label]) || "Tâche"
 
-    let parts = []
+    let badges = []
     let dStart = formatDateFr(task[taskCfg.start])
     let dEnd = formatDateFr(task[taskCfg.end])
     if(dStart || dEnd){
-        parts.push(detailRow("Période", escapeHtml(`${dStart || '?'} → ${dEnd || '?'}`)))
+        badges.push(detailBadge("Période", escapeHtml(`${dStart || '?'} → ${dEnd || '?'}`)))
     }
     if(taskCfg.state){
         let rule = stateRule(task[taskCfg.state])
         let label = rule.label && rule.label.trim() !== "" ? rule.label : (rule.match || "Autre")
-        parts.push(detailRow("Statut", `<span class="detail-status-badge"><span class="detail-status-dot" style="background:${rule.color}"></span>${escapeHtml(label)}</span>`))
+        badges.push(detailBadge("Statut", `<span class="detail-status-badge"><span class="detail-status-dot" style="background:${rule.color}"></span>${escapeHtml(label)}</span>`))
     }
     if(taskCfg.progress){
         let p = getPercentValue(task[taskCfg.progress])
-        if(p !== null) parts.push(detailRow("Avancement", `${p}%`))
+        if(p !== null) badges.push(detailBadge("Avancement", pillHtml(p+"%", pctPillStyle(p))))
     }
 
-    detailPanelBody.innerHTML = parts.join("")
+    detailPanelBody.innerHTML = badges.length ? `<div class="detail-badges">${badges.join("")}</div>` : ""
     detailPanel.classList.add("open")
     detailOverlay.classList.add("open")
 }
@@ -3134,45 +3295,56 @@ function openDetailPanel(record, mappings){
 
     detailPanelTitle.textContent = taskName || "Tâche"
 
+    // Champs courts regroupés en badges, textes longs en rubriques (charte PDF récap)
+    let badges = []
     let parts = []
 
     let dStart = formatDateFr(record[mappings.start])
     let dEnd = formatDateFr(record[mappings.end])
     if(dStart || dEnd){
-        parts.push(detailRow("Période", escapeHtml(`${dStart || '?'} → ${dEnd || '?'}`)))
+        badges.push(detailBadge("Période", escapeHtml(`${dStart || '?'} → ${dEnd || '?'}`)))
     }
 
     // Statut (masqué par défaut dans le panneau, réactivable via ⚙)
     if(showStatusInPanel && mappings.state){
         let rule = stateRule(record[mappings.state])
         let label = rule.label && rule.label.trim() !== "" ? rule.label : (rule.match || "Autre")
-        parts.push(detailRow("Statut", `<span class="detail-status-badge"><span class="detail-status-dot" style="background:${rule.color}"></span>${escapeHtml(label)}</span>`))
+        badges.push(detailBadge("Statut", `<span class="detail-status-badge"><span class="detail-status-dot" style="background:${rule.color}"></span>${escapeHtml(label)}</span>`))
     }
 
     if(mappings.progress){
         let progress = getProgress(record, mappings)
         if(progress !== null){
-            parts.push(detailRow("Avancement", `${progress}%`))
+            badges.push(detailBadge("Avancement", pillHtml(progress+"%", pctPillStyle(progress))))
         }
     }
 
     if(mappings.natureAction){
         let nat = displayValue(record[mappings.natureAction])
-        if(nat) parts.push(detailRow("Nature de l'action", escapeHtml(nat)))
+        if(nat) badges.push(detailBadge("Nature de l'action", escapeHtml(nat)))
     }
 
-    // Filtres 1 à 7 (avec leur libellé personnalisé)
+    // Filtres 1 à 8 (avec leur libellé personnalisé)
     FILTER_KEYS.forEach((key, idx)=>{
         if(!mappings[key] || filterHidePanel[key]) return
-        let val
+        let label = (filterLabels[key] && filterLabels[key].trim()) ? filterLabels[key].trim() : `Filtre ${idx+1}`
+        let normLabel = label.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()
+
         if(filterIsPercent[key]){
             let p = getPercentValue(record[mappings[key]])
-            val = p===null ? "" : p+"%"
-        } else {
-            val = displayValueMultiline(record[mappings[key]])
+            if(p !== null) badges.push(detailBadge(label, pillHtml(p+"%", pctPillStyle(p))))
+            return
         }
-        let label = (filterLabels[key] && filterLabels[key].trim()) ? filterLabels[key].trim() : `Filtre ${idx+1}`
-        if(val) parts.push(detailRow(label, escapeHtml(val)))
+
+        let val = displayValueMultiline(record[mappings[key]])
+        if(!val) return
+        if(normLabel.indexOf("priorit") !== -1){
+            badges.push(detailBadge(label, pillHtml(val, priorityPillStyle(val))))
+        } else if(isShortValue(val)){
+            badges.push(detailBadge(label, escapeHtml(val)))
+        } else {
+            parts.push(detailRow(label, renderJournal(val)))
+        }
     })
 
     // Champs supplémentaires
@@ -3182,17 +3354,22 @@ function openDetailPanel(record, mappings){
         if(!val) return
         let idx = EXTRA_KEYS.indexOf(key) + 1
         let label = (extraFieldLabels[key] && extraFieldLabels[key].trim()) ? extraFieldLabels[key].trim() : `Champ ${idx}`
-        parts.push(detailRow(label, escapeHtml(val)))
+        if(isShortValue(val)){
+            badges.push(detailBadge(label, escapeHtml(val)))
+        } else {
+            parts.push(detailRow(label, renderJournal(val)))
+        }
     })
 
     if(mappings.comment){
         let comment = displayValueMultiline(record[mappings.comment])
         if(comment){
-            parts.push(detailRow("Commentaire", escapeHtml(comment)))
+            parts.push(detailRow("Commentaire", `<div class="detail-comment-box">${escapeHtml(comment)}</div>`))
         }
     }
 
-    detailPanelBody.innerHTML = parts.join("")
+    let badgeBlock = badges.length ? `<div class="detail-badges">${badges.join("")}</div>` : ""
+    detailPanelBody.innerHTML = badgeBlock + parts.join("")
 
     // Pièce jointe (chargement asynchrone)
     if(mappings.attachment){
