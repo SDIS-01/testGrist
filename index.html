@@ -3346,8 +3346,9 @@ function openDetailPanel(record, mappings){
         let label = (filterLabels[key] && filterLabels[key].trim()) ? filterLabels[key].trim() : `Filtre ${idx+1}`
         let normLabel = label.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()
 
-        // Champ "Projet_Action" : réservé aux actions MEO
-        if(normLabel.indexOf("projet") !== -1 && !isMeoRow) return
+        // Champ "Projet_Action" : réservé aux actions MEO, et toujours présenté en rubrique
+        let isProjetField = normLabel.indexOf("projet") !== -1
+        if(isProjetField && !isMeoRow) return
 
         if(filterIsPercent[key]){
             let p = getPercentValue(record[mappings[key]])
@@ -3357,7 +3358,9 @@ function openDetailPanel(record, mappings){
 
         let val = displayValueMultiline(record[mappings[key]])
         if(!val) return
-        if(normLabel.indexOf("priorit") !== -1){
+        if(isProjetField){
+            parts.push(detailRow(label, escapeHtml(val)))
+        } else if(normLabel.indexOf("priorit") !== -1){
             badges.push(detailBadge(label, pillHtml(val, priorityPillStyle(val))))
         } else if(isSingleLine(val)){
             badges.push(detailBadge(label, escapeHtml(val)))
@@ -3373,11 +3376,8 @@ function openDetailPanel(record, mappings){
         if(!val) return
         let idx = EXTRA_KEYS.indexOf(key) + 1
         let label = (extraFieldLabels[key] && extraFieldLabels[key].trim()) ? extraFieldLabels[key].trim() : `Champ ${idx}`
-        if(isSingleLine(val)){
-            badges.push(detailBadge(label, escapeHtml(val)))
-        } else {
-            parts.push(detailRow(label, renderJournal(val)))
-        }
+        // Emplacements de texte long : toujours en rubrique, même sur une seule ligne
+        parts.push(detailRow(label, renderJournal(val)))
     })
 
     if(mappings.comment){
