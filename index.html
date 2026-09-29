@@ -6,11 +6,11 @@
 <script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
 
 <style>
-body{font-family:sans-serif;margin:0}
+body{font-family:sans-serif;margin:0;background:var(--bg);color:var(--text)}
 
 /* ===== BANDEAU ===== */
 #controls{
-    background:#f4f4f4;
+    background:var(--surface-alt);
     padding:8px 10px;
     display:flex;
     flex-direction:column;
@@ -26,9 +26,9 @@ body{font-family:sans-serif;margin:0}
     min-height:32px;
     padding:4px 6px;
     font-size:13px;
-    border:1px solid #ccc;
+    border:1px solid var(--border);
     border-radius:4px;
-    background:#fff;
+    background:var(--surface);
 }
 #toggleChips{
     display:flex;
@@ -40,17 +40,17 @@ body{font-family:sans-serif;margin:0}
     font-size:13px;
     padding:6px 12px;
     border-radius:16px;
-    border:1px solid #ccc;
-    background:#fff;
-    color:#555;
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--muted);
     line-height:1.2;
     white-space:nowrap;
 }
-.chip:hover{background:#eee;}
+.chip:hover{background:var(--hover);}
 .chip.on{
-    border-color:rgba(0,0,145,.45);
-    background:rgba(0,0,145,.12);
-    color:#00008f;
+    border-color:var(--accent-border);
+    background:var(--accent-bg);
+    color:var(--accent);
     font-weight:600;
 }
 #toolbarActions{
@@ -63,24 +63,24 @@ body{font-family:sans-serif;margin:0}
     cursor:pointer;
     font-size:13px;
     padding:6px 12px;
-    border:1px solid #ccc;
-    background:#fff;
+    border:1px solid var(--border);
+    background:var(--surface);
     border-radius:6px;
-    color:#333;
+    color:var(--text-2);
     line-height:1.2;
     white-space:nowrap;
     display:inline-flex;
     align-items:center;
     gap:6px;
 }
-.tool-btn:hover{background:#eee;}
+.tool-btn:hover{background:var(--hover);}
 .tool-btn.open{
-    border-color:rgba(0,0,145,.45);
-    background:rgba(0,0,145,.12);
-    color:#00008f;
+    border-color:var(--accent-border);
+    background:var(--accent-bg);
+    color:var(--accent);
 }
 .tool-badge{
-    background:#00008f;
+    background:var(--accent-solid);
     color:#fff;
     border-radius:10px;
     padding:1px 7px;
@@ -89,7 +89,7 @@ body{font-family:sans-serif;margin:0}
 }
 #tasksStatus{
     font-size:11px;
-    color:#c0504d;
+    color:var(--danger);
     flex:1 1 100%;
 }
 
@@ -98,7 +98,7 @@ body{font-family:sans-serif;margin:0}
     display:block;
     margin-top:10px;
     padding-top:10px;
-    border-top:1px solid #e2e2e2;
+    border-top:1px solid var(--border-soft);
 }
 #filtersGrid{
     display:grid;
@@ -119,7 +119,7 @@ body{font-family:sans-serif;margin:0}
 }
 .filter-label-text{
     font-size:12px;
-    color:#666;
+    color:var(--muted);
     overflow:hidden;
     text-overflow:ellipsis;
     white-space:nowrap;
@@ -128,13 +128,13 @@ body{font-family:sans-serif;margin:0}
     cursor:pointer;
     border:none;
     background:none;
-    color:#999;
+    color:var(--faint);
     font-size:12px;
     line-height:1;
     padding:2px 4px;
     border-radius:3px;
 }
-.filter-clear:hover{background:#e6e6e6;color:#c0392b;}
+.filter-clear:hover{background:var(--hover);color:var(--danger);}
 .filter-cell input[type=text],
 .filter-cell select,
 .filter-cell input[type=date]{
@@ -142,9 +142,9 @@ body{font-family:sans-serif;margin:0}
     box-sizing:border-box;
     padding:6px 8px;
     font-size:13px;
-    border:1px solid #ccc;
+    border:1px solid var(--border);
     border-radius:4px;
-    background:#fff;
+    background:var(--surface);
     min-height:32px;
 }
 .filter-date-controls{
@@ -153,15 +153,15 @@ body{font-family:sans-serif;margin:0}
 }
 .filter-date-op{flex:0 0 56px;}
 .filter-date-1,.filter-date-2{flex:1;min-width:0;}
-.filter-date-and{font-size:12px;color:#666;}
+.filter-date-and{font-size:12px;color:var(--muted);}
 .filter-multi-controls{width:100%;}
 .filter-multi-toggle{
     cursor:pointer;
     width:100%;
     box-sizing:border-box;
     text-align:left;
-    border:1px solid #ccc;
-    background:#fff;
+    border:1px solid var(--border);
+    background:var(--surface);
     border-radius:4px;
     padding:6px 8px;
     font-size:13px;
@@ -170,14 +170,14 @@ body{font-family:sans-serif;margin:0}
     text-overflow:ellipsis;
     white-space:nowrap;
 }
-.filter-multi-toggle:hover{background:#f5f5f5;}
+.filter-multi-toggle:hover{background:var(--hover);}
 .filter-multi-dropdown{
     position:absolute;
     top:100%;
     left:0;
     margin-top:4px;
-    background:#fff;
-    border:1px solid #ccc;
+    background:var(--surface);
+    border:1px solid var(--border);
     border-radius:6px;
     box-shadow:0 4px 14px rgba(0,0,0,.15);
     padding:8px;
@@ -194,14 +194,14 @@ body{font-family:sans-serif;margin:0}
     padding:3px 2px;
     white-space:nowrap;
 }
-.filter-multi-dropdown label:hover{background:#f5f5f5;}
+.filter-multi-dropdown label:hover{background:var(--hover);}
 .filter-multi-actions{
     display:flex;
     justify-content:space-between;
     font-size:11px;
-    color:#1e88e5;
+    color:var(--link);
     margin-bottom:6px;
-    border-bottom:1px solid #eee;
+    border-bottom:1px solid var(--border-soft);
     padding-bottom:6px;
 }
 .filter-multi-actions span{cursor:pointer;}
@@ -217,7 +217,7 @@ body{font-family:sans-serif;margin:0}
     cursor:pointer;
     border:none;
     background:none;
-    color:#1e5fa5;
+    color:var(--link);
     font-size:12px;
     padding:2px 0;
 }
@@ -229,21 +229,21 @@ body{font-family:sans-serif;margin:0}
     gap:8px;
     flex-wrap:wrap;
     font-size:13px;
-    color:#555;
+    color:var(--muted);
 }
 #sortPanel select{
     padding:6px 8px;
     font-size:13px;
-    border:1px solid #ccc;
+    border:1px solid var(--border);
     border-radius:4px;
-    background:#fff;
+    background:var(--surface);
     min-height:32px;
 }
 
 #freeNoteDisplay{
     margin-top:8px;
     font-size:13px;
-    color:#C0504D;
+    color:var(--danger);
     font-weight:600;
     white-space:normal;
     overflow-wrap:break-word;
@@ -258,13 +258,13 @@ body{font-family:sans-serif;margin:0}
     align-items:center;
     padding:6px 10px;
     font-size:11px;
-    color:#333;
+    color:var(--text-2);
 }
 .legend-item{display:flex;align-items:center;gap:5px;}
 .legend-swatch{width:12px;height:12px;border-radius:3px;display:inline-block;}
 .legend-toggle{
     cursor:pointer;
-    color:#1e5fa5;
+    color:var(--link);
     font-size:11px;
 }
 .legend-toggle:hover{text-decoration:underline;}
@@ -278,7 +278,7 @@ body{font-family:sans-serif;margin:0}
 }
 
 #gantt-table td{
-    border:1px solid #ddd;
+    border:1px solid var(--border-soft);
     height:30px;
     text-align:center;
     vertical-align:middle;
@@ -350,13 +350,13 @@ tr.task-row-sub td{
     height:26px;
 }
 .task-name-cell.task-name-sub-cell{
-    background:#fbfcfe;
+    background:var(--sub-row-bg);
     padding-left:34px;
 }
 .task-name-task{
     font-size:12.5px;
     font-weight:500;
-    color:#444;
+    color:var(--text-2);
     white-space:normal;
     overflow-wrap:break-word;
     line-height:1.3;
@@ -395,20 +395,20 @@ tr.task-row-sub td{
     box-shadow:2px 0 4px rgba(0,0,0,.08);
 }
 .task-name-header{
-    background:#f4f4f4;
+    background:var(--surface-alt);
     padding:4px 10px;
     z-index:7;
     position:sticky;
 }
 .task-name-cell{
-    background:#fff;
+    background:var(--surface);
     padding:6px 10px;
     vertical-align:middle;
 }
 .task-name-filter1{
     font-size:13px;
     font-weight:700;
-    color:#222;
+    color:var(--text-strong);
     white-space:normal;
     overflow-wrap:break-word;
     line-height:1.3;
@@ -416,7 +416,7 @@ tr.task-row-sub td{
 .task-name-main{
     font-size:13px;
     font-weight:500;
-    color:#1A1A8C;
+    color:var(--task-main);
     white-space:normal;
     overflow-wrap:break-word;
     line-height:1.3;
@@ -424,7 +424,7 @@ tr.task-row-sub td{
 .task-name-sub{
     font-size:13px;
     font-weight:400;
-    color:#666;
+    color:var(--muted);
     white-space:normal;
     overflow-wrap:break-word;
     line-height:1.3;
@@ -442,10 +442,10 @@ tr.task-row-sub td{
     padding-right:2px;
 }
 
-.weekend{background:#fafafa;}
+.weekend{background:var(--weekend);}
 
 /* Echelle mixte : colonnes annuelles (granularité plus large) légèrement grisées */
-#gantt-table col.unit-wide{background:#f0f0f0;}
+#gantt-table col.unit-wide{background:var(--unit-wide);}
 
 /* Ligne aujourd'hui */
 .today-line {
@@ -465,8 +465,8 @@ tr.task-row-sub td{
     top:40px;
     left:6px;
     z-index:200;
-    background:#fff;
-    border:1px solid #ccc;
+    background:var(--surface);
+    border:1px solid var(--border);
     border-radius:6px;
     box-shadow:0 4px 16px rgba(0,0,0,.18);
     padding:14px;
@@ -476,23 +476,23 @@ tr.task-row-sub td{
 #configPanel h3{margin:0 0 10px 0;font-size:14px;}
 #configRows{max-height:260px;overflow-y:auto;margin-bottom:8px;}
 .config-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
-.config-row input[type=text]{flex:1;padding:4px 6px;font-size:12px;border:1px solid #ccc;border-radius:3px;}
-.config-row select{padding:4px 6px;font-size:12px;border:1px solid #ccc;border-radius:3px;}
+.config-row input[type=text]{flex:1;padding:4px 6px;font-size:12px;border:1px solid var(--border);border-radius:3px;}
+.config-row select{padding:4px 6px;font-size:12px;border:1px solid var(--border);border-radius:3px;}
 .config-row input[type=color]{width:34px;height:28px;border:none;padding:0;cursor:pointer;}
-.cfg-remove{cursor:pointer;border:none;background:none;color:#c0392b;font-size:15px;padding:2px 6px;}
-.cfg-remove:hover{background:#fdecea;border-radius:3px;}
-#addRow{margin-bottom:10px;font-size:12px;padding:4px 8px;border:1px dashed #999;background:#fafafa;border-radius:4px;cursor:pointer;}
-#addRow:hover{background:#f0f0f0;}
-.config-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px;border-top:1px solid #eee;padding-top:10px;}
-.config-hint{font-size:11px;color:#888;margin-bottom:8px;}
+.cfg-remove{cursor:pointer;border:none;background:none;color:var(--danger);font-size:15px;padding:2px 6px;}
+.cfg-remove:hover{background:var(--danger-bg);border-radius:3px;}
+#addRow{margin-bottom:10px;font-size:12px;padding:4px 8px;border:1px dashed var(--faint);background:var(--surface-alt);border-radius:4px;cursor:pointer;}
+#addRow:hover{background:var(--hover);}
+.config-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px;border-top:1px solid var(--border-soft);padding-top:10px;}
+.config-hint{font-size:11px;color:var(--faint);margin-bottom:8px;}
 #saveConfig{background:#2e7d32;color:white;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;min-height:36px;}
-#cancelConfig{background:none;border:1px solid #ccc;padding:8px 16px;border-radius:4px;cursor:pointer;min-height:36px;}
+#cancelConfig{background:none;border:1px solid var(--border);padding:8px 16px;border-radius:4px;cursor:pointer;min-height:36px;}
 
 /* ===== Panneau latéral de détail ===== */
 #detailOverlay{
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,.25);
+    background:var(--overlay);
     opacity:0;
     pointer-events:none;
     transition:opacity .2s ease;
@@ -510,7 +510,7 @@ tr.task-row-sub td{
     height:100vh;
     width:380px;
     max-width:92vw;
-    background:#fff;
+    background:var(--surface);
     box-shadow:-3px 0 14px rgba(0,0,0,.2);
     transform:translateX(100%);
     transition:transform .25s ease;
@@ -526,8 +526,8 @@ tr.task-row-sub td{
     align-items:center;
     justify-content:space-between;
     padding:14px 16px;
-    border-bottom:1px solid #eee;
-    background:#f9f9f9;
+    border-bottom:1px solid var(--border-soft);
+    background:var(--surface-alt);
 }
 #detailPanelTitle{
     font-size:15px;
@@ -538,15 +538,15 @@ tr.task-row-sub td{
 }
 #detailPanelClose{
     cursor:pointer;
-    border:1px solid #ccc;
-    background:#fff;
+    border:1px solid var(--border);
+    background:var(--surface);
     border-radius:4px;
     padding:5px 10px;
     font-size:14px;
     line-height:1;
     flex:0 0 auto;
 }
-#detailPanelClose:hover{background:#eee;}
+#detailPanelClose:hover{background:var(--hover);}
 #detailPanelBody{
     padding:16px;
     overflow-y:auto;
@@ -563,7 +563,7 @@ tr.task-row-sub td{
 }
 .detail-value{
     font-size:12px;
-    color:#222;
+    color:var(--text-strong);
     overflow-wrap:break-word;
     white-space:pre-wrap;
 }
@@ -576,7 +576,7 @@ tr.task-row-sub td{
     margin-bottom:16px;
 }
 .detail-badge{
-    background:#eef2f8;
+    background:var(--badge-bg);
     border-radius:6px;
     padding:7px 11px;
     font-size:12px;
@@ -590,7 +590,7 @@ tr.task-row-sub td{
     align-items:flex-start;
     gap:2px;
 }
-.detail-badge .k{color:#5f5e5a;flex:0 0 auto;}
+.detail-badge .k{color:var(--muted);flex:0 0 auto;}
 .detail-badge .v{
     font-weight:700;
     color:var(--bleu-france);
@@ -608,8 +608,8 @@ tr.task-row-sub td{
 /* Encadré commentaire */
 .detail-comment-box{
     font-size:12px;
-    color:#333;
-    background:#fafaf8;
+    color:var(--text-2);
+    background:var(--comment-bg);
     border-radius:6px;
     padding:9px 11px;
     line-height:1.45;
@@ -620,7 +620,7 @@ tr.task-row-sub td{
 /* Rendu "journal de bord" : une entrée datée = un bloc distinct */
 .detail-journal{white-space:normal;}
 .detail-entry{
-    border-left:2px solid #b9c6dc;
+    border-left:2px solid var(--entry-border);
     padding-left:10px;
     margin-bottom:10px;
 }
@@ -642,8 +642,8 @@ tr.task-row-sub td{
     font-weight:700;
     text-transform:uppercase;
     letter-spacing:.03em;
-    background:#eef2f8;
-    color:#5f5e5a;
+    background:var(--badge-bg);
+    color:var(--muted);
     border-radius:3px;
     padding:1px 6px;
 }
@@ -671,14 +671,14 @@ tr.task-row-sub td{
     align-items:center;
     gap:8px;
     padding:8px 10px;
-    border:1px solid #ddd;
+    border:1px solid var(--border-soft);
     border-radius:6px;
     margin-bottom:8px;
     font-size:13px;
     text-decoration:none;
     color:var(--bleu-france);
 }
-.detail-attachment:hover{background:#eef2f8;}
+.detail-attachment:hover{background:var(--badge-bg);}
 .detail-form-button{
     display:flex;
     align-items:center;
@@ -696,7 +696,7 @@ tr.task-row-sub td{
 }
 .detail-form-button:hover{background:#001c73;}
 .detail-empty{
-    color:#999;
+    color:var(--faint);
     font-size:12.5px;
     font-style:italic;
 }
@@ -758,6 +758,35 @@ tr.task-row-sub td{
         display:none !important;
     }
 }
+/* ===== THÈME (clair par défaut, sombre selon le réglage de l'ordinateur) ===== */
+:root{
+    --bg:#fff; --surface:#fff; --surface-alt:#f4f4f4; --hover:#eee;
+    --text:#000; --text-strong:#222; --text-2:#333; --muted:#555; --faint:#999;
+    --border:#ccc; --border-soft:#e2e2e2;
+    --accent:#00008f; --accent-solid:#00008f; --accent-bg:rgba(0,0,145,.12); --accent-border:rgba(0,0,145,.45);
+    --link:#1e5fa5; --danger:#c0392b; --danger-bg:#fdecea;
+    --weekend:#fafafa; --unit-wide:#f0f0f0; --sub-row-bg:#fbfcfe;
+    --badge-bg:#eef2f8; --comment-bg:#fafaf8; --entry-border:#b9c6dc; --task-main:#1A1A8C;
+    --overlay:rgba(0,0,0,.25); --bar-track:#fff;
+}
+@media screen and (prefers-color-scheme:dark){
+    :root{
+        color-scheme:dark;
+        --bg:#1b1d21; --surface:#24272c; --surface-alt:#202328; --hover:#30343a;
+        --text:#e4e6ea; --text-strong:#f0f1f3; --text-2:#d2d5da; --muted:#a8adb4; --faint:#80868e;
+        --border:#474c54; --border-soft:#363a40;
+        --accent:#aebcff; --accent-solid:#4a5fd0; --accent-bg:rgba(120,140,255,.18); --accent-border:rgba(140,160,255,.55);
+        --link:#7ab4f5; --danger:#ef7a74; --danger-bg:rgba(239,122,116,.15);
+        --weekend:#202226; --unit-wide:#26292e; --sub-row-bg:#22252a;
+        --badge-bg:#2b313b; --comment-bg:#22252a; --entry-border:#4a5670; --task-main:#aebcff;
+        --overlay:rgba(0,0,0,.55); --bar-track:#24272c;
+        --green-pale:rgba(155,187,89,.18);  --green-text:#b9d57f;
+        --yellow-pale:rgba(255,204,0,.16);  --yellow-text:#ffd84d;
+        --orange-pale:rgba(247,150,70,.18); --orange-text:#f7ac6e;
+        --red-pale:rgba(192,80,77,.22);     --red-text:#ef8f8b;
+    }
+}
+
 </style>
 </head>
 
@@ -1137,7 +1166,7 @@ tr.task-row-sub td{
   <div style="margin-top:10px;">
     <label style="font-size:12px;display:flex;align-items:center;gap:6px;">
       Largeur de la colonne Tâche :
-      <input type="number" id="taskColWidthConfigInput" min="120" max="6000" step="10" style="width:80px;padding:4px 6px;font-size:12px;border:1px solid #ccc;border-radius:4px;">
+      <input type="number" id="taskColWidthConfigInput" min="120" max="6000" step="10" style="width:80px;padding:4px 6px;font-size:12px;border:1px solid var(--border);border-radius:4px;">
       px
     </label>
   </div>
@@ -1145,12 +1174,12 @@ tr.task-row-sub td{
   <div style="margin-top:10px;">
     <label style="font-size:12px;display:flex;align-items:center;gap:6px;">
       Largeur des colonnes de la frise (Mois/Trimestre/...) :
-      <input type="number" id="timelineColWidthConfigInput" min="30" max="300" step="5" style="width:70px;padding:4px 6px;font-size:12px;border:1px solid #ccc;border-radius:4px;">
+      <input type="number" id="timelineColWidthConfigInput" min="30" max="300" step="5" style="width:70px;padding:4px 6px;font-size:12px;border:1px solid var(--border);border-radius:4px;">
       px
     </label>
   </div>
 
-  <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
+  <div style="margin-top:12px;border-top:1px solid var(--border-soft);padding-top:10px;">
     <h3>Nature des actions</h3>
     <div class="config-hint">
       Valeurs affichées d'office à l'ouverture, et valeurs ajoutées uniquement si la puce correspondante est activée
@@ -1158,26 +1187,26 @@ tr.task-row-sub td{
       "Nature de l'action" dans le panneau de droite (association des colonnes).
     </div>
     <div class="config-row">
-      <span style="width:150px;font-size:12px;color:#555;">Affichées d'office :</span>
+      <span style="width:150px;font-size:12px;color:var(--muted);">Affichées d'office :</span>
       <input type="text" id="natureDefaultsInput" placeholder="PEPS, AV">
     </div>
     <div class="config-row">
-      <span style="width:150px;font-size:12px;color:#555;">Ajoutées via la puce :</span>
+      <span style="width:150px;font-size:12px;color:var(--muted);">Ajoutées via la puce :</span>
       <input type="text" id="natureOptionalInput" placeholder="MEO">
     </div>
     <div class="config-row">
-      <label style="font-size:12px;color:#555;display:flex;align-items:center;gap:6px;">
+      <label style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;">
         <input type="checkbox" id="natureSortEnabledInput">
         Classer les lignes selon cet ordre de natures (PEPS/AV avant MEO)
       </label>
     </div>
     <div class="config-row">
-      <span style="width:150px;font-size:12px;color:#555;">à l'intérieur de :</span>
+      <span style="width:150px;font-size:12px;color:var(--muted);">à l'intérieur de :</span>
       <select id="natureGroupFieldInput"></select>
     </div>
   </div>
 
-  <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
+  <div style="margin-top:12px;border-top:1px solid var(--border-soft);padding-top:10px;">
     <h3>Table des tâches liée</h3>
     <div class="config-hint">
       Identifiants (IDs techniques) de la table des tâches et de ses colonnes. Les tâches s'affichent en lignes
@@ -1185,249 +1214,249 @@ tr.task-row-sub td{
       Le widget doit disposer de l'accès complet au document.
     </div>
     <div class="config-row">
-      <span style="width:150px;font-size:12px;color:#555;">Table :</span>
+      <span style="width:150px;font-size:12px;color:var(--muted);">Table :</span>
       <input type="text" id="taskTableInput" placeholder="Liste_Tache">
     </div>
     <div class="config-row">
-      <span style="width:150px;font-size:12px;color:#555;">Libellé :</span>
+      <span style="width:150px;font-size:12px;color:var(--muted);">Libellé :</span>
       <input type="text" id="taskLabelInput" placeholder="ID_Tache">
     </div>
     <div class="config-row">
-      <span style="width:150px;font-size:12px;color:#555;">Date de début :</span>
+      <span style="width:150px;font-size:12px;color:var(--muted);">Date de début :</span>
       <input type="text" id="taskStartInput" placeholder="Date_Debut">
     </div>
     <div class="config-row">
-      <span style="width:150px;font-size:12px;color:#555;">Date de fin :</span>
+      <span style="width:150px;font-size:12px;color:var(--muted);">Date de fin :</span>
       <input type="text" id="taskEndInput" placeholder="Ech_Prev">
     </div>
     <div class="config-row">
-      <span style="width:150px;font-size:12px;color:#555;">Statut :</span>
+      <span style="width:150px;font-size:12px;color:var(--muted);">Statut :</span>
       <input type="text" id="taskStateInput" placeholder="Satut">
     </div>
     <div class="config-row">
-      <span style="width:150px;font-size:12px;color:#555;">Avancement :</span>
+      <span style="width:150px;font-size:12px;color:var(--muted);">Avancement :</span>
       <input type="text" id="taskProgressInput" placeholder="Avancement">
     </div>
     <div class="config-row">
-      <span style="width:150px;font-size:12px;color:#555;">Référence action :</span>
+      <span style="width:150px;font-size:12px;color:var(--muted);">Référence action :</span>
       <input type="text" id="taskParentInput" placeholder="ID_Action_MEO">
     </div>
   </div>
 
-  <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
+  <div style="margin-top:12px;border-top:1px solid var(--border-soft);padding-top:10px;">
     <h3>Libellés affichés sous le nom de tâche</h3>
     <div class="config-hint">
       Texte affiché devant la valeur de chaque champ de filtre, dans la colonne de gauche (ex: "Porteur"). Laissez vide pour ne pas afficher ce champ dans la colonne de gauche.
     </div>
     <div class="config-row">
-      <span style="width:70px;font-size:12px;color:#555;">Filtre 1 :</span>
+      <span style="width:70px;font-size:12px;color:var(--muted);">Filtre 1 :</span>
       <input type="text" id="filterLabel1" placeholder="ex: Porteur" style="flex:1;">
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterPercent1" class="filter-percent-checkbox" data-idx="1"> %  (tranches de 25)
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterDate1" class="filter-date-checkbox" data-idx="1"> c'est une date
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterMulti1" class="filter-multi-checkbox" data-idx="1"> sélection multiple
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel1"> masquer du panneau
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHideColumn1"> masquer colonne Tâche
       </label>
     </div>
     <div class="config-row">
-      <span style="width:70px;font-size:12px;color:#555;">Filtre 2 :</span>
+      <span style="width:70px;font-size:12px;color:var(--muted);">Filtre 2 :</span>
       <input type="text" id="filterLabel2" placeholder="ex: Groupement" style="flex:1;">
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterPercent2" class="filter-percent-checkbox" data-idx="2"> %  (tranches de 25)
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterDate2" class="filter-date-checkbox" data-idx="2"> c'est une date
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterMulti2" class="filter-multi-checkbox" data-idx="2"> sélection multiple
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel2"> masquer du panneau
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHideColumn2"> masquer colonne Tâche
       </label>
     </div>
     <div class="config-row">
-      <span style="width:70px;font-size:12px;color:#555;">Filtre 3 :</span>
+      <span style="width:70px;font-size:12px;color:var(--muted);">Filtre 3 :</span>
       <input type="text" id="filterLabel3" placeholder="ex: ..." style="flex:1;">
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterPercent3" class="filter-percent-checkbox" data-idx="3"> %  (tranches de 25)
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterDate3" class="filter-date-checkbox" data-idx="3"> c'est une date
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterMulti3" class="filter-multi-checkbox" data-idx="3"> sélection multiple
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel3"> masquer du panneau
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHideColumn3"> masquer colonne Tâche
       </label>
     </div>
     <div class="config-row">
-      <span style="width:70px;font-size:12px;color:#555;">Filtre 4 :</span>
+      <span style="width:70px;font-size:12px;color:var(--muted);">Filtre 4 :</span>
       <input type="text" id="filterLabel4" placeholder="ex: ..." style="flex:1;">
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterPercent4" class="filter-percent-checkbox" data-idx="4"> %  (tranches de 25)
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterDate4" class="filter-date-checkbox" data-idx="4"> c'est une date
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterMulti4" class="filter-multi-checkbox" data-idx="4"> sélection multiple
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel4"> masquer du panneau
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHideColumn4"> masquer colonne Tâche
       </label>
     </div>
     <div class="config-row">
-      <span style="width:70px;font-size:12px;color:#555;">Filtre 5 :</span>
+      <span style="width:70px;font-size:12px;color:var(--muted);">Filtre 5 :</span>
       <input type="text" id="filterLabel5" placeholder="ex: ..." style="flex:1;">
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterPercent5" class="filter-percent-checkbox" data-idx="5"> %  (tranches de 25)
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterDate5" class="filter-date-checkbox" data-idx="5"> c'est une date
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterMulti5" class="filter-multi-checkbox" data-idx="5"> sélection multiple
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel5"> masquer du panneau
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHideColumn5"> masquer colonne Tâche
       </label>
     </div>
     <div class="config-row">
-      <span style="width:70px;font-size:12px;color:#555;">Filtre 6 :</span>
+      <span style="width:70px;font-size:12px;color:var(--muted);">Filtre 6 :</span>
       <input type="text" id="filterLabel6" placeholder="ex: ..." style="flex:1;">
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterPercent6" class="filter-percent-checkbox" data-idx="6"> %  (tranches de 25)
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterDate6" class="filter-date-checkbox" data-idx="6"> c'est une date
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterMulti6" class="filter-multi-checkbox" data-idx="6"> sélection multiple
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel6"> masquer du panneau
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHideColumn6"> masquer colonne Tâche
       </label>
     </div>
     <div class="config-row">
-      <span style="width:70px;font-size:12px;color:#555;">Filtre 7 :</span>
+      <span style="width:70px;font-size:12px;color:var(--muted);">Filtre 7 :</span>
       <input type="text" id="filterLabel7" placeholder="ex: ..." style="flex:1;">
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterPercent7" class="filter-percent-checkbox" data-idx="7"> %  (tranches de 25)
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterDate7" class="filter-date-checkbox" data-idx="7"> c'est une date
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterMulti7" class="filter-multi-checkbox" data-idx="7"> sélection multiple
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel7"> masquer du panneau
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHideColumn7"> masquer colonne Tâche
       </label>
     </div>
     <div class="config-row">
-      <span style="width:70px;font-size:12px;color:#555;">Filtre 8 :</span>
+      <span style="width:70px;font-size:12px;color:var(--muted);">Filtre 8 :</span>
       <input type="text" id="filterLabel8" placeholder="ex: ..." style="flex:1;">
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterPercent8" class="filter-percent-checkbox" data-idx="8"> %  (tranches de 25)
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterDate8" class="filter-date-checkbox" data-idx="8"> c'est une date
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterMulti8" class="filter-multi-checkbox" data-idx="8"> sélection multiple
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHidePanel8"> masquer du panneau
       </label>
-      <label style="font-size:11px;color:#555;display:flex;align-items:center;gap:3px;white-space:nowrap;">
+      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
         <input type="checkbox" id="filterHideColumn8"> masquer colonne Tâche
       </label>
     </div>
   </div>
 
-  <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
+  <div style="margin-top:12px;border-top:1px solid var(--border-soft);padding-top:10px;">
     <h3>Champs supplémentaires (panneau détail uniquement)</h3>
     <div class="config-hint">
       Texte affiché devant la valeur, dans le panneau qui s'ouvre au clic sur une barre. Laissez vide pour ne pas afficher ce champ.
     </div>
     <div class="config-row">
-      <span style="width:70px;font-size:12px;color:#555;">Champ 1 :</span>
+      <span style="width:70px;font-size:12px;color:var(--muted);">Champ 1 :</span>
       <input type="text" id="extraLabel1" placeholder="ex: Budget">
     </div>
     <div class="config-row">
-      <span style="width:70px;font-size:12px;color:#555;">Champ 2 :</span>
+      <span style="width:70px;font-size:12px;color:var(--muted);">Champ 2 :</span>
       <input type="text" id="extraLabel2" placeholder="ex: ...">
     </div>
     <div class="config-row">
-      <span style="width:70px;font-size:12px;color:#555;">Champ 3 :</span>
+      <span style="width:70px;font-size:12px;color:var(--muted);">Champ 3 :</span>
       <input type="text" id="extraLabel3" placeholder="ex: ...">
     </div>
     <div class="config-row">
-      <span style="width:70px;font-size:12px;color:#555;">Champ 4 :</span>
+      <span style="width:70px;font-size:12px;color:var(--muted);">Champ 4 :</span>
       <input type="text" id="extraLabel4" placeholder="ex: ...">
     </div>
     <div class="config-row">
-      <span style="width:70px;font-size:12px;color:#555;">Champ 5 :</span>
+      <span style="width:70px;font-size:12px;color:var(--muted);">Champ 5 :</span>
       <input type="text" id="extraLabel5" placeholder="ex: ...">
     </div>
     <div class="config-row">
-      <span style="width:70px;font-size:12px;color:#555;">Champ 6 :</span>
+      <span style="width:70px;font-size:12px;color:var(--muted);">Champ 6 :</span>
       <input type="text" id="extraLabel6" placeholder="ex: ...">
     </div>
   </div>
 
-  <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
+  <div style="margin-top:12px;border-top:1px solid var(--border-soft);padding-top:10px;">
     <h3>Note libre</h3>
     <div class="config-hint">
       Texte affiché dans le bandeau (lecture seule pour les autres utilisateurs, modifiable uniquement ici).
     </div>
-    <textarea id="freeNoteConfigInput" placeholder="Écrire une note..." style="width:100%;box-sizing:border-box;min-height:70px;padding:8px;font-size:13px;font-family:inherit;border:1px solid #ccc;border-radius:4px;resize:vertical;"></textarea>
+    <textarea id="freeNoteConfigInput" placeholder="Écrire une note..." style="width:100%;box-sizing:border-box;min-height:70px;padding:8px;font-size:13px;font-family:inherit;border:1px solid var(--border);border-radius:4px;resize:vertical;"></textarea>
   </div>
 
-  <div style="margin-top:12px;border-top:1px solid #eee;padding-top:10px;">
+  <div style="margin-top:12px;border-top:1px solid var(--border-soft);padding-top:10px;">
     <h3>Lien vers un formulaire (panneau détail)</h3>
     <div class="config-hint">
       URL de votre formulaire Grist. Si renseignée, un lien pour l'ouvrir apparaît dans le panneau latéral au clic sur une tâche.
     </div>
-    <input type="text" id="formUrlConfigInput" placeholder="https://docs.getgrist.com/.../forms/..." style="width:100%;box-sizing:border-box;padding:8px;font-size:13px;font-family:inherit;border:1px solid #ccc;border-radius:4px;">
+    <input type="text" id="formUrlConfigInput" placeholder="https://docs.getgrist.com/.../forms/..." style="width:100%;box-sizing:border-box;padding:8px;font-size:13px;font-family:inherit;border:1px solid var(--border);border-radius:4px;">
 
     <div class="config-hint" style="margin-top:10px;">
       Pré-remplissage (facultatif) : associez l'identifiant de colonne de votre formulaire (visible sous chaque champ dans l'éditeur de formulaire Grist) à une donnée du planning.
     </div>
     <div id="formPrefillRows"></div>
-    <button id="addFormPrefillRow" type="button" style="margin-top:6px;font-size:12px;padding:4px 8px;border:1px dashed #999;background:#fafafa;border-radius:4px;cursor:pointer;">+ Ajouter une correspondance</button>
+    <button id="addFormPrefillRow" type="button" style="margin-top:6px;font-size:12px;padding:4px 8px;border:1px dashed var(--faint);background:var(--surface-alt);border-radius:4px;cursor:pointer;">+ Ajouter une correspondance</button>
   </div>
 
   <div class="config-footer">
-    <button id="resetConfig" type="button" style="background:none;border:none;color:#888;font-size:11px;cursor:pointer;text-decoration:underline;">Réinitialiser les valeurs par défaut</button>
+    <button id="resetConfig" type="button" style="background:none;border:none;color:var(--faint);font-size:11px;cursor:pointer;text-decoration:underline;">Réinitialiser les valeurs par défaut</button>
     <div>
       <button id="cancelConfig" type="button">Fermer</button>
       <button id="saveConfig" type="button">Enregistrer</button>
@@ -2485,6 +2514,12 @@ function stateRule(state){
 }
 
 // Éclaircit une couleur hex en la mélangeant avec du blanc (amount: 0 = inchangé, 1 = blanc pur)
+// Partie non réalisée d'une barre : 40 % de la couleur du statut, mêlée au fond du thème
+function barTrack(color){
+    if(window.CSS && CSS.supports && CSS.supports('color','color-mix(in srgb, red 40%, white)'))
+        return `color-mix(in srgb, ${color} 40%, var(--bar-track))`
+    return lightenColor(color, 0.6)
+}
 function lightenColor(hex, amount){
     let c = String(hex).replace('#','')
     if(c.length===3) c = c.split('').map(ch=>ch+ch).join('')
@@ -2821,7 +2856,7 @@ function renderTaskRow(t, units){
     let progressOverlay = ""
     let progressBadge = ""
     if(showProgress && progress!==null){
-        cellBg = lightenColor(rule.color, 0.6)
+        cellBg = barTrack(rule.color)
         progressOverlay = `<div class="progress-overlay" style="width:${progress}%;background:${rule.color}"></div>`
         progressBadge = `<span class="progress-badge progress-badge-sm">${progress}%</span>`
     }
@@ -2987,7 +3022,7 @@ function draw(records,mappings){
             let progressOverlay = ""
             let progressBadge = ""
             if(showProgress && progress!==null){
-                cellBg = lightenColor(rule.color, 0.6)
+                cellBg = barTrack(rule.color)
                 progressOverlay = `<div class="progress-overlay" style="width:${progress}%;background:${rule.color}"></div>`
                 progressBadge = `<span class="progress-badge">${progress}%</span>`
             }
