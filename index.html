@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Widget planning (Gantt) — version 2026-10-15-c : ouverture de la fiche dans la console par double-clic ; paramétrage en dur (colonnes de la console), filtre Projet, couleur par groupement, clic = fiche dans la console -->
+<!-- Widget planning (Gantt) — version 2026-10-15-e : fiche console ouverte dans un nouvel onglet ; lecture directe de Liste_Action_MEO, identifiants de colonnes corrigés ; ouverture de la fiche dans la console par double-clic ; paramétrage en dur (colonnes de la console), filtre Projet, couleur par groupement, clic = fiche dans la console -->
 <html>
 <head>
 <meta charset="utf-8">
@@ -1282,16 +1282,16 @@ grist.ready({
 
 /* =====================================================================
    PARAMÉTRAGE EN DUR (remplace le panneau ⚙ et le mappage des colonnes)
-   Reprend les noms de colonnes de la console projets (table Liste_PEPS_AV).
+   Reprend les colonnes de la console projets (identifiants Grist, table Liste_Action_MEO).
    Pour changer un réglage : modifier ce bloc.
    ===================================================================== */
 const CONFIG = {
-    table: "Liste_PEPS_AV",
+    table: "Liste_Action_MEO",          // table principale de la console (lue directement)
     /* double-clic sur un projet ou une action : ouvre cette page, sur la fiche */
     console: { page: "Console_Projets_Actions" },
     colonnes: {
         libelle:   "ID_Action_MEO",     // intitulé complet, projets et actions
-        debut:     "Date_Début",
+        debut:     "Date_Debut",
         fin:       "Ech_Prev",
         statut:    "Statut",
         avancement:"Avancement",
@@ -1304,7 +1304,7 @@ const CONFIG = {
         {libelle:"Groupement",    colonne:"Groupement",     type:"multi"},
         {libelle:"Sponsor CODIR", colonne:"Sponsor_CODIR",  type:"multi"},
         {libelle:"Porteur",       colonne:"Porteur",        type:"multi"},
-        {libelle:"Priorité",      colonne:"Priorité",       type:"multi"},
+        {libelle:"Priorité",      colonne:"Priorite",       type:"multi"},
         {libelle:"Statut",        colonne:"Statut",         type:"multi"},
         {libelle:"Avancement",    colonne:"Avancement",     type:"pourcent"},
         {libelle:"Échéance",      colonne:"Ech_Prev",       type:"date"},
@@ -3388,7 +3388,7 @@ function renderLegend(){
     if(showTasks && tasksLoaded){
         items.push(`<span class="legend-item">↳ Tâche</span>`)
     }
-    items.push(`<span class="legend-item" style="color:var(--faint)">Double-clic : ouvrir la fiche dans la console</span>`)
+    items.push(`<span class="legend-item" style="color:var(--faint)">Double-clic : ouvrir la fiche dans la console (nouvel onglet)</span>`)
     legend.innerHTML = items.join("")
 }
 
@@ -3478,12 +3478,10 @@ function ouvrirDansConsole(rowId){
         return
     }
     const url = lienConsole(rowId)
-    // bascule dans le même onglet si Grist l'autorise ; sinon, lien vers un nouvel onglet
-    let tente = false
-    try{ window.top.location.href = url; tente = true }catch(e){}
-    setTimeout(()=>{
-        avisPlanning(`<span>Grist n'autorise pas le widget à changer de page.</span><a href="${escapeAttr(url)}" target="_blank" rel="noopener">Ouvrir la fiche dans un nouvel onglet</a>`)
-    }, tente ? 1500 : 0)
+    // nouvel onglet : le planning reste ouvert dans l'onglet en cours
+    let w = null
+    try{ w = window.open(url, "_blank") }catch(e){}
+    if(!w) avisPlanning(`<span>Le navigateur a bloqué l'ouverture automatique.</span><a href="${escapeAttr(url)}" target="_blank" rel="noopener">Ouvrir la fiche dans un nouvel onglet</a>`)
 }
 ganttContainerEl.addEventListener("dblclick", e=>{
     if(e.target.closest("[data-chev]") || e.target.closest("[data-grp]")) return
@@ -3929,7 +3927,24 @@ function formatDateFr(v){
 }
 
 // Format ISO (aaaa-mm-jj), plus fiable pour pré-remplir un champ Date de formulaire
-grist.onRecords(r=>draw(r, mappingsFromConfig(r)))
+/* Le planning lit lui-même la table principale : il fonctionne quelle que soit la
+   table sur laquelle le widget est posé. Un changement signalé par Grist relance la lecture. */
+let tChargement = null
+async function chargerDonnees(){
+    try{
+        const recs = columnarToRecords(await grist.docApi.fetchTable(CONFIG.table))
+        const m = mappingsFromConfig(recs)
+        const manquantes = Object.entries(CONFIG.colonnes).filter(([k,c])=>!recs.length || !(c in recs[0])).map(([k,c])=>c)
+        if(recs.length && manquantes.length)
+            avisPlanning(`<span>Colonnes introuvables dans « ${escapeHtml(CONFIG.table)} » : ${escapeHtml(manquantes.join(", "))}.</span>`)
+        draw(recs, m)
+    }catch(e){
+        avisPlanning(`<span>Lecture de la table « ${escapeHtml(CONFIG.table)} » impossible : ${escapeHtml(e.message||String(e))}</span>`)
+    }
+}
+function chargerBientot(){ clearTimeout(tChargement); tChargement = setTimeout(chargerDonnees, 150) }
+grist.onRecords(()=>chargerBientot())
+chargerBientot()
 </script>
 </body>
 </html>
