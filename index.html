@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Widget planning (Gantt) — version 2026-10-14-a : langage de la console, sélection reliée, export PDF / diaporama, regroupement -->
+<!-- Widget planning (Gantt) — version 2026-10-15-a : paramétrage en dur (colonnes de la console), filtre Projet, couleur par groupement, clic = fiche dans la console -->
 <html>
 <head>
 <meta charset="utf-8">
@@ -762,7 +762,7 @@ tr.task-row-sub td{
     }
 }
 /* ===== Langage de la console : hiérarchie, couleurs, regroupement, export ===== */
-#groupByWrap{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);white-space:nowrap;}
+#groupByWrap,#colorByWrap{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);white-space:nowrap;}
 .tool-btn.btn-pdf{background:#F5A623;color:#3d2600;border-color:#F5A623;font-weight:bold;}
 .tool-btn.btn-pdf:hover{background:#E0921A;border-color:#E0921A;}
 #gantt-table td.bar-td{position:relative;padding:0;}
@@ -780,6 +780,9 @@ tr.task-row-sub td{
 #gantt-table tbody tr.sel td.task-name-cell{box-shadow:inset 3px 0 0 #1d6fd6, 2px 0 4px rgba(0,0,0,.08);}
 .task-name-cell.has-pct{padding-right:56px;}
 .nm-pct{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11.5px;color:var(--muted);font-weight:normal;}
+.liser{position:absolute;left:0;top:4px;bottom:4px;width:5px;border-radius:0 2px 2px 0;}
+.grp-carre{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 7px 0 2px;vertical-align:-1px;}
+.legend-titre{font-weight:bold;}
 .chev{display:inline-block;width:16px;color:var(--faint);cursor:pointer;user-select:none;}
 .chev.vide{cursor:default;visibility:hidden;}
 .nm-proj{font-size:13px;font-weight:bold;color:#C0504D;white-space:normal;overflow-wrap:break-word;line-height:1.3;}
@@ -864,6 +867,10 @@ tr.task-row-sub td{
 
     <label id="groupByWrap" title="Regrouper les projets selon l'un des champs de filtre">Regrouper par
       <select id="groupBy"><option value="">Aucun</option></select>
+    </label>
+
+    <label id="colorByWrap" title="Colorer les projets selon un champ (couleurs fixes pour les groupements)">Couleur par
+      <select id="colorBy"><option value="">Aucune</option></select>
     </label>
 
     <div id="toggleChips">
@@ -1149,6 +1156,39 @@ tr.task-row-sub td{
         </span>
       </div>
 
+      <div class="filter-cell" id="filterControls-filterField9">
+        <div class="filter-cell-head">
+          <span class="filter-label-text" data-key="filterField9">Filtre 9</span>
+          <button type="button" class="filter-clear" data-key="filterField9" title="Effacer ce filtre" style="display:none;">✕</button>
+        </div>
+        <input type="text" class="filter-input" data-key="filterField9" list="filterOptions-filterField9" placeholder="Tous" autocomplete="off">
+        <datalist id="filterOptions-filterField9"></datalist>
+        <select class="filter-percent-select" data-key="filterField9" style="display:none;">
+          <option value="">Tous</option>
+          <option value="0-25">0 – 25%</option>
+          <option value="25-50">25 – 50%</option>
+          <option value="50-75">50 – 75%</option>
+          <option value="75-100">75 – 100%</option>
+        </select>
+        <span class="filter-date-controls" data-key="filterField9" style="display:none;align-items:center;">
+          <select class="filter-date-op" data-key="filterField9">
+            <option value="lt">&lt;</option>
+            <option value="lte">≤</option>
+            <option value="eq">=</option>
+            <option value="gte">≥</option>
+            <option value="gt">&gt;</option>
+            <option value="between">Entre</option>
+          </select>
+          <input type="date" class="filter-date-1" data-key="filterField9">
+          <span class="filter-date-and" data-key="filterField9" style="display:none;">et</span>
+          <input type="date" class="filter-date-2" data-key="filterField9" style="display:none;">
+        </span>
+        <span class="filter-multi-controls" data-key="filterField9" style="display:none;position:relative;">
+          <button type="button" class="filter-multi-toggle" data-key="filterField9">Tous</button>
+          <div class="filter-multi-dropdown" data-key="filterField9" style="display:none;"></div>
+        </span>
+      </div>
+
     </div>
 
     <div id="panelFooter">
@@ -1201,331 +1241,7 @@ tr.task-row-sub td{
     </div>
   </div>
 
-  <div id="freeNoteDisplay" style="display:none;"></div>
-</div>
-
-<div id="configPanel">
-  <h3>Configuration des statuts</h3>
-  <div class="config-hint">
-    Chaque ligne définit un texte que la colonne "Etat" doit avoir en <strong>début</strong> de valeur (insensible à la casse).
-    Laissez le champ "texte à repérer" vide pour créer le statut par défaut (utilisé quand aucune règle ne correspond).
-  </div>
-  <div id="configRows"></div>
-  <button id="addRow" type="button">+ Ajouter un statut</button>
-
-  <div>
-    <label style="font-size:12px;">
-      Couleur des jalons :
-      <input type="color" id="milestoneColorInput">
-    </label>
-  </div>
-
-  <div style="margin-top:10px;">
-    <label style="font-size:12px;display:flex;align-items:center;gap:6px;">
-      <input type="checkbox" id="showStatusInPanelInput">
-      Afficher le Statut (Etat) dans le panneau latéral
-    </label>
-  </div>
-
-  <div style="margin-top:10px;">
-    <label style="font-size:12px;display:flex;align-items:center;gap:6px;">
-      Largeur de la colonne Tâche :
-      <input type="number" id="taskColWidthConfigInput" min="120" max="6000" step="10" style="width:80px;padding:4px 6px;font-size:12px;border:1px solid var(--border);border-radius:4px;">
-      px
-    </label>
-  </div>
-
-  <div style="margin-top:10px;">
-    <label style="font-size:12px;display:flex;align-items:center;gap:6px;">
-      Largeur des colonnes de la frise (Mois/Trimestre/...) :
-      <input type="number" id="timelineColWidthConfigInput" min="30" max="300" step="5" style="width:70px;padding:4px 6px;font-size:12px;border:1px solid var(--border);border-radius:4px;">
-      px
-    </label>
-  </div>
-
-  <div style="margin-top:12px;border-top:1px solid var(--border-soft);padding-top:10px;">
-    <h3>Nature des actions</h3>
-    <div class="config-hint">
-      Valeurs affichées d'office à l'ouverture, et valeurs ajoutées uniquement si la puce correspondante est activée
-      dans le bandeau. Séparez par des virgules. Nécessite d'associer la colonne
-      "Nature de l'action" dans le panneau de droite (association des colonnes).
-    </div>
-    <div class="config-row">
-      <span style="width:150px;font-size:12px;color:var(--muted);">Affichées d'office :</span>
-      <input type="text" id="natureDefaultsInput" placeholder="PEPS, AV">
-    </div>
-    <div class="config-row">
-      <span style="width:150px;font-size:12px;color:var(--muted);">Ajoutées via la puce :</span>
-      <input type="text" id="natureOptionalInput" placeholder="MEO">
-    </div>
-    <div class="config-row">
-      <label style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;">
-        <input type="checkbox" id="natureSortEnabledInput">
-        Classer les lignes selon cet ordre de natures (PEPS/AV avant MEO)
-      </label>
-    </div>
-    <div class="config-row">
-      <span style="width:150px;font-size:12px;color:var(--muted);">à l'intérieur de :</span>
-      <select id="natureGroupFieldInput"></select>
-    </div>
-  </div>
-
-  <div style="margin-top:12px;border-top:1px solid var(--border-soft);padding-top:10px;">
-    <h3>Table des tâches liée</h3>
-    <div class="config-hint">
-      Identifiants (IDs techniques) de la table des tâches et de ses colonnes. Les tâches s'affichent en lignes
-      indentées sous leur action parente quand la puce "Tâches" est activée.
-      Le widget doit disposer de l'accès complet au document.
-    </div>
-    <div class="config-row">
-      <span style="width:150px;font-size:12px;color:var(--muted);">Table :</span>
-      <input type="text" id="taskTableInput" placeholder="Liste_Tache">
-    </div>
-    <div class="config-row">
-      <span style="width:150px;font-size:12px;color:var(--muted);">Libellé :</span>
-      <input type="text" id="taskLabelInput" placeholder="ID_Tache">
-    </div>
-    <div class="config-row">
-      <span style="width:150px;font-size:12px;color:var(--muted);">Date de début :</span>
-      <input type="text" id="taskStartInput" placeholder="Date_Debut">
-    </div>
-    <div class="config-row">
-      <span style="width:150px;font-size:12px;color:var(--muted);">Date de fin :</span>
-      <input type="text" id="taskEndInput" placeholder="Ech_Prev">
-    </div>
-    <div class="config-row">
-      <span style="width:150px;font-size:12px;color:var(--muted);">Statut :</span>
-      <input type="text" id="taskStateInput" placeholder="Satut">
-    </div>
-    <div class="config-row">
-      <span style="width:150px;font-size:12px;color:var(--muted);">Avancement :</span>
-      <input type="text" id="taskProgressInput" placeholder="Avancement">
-    </div>
-    <div class="config-row">
-      <span style="width:150px;font-size:12px;color:var(--muted);">Référence action :</span>
-      <input type="text" id="taskParentInput" placeholder="ID_Action_MEO">
-    </div>
-  </div>
-
-  <div style="margin-top:12px;border-top:1px solid var(--border-soft);padding-top:10px;">
-    <h3>Libellés affichés sous le nom de tâche</h3>
-    <div class="config-hint">
-      Texte affiché devant la valeur de chaque champ de filtre, dans la colonne de gauche (ex: "Porteur"). Laissez vide pour ne pas afficher ce champ dans la colonne de gauche.
-    </div>
-    <div class="config-row">
-      <span style="width:70px;font-size:12px;color:var(--muted);">Filtre 1 :</span>
-      <input type="text" id="filterLabel1" placeholder="ex: Porteur" style="flex:1;">
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterPercent1" class="filter-percent-checkbox" data-idx="1"> %  (tranches de 25)
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterDate1" class="filter-date-checkbox" data-idx="1"> c'est une date
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterMulti1" class="filter-multi-checkbox" data-idx="1"> sélection multiple
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterHidePanel1"> masquer du panneau
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterHideColumn1"> masquer colonne Tâche
-      </label>
-    </div>
-    <div class="config-row">
-      <span style="width:70px;font-size:12px;color:var(--muted);">Filtre 2 :</span>
-      <input type="text" id="filterLabel2" placeholder="ex: Groupement" style="flex:1;">
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterPercent2" class="filter-percent-checkbox" data-idx="2"> %  (tranches de 25)
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterDate2" class="filter-date-checkbox" data-idx="2"> c'est une date
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterMulti2" class="filter-multi-checkbox" data-idx="2"> sélection multiple
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterHidePanel2"> masquer du panneau
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterHideColumn2"> masquer colonne Tâche
-      </label>
-    </div>
-    <div class="config-row">
-      <span style="width:70px;font-size:12px;color:var(--muted);">Filtre 3 :</span>
-      <input type="text" id="filterLabel3" placeholder="ex: ..." style="flex:1;">
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterPercent3" class="filter-percent-checkbox" data-idx="3"> %  (tranches de 25)
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterDate3" class="filter-date-checkbox" data-idx="3"> c'est une date
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterMulti3" class="filter-multi-checkbox" data-idx="3"> sélection multiple
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterHidePanel3"> masquer du panneau
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterHideColumn3"> masquer colonne Tâche
-      </label>
-    </div>
-    <div class="config-row">
-      <span style="width:70px;font-size:12px;color:var(--muted);">Filtre 4 :</span>
-      <input type="text" id="filterLabel4" placeholder="ex: ..." style="flex:1;">
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterPercent4" class="filter-percent-checkbox" data-idx="4"> %  (tranches de 25)
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterDate4" class="filter-date-checkbox" data-idx="4"> c'est une date
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterMulti4" class="filter-multi-checkbox" data-idx="4"> sélection multiple
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterHidePanel4"> masquer du panneau
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterHideColumn4"> masquer colonne Tâche
-      </label>
-    </div>
-    <div class="config-row">
-      <span style="width:70px;font-size:12px;color:var(--muted);">Filtre 5 :</span>
-      <input type="text" id="filterLabel5" placeholder="ex: ..." style="flex:1;">
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterPercent5" class="filter-percent-checkbox" data-idx="5"> %  (tranches de 25)
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterDate5" class="filter-date-checkbox" data-idx="5"> c'est une date
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterMulti5" class="filter-multi-checkbox" data-idx="5"> sélection multiple
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterHidePanel5"> masquer du panneau
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterHideColumn5"> masquer colonne Tâche
-      </label>
-    </div>
-    <div class="config-row">
-      <span style="width:70px;font-size:12px;color:var(--muted);">Filtre 6 :</span>
-      <input type="text" id="filterLabel6" placeholder="ex: ..." style="flex:1;">
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterPercent6" class="filter-percent-checkbox" data-idx="6"> %  (tranches de 25)
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterDate6" class="filter-date-checkbox" data-idx="6"> c'est une date
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterMulti6" class="filter-multi-checkbox" data-idx="6"> sélection multiple
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterHidePanel6"> masquer du panneau
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterHideColumn6"> masquer colonne Tâche
-      </label>
-    </div>
-    <div class="config-row">
-      <span style="width:70px;font-size:12px;color:var(--muted);">Filtre 7 :</span>
-      <input type="text" id="filterLabel7" placeholder="ex: ..." style="flex:1;">
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterPercent7" class="filter-percent-checkbox" data-idx="7"> %  (tranches de 25)
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterDate7" class="filter-date-checkbox" data-idx="7"> c'est une date
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterMulti7" class="filter-multi-checkbox" data-idx="7"> sélection multiple
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterHidePanel7"> masquer du panneau
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterHideColumn7"> masquer colonne Tâche
-      </label>
-    </div>
-    <div class="config-row">
-      <span style="width:70px;font-size:12px;color:var(--muted);">Filtre 8 :</span>
-      <input type="text" id="filterLabel8" placeholder="ex: ..." style="flex:1;">
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterPercent8" class="filter-percent-checkbox" data-idx="8"> %  (tranches de 25)
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterDate8" class="filter-date-checkbox" data-idx="8"> c'est une date
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterMulti8" class="filter-multi-checkbox" data-idx="8"> sélection multiple
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterHidePanel8"> masquer du panneau
-      </label>
-      <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;white-space:nowrap;">
-        <input type="checkbox" id="filterHideColumn8"> masquer colonne Tâche
-      </label>
-    </div>
-  </div>
-
-  <div style="margin-top:12px;border-top:1px solid var(--border-soft);padding-top:10px;">
-    <h3>Champs supplémentaires (panneau détail uniquement)</h3>
-    <div class="config-hint">
-      Texte affiché devant la valeur, dans le panneau qui s'ouvre au clic sur une barre. Laissez vide pour ne pas afficher ce champ.
-    </div>
-    <div class="config-row">
-      <span style="width:70px;font-size:12px;color:var(--muted);">Champ 1 :</span>
-      <input type="text" id="extraLabel1" placeholder="ex: Budget">
-    </div>
-    <div class="config-row">
-      <span style="width:70px;font-size:12px;color:var(--muted);">Champ 2 :</span>
-      <input type="text" id="extraLabel2" placeholder="ex: ...">
-    </div>
-    <div class="config-row">
-      <span style="width:70px;font-size:12px;color:var(--muted);">Champ 3 :</span>
-      <input type="text" id="extraLabel3" placeholder="ex: ...">
-    </div>
-    <div class="config-row">
-      <span style="width:70px;font-size:12px;color:var(--muted);">Champ 4 :</span>
-      <input type="text" id="extraLabel4" placeholder="ex: ...">
-    </div>
-    <div class="config-row">
-      <span style="width:70px;font-size:12px;color:var(--muted);">Champ 5 :</span>
-      <input type="text" id="extraLabel5" placeholder="ex: ...">
-    </div>
-    <div class="config-row">
-      <span style="width:70px;font-size:12px;color:var(--muted);">Champ 6 :</span>
-      <input type="text" id="extraLabel6" placeholder="ex: ...">
-    </div>
-  </div>
-
-  <div style="margin-top:12px;border-top:1px solid var(--border-soft);padding-top:10px;">
-    <h3>Note libre</h3>
-    <div class="config-hint">
-      Texte affiché dans le bandeau (lecture seule pour les autres utilisateurs, modifiable uniquement ici).
-    </div>
-    <textarea id="freeNoteConfigInput" placeholder="Écrire une note..." style="width:100%;box-sizing:border-box;min-height:70px;padding:8px;font-size:13px;font-family:inherit;border:1px solid var(--border);border-radius:4px;resize:vertical;"></textarea>
-  </div>
-
-  <div style="margin-top:12px;border-top:1px solid var(--border-soft);padding-top:10px;">
-    <h3>Lien vers un formulaire (panneau détail)</h3>
-    <div class="config-hint">
-      URL de votre formulaire Grist. Si renseignée, un lien pour l'ouvrir apparaît dans le panneau latéral au clic sur une tâche.
-    </div>
-    <input type="text" id="formUrlConfigInput" placeholder="https://docs.getgrist.com/.../forms/..." style="width:100%;box-sizing:border-box;padding:8px;font-size:13px;font-family:inherit;border:1px solid var(--border);border-radius:4px;">
-
-    <div class="config-hint" style="margin-top:10px;">
-      Pré-remplissage (facultatif) : associez l'identifiant de colonne de votre formulaire (visible sous chaque champ dans l'éditeur de formulaire Grist) à une donnée du planning.
-    </div>
-    <div id="formPrefillRows"></div>
-    <button id="addFormPrefillRow" type="button" style="margin-top:6px;font-size:12px;padding:4px 8px;border:1px dashed var(--faint);background:var(--surface-alt);border-radius:4px;cursor:pointer;">+ Ajouter une correspondance</button>
-  </div>
-
-  <div class="config-footer">
-    <button id="resetConfig" type="button" style="background:none;border:none;color:var(--faint);font-size:11px;cursor:pointer;text-decoration:underline;">Réinitialiser les valeurs par défaut</button>
-    <div>
-      <button id="cancelConfig" type="button">Fermer</button>
-      <button id="saveConfig" type="button">Enregistrer</button>
-    </div>
-  </div>
+  
 </div>
 
 <div id="legend"></div>
@@ -1554,66 +1270,77 @@ tr.task-row-sub td{
  </div>
 </div>
 
-<div id="detailOverlay"></div>
-<div id="detailPanel">
-  <div id="detailPanelHeader">
-    <span id="detailPanelTitle">Détail</span>
-    <button id="detailPanelClose" type="button" title="Fermer">✕</button>
-  </div>
-  <div id="detailPanelBody"></div>
-</div>
-
 <script>
 // L'accès complet au document est nécessaire pour lire la table des tâches (Liste_Tache)
 grist.ready({
-requiredAccess:'full',
-columns:[
-{name:'task',title:'Nom de la tâche ou jalon'},
-{name:'start',title:'Date de début'},
-{name:'end',title:'Date de fin'},
-{name:'state',title:'Etat', optional:true},
-{name:'natureAction',title:"Nature de l'action (PEPS/AV/MEO)", optional:true},
-{name:'actionKey',title:'Clé de liaison des tâches (optionnel, si la référence n\'est pas un Ref)', optional:true},
-{name:'filterField',title:'Champ de filtre 1 (optionnel)', optional:true},
-{name:'filterField2',title:'Champ de filtre 2 (optionnel)', optional:true},
-{name:'filterField3',title:'Champ de filtre 3 (optionnel)', optional:true},
-{name:'filterField4',title:'Champ de filtre 4 (optionnel)', optional:true},
-{name:'filterField5',title:'Champ de filtre 5 (optionnel)', optional:true},
-{name:'filterField6',title:'Champ de filtre 6 (optionnel)', optional:true},
-{name:'filterField7',title:'Champ de filtre 7 (optionnel)', optional:true},
-{name:'filterField8',title:'Champ de filtre 8 (optionnel)', optional:true},
-{name:'progress',title:'% Avancement (optionnel)', optional:true},
-{name:'comment',title:'Commentaire (optionnel, panneau détail)', optional:true},
-{name:'attachment',title:'Pièce jointe (optionnel, panneau détail)', optional:true},
-{name:'extraField1',title:'Champ supplémentaire 1 (optionnel, panneau détail)', optional:true},
-{name:'extraField2',title:'Champ supplémentaire 2 (optionnel, panneau détail)', optional:true},
-{name:'extraField3',title:'Champ supplémentaire 3 (optionnel, panneau détail)', optional:true},
-{name:'extraField4',title:'Champ supplémentaire 4 (optionnel, panneau détail)', optional:true},
-{name:'extraField5',title:'Champ supplémentaire 5 (optionnel, panneau détail)', optional:true},
-{name:'extraField6',title:'Champ supplémentaire 6 (optionnel, panneau détail)', optional:true},
-{name:'jalonDate',title:'Date du Jalon superposé sur la barre (optionnel)', optional:true},
-{name:'jalonLabel',title:'Texte du Jalon superposé, infobulle (optionnel)', optional:true}
-],
-onEditOptions: ()=> openConfigPanel()
+    requiredAccess:'full'   // lecture de la table des tâches ; colonnes figées dans CONFIG
 })
 
+/* =====================================================================
+   PARAMÉTRAGE EN DUR (remplace le panneau ⚙ et le mappage des colonnes)
+   Reprend les noms de colonnes de la console projets (table Liste_PEPS_AV).
+   Pour changer un réglage : modifier ce bloc.
+   ===================================================================== */
+const CONFIG = {
+    colonnes: {
+        libelle:   "ID_Action_MEO",     // intitulé complet, projets et actions
+        debut:     "Date_Début",
+        fin:       "Ech_Prev",
+        statut:    "Statut",
+        avancement:"Avancement",
+        nature:    "Nature"
+    },
+    natures: { affichees:["PEPS","AV"], puce:["MEO"] },     // MEO via la puce « Actions MEO »
+    /* filtres, dans l'ordre d'affichage ; colonne "__projet" = projet de rattachement (calculé) */
+    filtres: [
+        {libelle:"Projet",        colonne:"__projet",       type:"multi"},
+        {libelle:"Groupement",    colonne:"Groupement",     type:"multi"},
+        {libelle:"Sponsor CODIR", colonne:"Sponsor_CODIR",  type:"multi"},
+        {libelle:"Porteur",       colonne:"Porteur",        type:"multi"},
+        {libelle:"Priorité",      colonne:"Priorité",       type:"multi"},
+        {libelle:"Statut",        colonne:"Statut",         type:"multi"},
+        {libelle:"Avancement",    colonne:"Avancement",     type:"pourcent"},
+        {libelle:"Échéance",      colonne:"Ech_Prev",       type:"date"},
+        {libelle:"Millésime P2A", colonne:"Millesime_P2A",  type:"multi"}
+    ],
+    /* ligne grise sous le nom d'un projet */
+    sousLigne: ["Groupement","Porteur","Sponsor_CODIR"],
+    taches: { table:"Liste_Tache", libelle:"ID_Tache", debut:"Date_Debut", fin:"Ech_Prev",
+              statut:"Satut", avancement:"Avancement", parent:"ID_Action_MEO" },
+    /* couleurs fixes des groupements (ni rouge, ni orange, ni jaune, ni vert franc) */
+    couleursGroupement: {
+        "DDA":"#7F77DD", "DIR":"#2E3B52", "GAAF":"#2B9BB5", "GAST":"#8B6BB1", "GBG":"#5B8DB8",
+        "GBR":"#A0785A", "GDB":"#3C5BA9", "GFS":"#B05C9E", "GMJ":"#4F9A94", "GPOS":"#6B7FA0",
+        "GPTN":"#1D9E75", "GRH":"#D4537E", "GSIC":"#378ADD", "GSM":"#8D6E63", "GST":"#0E7490",
+        "SDO":"#7A5195", "SDSanté":"#5C6BC0"
+    },
+    /* couleurs des autres champs (porteur, sponsor…) et des groupements imprévus */
+    couleursReserve: ["#378ADD","#1D9E75","#7F77DD","#D4537E","#2B9BB5","#A0785A","#3C5BA9","#B05C9E","#4F9A94","#6B7FA0","#0E7490","#8B6BB1"],
+    couleurParDefaut: "Groupement",     // colonne de « Couleur par » à l'ouverture ("" = aucune)
+    largeurNoms: 600,
+    largeurColonnes: 80
+}
+
 let scale="mixed"   // vue d'ouverture : trimestres pour l'année en cours et la suivante
-let taskColWidth=600
+let taskColWidth=CONFIG.largeurNoms
 const TASK_COL_MIN=120
 const TASK_COL_MAX=6000
-let timelineColWidth=80
+let timelineColWidth=CONFIG.largeurColonnes
 const TIMELINE_COL_MIN=30
 const TIMELINE_COL_MAX=300
 let currentRecords=[]
 let currentMappings={}
 let highlightToday=true   // actif à l'ouverture, désactivable via la puce
-let selectedFilterValue={filterField:"", filterField2:"", filterField3:"", filterField4:"", filterField5:"", filterField6:"", filterField7:"", filterField8:""}
-const FILTER_KEYS = ["filterField","filterField2","filterField3","filterField4","filterField5","filterField6","filterField7","filterField8"]
+const FILTER_KEYS = CONFIG.filtres.map((f,i)=> i===0 ? "filterField" : "filterField"+(i+1))
+const filtreParCle = k => CONFIG.filtres[FILTER_KEYS.indexOf(k)]
+const parCle = f => Object.fromEntries(FILTER_KEYS.map(k=>[k, f(filtreParCle(k), k)]))
+let selectedFilterValue = parCle(()=> "")
 let sortLevels=["","",""]
 let showProgress=true
 
 // ===== Langage de la console =====
 let groupBy = ""              // clé d'un champ de filtre, "" = pas de regroupement (mémorisé)
+let colorBy = null            // clé du champ de « Couleur par » (mémorisé) ; null = défaut du CONFIG
 let colorByAxis = false       // puce « Couleur par axe »
 let showArchives = false      // puce « Archives » : projets archivés masqués à l'ouverture
 let collapsedProjects = new Set()   // projets repliés (non mémorisé)
@@ -1622,21 +1349,16 @@ let selectedRowId = null      // ligne sélectionnée (synchronisée avec le cur
 let lastView = null           // dernier modèle affiché, réutilisé par l'export
 
 // ===== NATURE DES ACTIONS (PEPS / AV affichés d'office, MEO via la puce) =====
-let natureDefaults = ["PEPS","AV"]
-let natureOptional = ["MEO"]
+let natureDefaults = CONFIG.natures.affichees
+let natureOptional = CONFIG.natures.puce
 let includeOptionalNature = false   // volontairement non mémorisé : on repart sur PEPS+AV à chaque ouverture
 let natureSortEnabled = true
-let natureGroupField = "filterField"   // "" = pas de regroupement
+let natureGroupField = ""
 
 // ===== TABLE DES TÂCHES LIÉE =====
 let taskCfg = {
-    table:"Liste_Tache",
-    label:"ID_Tache",
-    start:"Date_Debut",
-    end:"Ech_Prev",
-    state:"Satut",
-    progress:"Avancement",
-    parent:"ID_Action_MEO"
+    table:CONFIG.taches.table, label:CONFIG.taches.libelle, start:CONFIG.taches.debut, end:CONFIG.taches.fin,
+    state:CONFIG.taches.statut, progress:CONFIG.taches.avancement, parent:CONFIG.taches.parent
 }
 let showTasks = false
 let tasksRecords = []
@@ -1644,25 +1366,37 @@ let tasksByParent = {}
 let tasksLoaded = false
 let tasksLoading = false
 
-// ===== CONFIGURATION DES STATUTS (personnalisable) =====
-const defaultStateConfig = [
-    {match:"1-", label:"À faire",        color:"#2e7d32"},
-    {match:"2-", label:"En cours",       color:"#1e88e5"},
-    {match:"3-", label:"En validation",  color:"#fb8c00"},
-    {match:"",   label:"Terminé",        color:"#757575"}
-]
-let stateConfig = JSON.parse(JSON.stringify(defaultStateConfig))
+// Couleur de secours : barre dont l'avancement n'est pas renseigné
+let stateConfig = [ {match:"", label:"Sans avancement", color:"#9A948E"} ]
 let milestoneColor = "#e74c3c"
-let filterLabels = {filterField:"", filterField2:"", filterField3:"", filterField4:"", filterField5:"", filterField6:"", filterField7:"", filterField8:""}
-const EXTRA_KEYS = ["extraField1","extraField2","extraField3","extraField4","extraField5","extraField6"]
-let extraFieldLabels = {extraField1:"", extraField2:"", extraField3:"", extraField4:"", extraField5:"", extraField6:""}
-let filterIsPercent = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false}
-let filterIsDate = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false}
-let filterIsMulti = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false}
+let filterLabels = parCle(f=>f.libelle)
+let filterIsPercent = parCle(f=>f.type==="pourcent")
+let filterIsDate = parCle(f=>f.type==="date")
+let filterIsMulti = parCle(f=>f.type==="multi")
 const MULTI_SEP = "\u001F"
-let filterHidePanel = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false}
-let filterHideColumn = {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false}
-let showStatusInPanel = false
+let filterHidePanel = parCle(()=>false)
+let filterHideColumn = parCle(()=>true)
+
+/* Colonnes réellement présentes dans la table : un filtre dont la colonne
+   n'existe pas est simplement masqué. */
+function mappingsFromConfig(records){
+    const keys = new Set(records && records.length ? Object.keys(records[0]) : [])
+    const c = CONFIG.colonnes
+    const m = {}
+    const si = col => (col==="__projet" || keys.has(col)) ? col : null
+    m.task = si(c.libelle); m.start = si(c.debut); m.end = si(c.fin)
+    m.state = si(c.statut); m.progress = si(c.avancement); m.natureAction = si(c.nature)
+    m.actionKey = si(c.libelle)
+    FILTER_KEYS.forEach(k=>{ m[k] = si(filtreParCle(k).colonne) })
+    return m
+}
+// Valeurs d'une cellule : une liste Grist donne plusieurs valeurs
+function cellItems(v){
+    if(Array.isArray(v) && v[0]==='L') return v.slice(1).map(x=>displayValue(x).trim()).filter(Boolean)
+    const d = displayValue(v).trim()
+    return d ? [d] : []
+}
+
 
 // ===== Bandeau : puces et panneaux =====
 
@@ -1723,6 +1457,12 @@ document.getElementById("groupBy").onchange = e=>{
     groupBy = e.target.value
     collapsedGroups = new Set()
     grist.setOption("groupBy", groupBy)
+    draw(currentRecords,currentMappings)
+}
+
+document.getElementById("colorBy").onchange = e=>{
+    colorBy = e.target.value
+    grist.setOption("colorBy", colorBy)
     draw(currentRecords,currentMappings)
 }
 
@@ -1978,7 +1718,7 @@ document.getElementById("controls").addEventListener("click", e=>{
         let key = e.target.dataset.key
         let action = e.target.dataset.action
         if(action === "all"){
-            let values = [...new Set((currentRecords||[]).map(r=>displayValue(r[currentMappings[key]])).filter(v=>v!==""))]
+            let values = [...new Set((currentRecords||[]).flatMap(r=>cellItems(r[currentMappings[key]])))]
             selectedFilterValue[key] = values.join(MULTI_SEP)
         } else {
             selectedFilterValue[key] = ""
@@ -2059,334 +1799,6 @@ document.querySelectorAll(".sort-select").forEach(select=>{
     }
 })
 
-// ===== Gestion du panneau de configuration =====
-const configPanel = document.getElementById("configPanel")
-const configRowsEl = document.getElementById("configRows")
-
-// ===== Note libre (lecture seule dans le bandeau, éditée via ⚙) =====
-let freeNote = ""
-let formUrl = ""
-let formPrefillMap = []
-
-// Sources de données disponibles pour le pré-remplissage du formulaire
-const PREFILL_SOURCES = [
-    {value:"task", label:"Nom de la tâche"},
-    {value:"start", label:"Date de début"},
-    {value:"end", label:"Date de fin"},
-    {value:"state", label:"Statut"},
-    {value:"progress", label:"% Avancement"},
-    {value:"filterField", label:"Filtre 1"},
-    {value:"filterField2", label:"Filtre 2"},
-    {value:"filterField3", label:"Filtre 3"},
-    {value:"filterField4", label:"Filtre 4"},
-    {value:"filterField5", label:"Filtre 5"},
-    {value:"filterField6", label:"Filtre 6"},
-    {value:"filterField7", label:"Filtre 7"},
-    {value:"filterField8", label:"Filtre 8"},
-    {value:"extraField1", label:"Champ supplémentaire 1"},
-    {value:"extraField2", label:"Champ supplémentaire 2"},
-    {value:"extraField3", label:"Champ supplémentaire 3"},
-    {value:"extraField4", label:"Champ supplémentaire 4"},
-    {value:"extraField5", label:"Champ supplémentaire 5"},
-    {value:"extraField6", label:"Champ supplémentaire 6"},
-    {value:"comment", label:"Commentaire"}
-]
-
-function updateFreeNoteDisplay(){
-    const display = document.getElementById("freeNoteDisplay")
-    if(freeNote && freeNote.trim() !== ""){
-        display.textContent = freeNote
-        display.style.display = "block"
-    } else {
-        display.style.display = "none"
-    }
-}
-
-// % , Date et sélection multiple sont mutuellement exclusifs pour un même filtre
-document.querySelectorAll(".filter-percent-checkbox").forEach(cb=>{
-    cb.onchange = ()=>{
-        if(cb.checked){
-            document.getElementById("filterDate"+cb.dataset.idx).checked = false
-            document.getElementById("filterMulti"+cb.dataset.idx).checked = false
-        }
-    }
-})
-document.querySelectorAll(".filter-date-checkbox").forEach(cb=>{
-    cb.onchange = ()=>{
-        if(cb.checked){
-            document.getElementById("filterPercent"+cb.dataset.idx).checked = false
-            document.getElementById("filterMulti"+cb.dataset.idx).checked = false
-        }
-    }
-})
-document.querySelectorAll(".filter-multi-checkbox").forEach(cb=>{
-    cb.onchange = ()=>{
-        if(cb.checked){
-            document.getElementById("filterPercent"+cb.dataset.idx).checked = false
-            document.getElementById("filterDate"+cb.dataset.idx).checked = false
-        }
-    }
-})
-
-// Menu déroulant "à l'intérieur de" : liste des filtres, avec leur libellé personnalisé
-function renderNatureGroupOptions(selected){
-    let opts = `<option value="">Aucun regroupement</option>`
-    FILTER_KEYS.forEach((key, idx)=>{
-        let label = (filterLabels[key] && filterLabels[key].trim()) ? filterLabels[key].trim() : `Filtre ${idx+1}`
-        opts += `<option value="${key}"${key===selected?" selected":""}>${escapeHtml(label)}</option>`
-    })
-    document.getElementById("natureGroupFieldInput").innerHTML = opts
-}
-
-function openConfigPanel(){
-    renderConfigRows(stateConfig)
-    document.getElementById("milestoneColorInput").value = milestoneColor
-    document.getElementById("showStatusInPanelInput").checked = showStatusInPanel
-    document.getElementById("taskColWidthConfigInput").value = taskColWidth
-    document.getElementById("timelineColWidthConfigInput").value = timelineColWidth
-    document.getElementById("natureDefaultsInput").value = natureDefaults.join(", ")
-    document.getElementById("natureOptionalInput").value = natureOptional.join(", ")
-    document.getElementById("natureSortEnabledInput").checked = natureSortEnabled
-    renderNatureGroupOptions(natureGroupField)
-    document.getElementById("taskTableInput").value = taskCfg.table || ""
-    document.getElementById("taskLabelInput").value = taskCfg.label || ""
-    document.getElementById("taskStartInput").value = taskCfg.start || ""
-    document.getElementById("taskEndInput").value = taskCfg.end || ""
-    document.getElementById("taskStateInput").value = taskCfg.state || ""
-    document.getElementById("taskProgressInput").value = taskCfg.progress || ""
-    document.getElementById("taskParentInput").value = taskCfg.parent || ""
-    document.getElementById("filterLabel1").value = filterLabels.filterField || ""
-    document.getElementById("filterLabel2").value = filterLabels.filterField2 || ""
-    document.getElementById("filterLabel3").value = filterLabels.filterField3 || ""
-    document.getElementById("filterLabel4").value = filterLabels.filterField4 || ""
-    document.getElementById("filterLabel5").value = filterLabels.filterField5 || ""
-    document.getElementById("filterLabel6").value = filterLabels.filterField6 || ""
-    document.getElementById("filterLabel7").value = filterLabels.filterField7 || ""
-    document.getElementById("filterLabel8").value = filterLabels.filterField8 || ""
-    document.getElementById("extraLabel1").value = extraFieldLabels.extraField1 || ""
-    document.getElementById("extraLabel2").value = extraFieldLabels.extraField2 || ""
-    document.getElementById("extraLabel3").value = extraFieldLabels.extraField3 || ""
-    document.getElementById("extraLabel4").value = extraFieldLabels.extraField4 || ""
-    document.getElementById("extraLabel5").value = extraFieldLabels.extraField5 || ""
-    document.getElementById("extraLabel6").value = extraFieldLabels.extraField6 || ""
-    document.getElementById("freeNoteConfigInput").value = freeNote || ""
-    document.getElementById("formUrlConfigInput").value = formUrl || ""
-    renderFormPrefillRows(formPrefillMap)
-    FILTER_KEYS.forEach((key,i)=>{
-        document.getElementById("filterPercent"+(i+1)).checked = !!filterIsPercent[key]
-        document.getElementById("filterDate"+(i+1)).checked = !!filterIsDate[key]
-        document.getElementById("filterMulti"+(i+1)).checked = !!filterIsMulti[key]
-        document.getElementById("filterHidePanel"+(i+1)).checked = !!filterHidePanel[key]
-        document.getElementById("filterHideColumn"+(i+1)).checked = !!filterHideColumn[key]
-    })
-    configPanel.style.display = "block"
-}
-
-document.getElementById("cancelConfig").onclick = ()=>{
-    configPanel.style.display = "none"
-}
-
-document.getElementById("addRow").onclick = ()=>{
-    addConfigRow({match:"", label:"", color:"#607d8b"})
-}
-
-document.getElementById("resetConfig").onclick = ()=>{
-    renderConfigRows(JSON.parse(JSON.stringify(defaultStateConfig)))
-    document.getElementById("milestoneColorInput").value = "#e74c3c"
-    document.getElementById("showStatusInPanelInput").checked = false
-    document.getElementById("taskColWidthConfigInput").value = 600
-    document.getElementById("timelineColWidthConfigInput").value = 80
-    document.getElementById("natureDefaultsInput").value = "PEPS, AV"
-    document.getElementById("natureOptionalInput").value = "MEO"
-    document.getElementById("natureSortEnabledInput").checked = true
-    renderNatureGroupOptions("filterField")
-    document.getElementById("taskTableInput").value = "Liste_Tache"
-    document.getElementById("taskLabelInput").value = "ID_Tache"
-    document.getElementById("taskStartInput").value = "Date_Debut"
-    document.getElementById("taskEndInput").value = "Ech_Prev"
-    document.getElementById("taskStateInput").value = "Satut"
-    document.getElementById("taskProgressInput").value = "Avancement"
-    document.getElementById("taskParentInput").value = "ID_Action_MEO"
-    document.getElementById("filterLabel1").value = ""
-    document.getElementById("filterLabel2").value = ""
-    document.getElementById("filterLabel3").value = ""
-    document.getElementById("filterLabel4").value = ""
-    document.getElementById("filterLabel5").value = ""
-    document.getElementById("filterLabel6").value = ""
-    document.getElementById("filterLabel7").value = ""
-    document.getElementById("filterLabel8").value = ""
-    document.getElementById("extraLabel1").value = ""
-    document.getElementById("extraLabel2").value = ""
-    document.getElementById("extraLabel3").value = ""
-    document.getElementById("extraLabel4").value = ""
-    document.getElementById("extraLabel5").value = ""
-    document.getElementById("extraLabel6").value = ""
-    document.getElementById("freeNoteConfigInput").value = ""
-    document.getElementById("formUrlConfigInput").value = ""
-    renderFormPrefillRows([])
-    FILTER_KEYS.forEach((key,i)=>{
-        document.getElementById("filterPercent"+(i+1)).checked = false
-        document.getElementById("filterDate"+(i+1)).checked = false
-        document.getElementById("filterMulti"+(i+1)).checked = false
-        document.getElementById("filterHidePanel"+(i+1)).checked = false
-        document.getElementById("filterHideColumn"+(i+1)).checked = false
-    })
-}
-
-document.getElementById("saveConfig").onclick = ()=>{
-    stateConfig = collectConfigFromRows()
-    milestoneColor = document.getElementById("milestoneColorInput").value
-    showStatusInPanel = document.getElementById("showStatusInPanelInput").checked
-    applyTaskColWidth(parseInt(document.getElementById("taskColWidthConfigInput").value, 10) || taskColWidth)
-    applyTimelineColWidth(parseInt(document.getElementById("timelineColWidthConfigInput").value, 10) || timelineColWidth)
-    natureDefaults = parseNatureList(document.getElementById("natureDefaultsInput").value)
-    natureOptional = parseNatureList(document.getElementById("natureOptionalInput").value)
-    natureSortEnabled = document.getElementById("natureSortEnabledInput").checked
-    natureGroupField = document.getElementById("natureGroupFieldInput").value
-    includeOptionalNature = false
-    setChip("chipNature", false)
-    taskCfg = {
-        table: document.getElementById("taskTableInput").value.trim(),
-        label: document.getElementById("taskLabelInput").value.trim(),
-        start: document.getElementById("taskStartInput").value.trim(),
-        end: document.getElementById("taskEndInput").value.trim(),
-        state: document.getElementById("taskStateInput").value.trim(),
-        progress: document.getElementById("taskProgressInput").value.trim(),
-        parent: document.getElementById("taskParentInput").value.trim()
-    }
-    tasksLoaded = false
-    tasksRecords = []
-    tasksByParent = {}
-    filterLabels = {
-        filterField: document.getElementById("filterLabel1").value.trim(),
-        filterField2: document.getElementById("filterLabel2").value.trim(),
-        filterField3: document.getElementById("filterLabel3").value.trim(),
-        filterField4: document.getElementById("filterLabel4").value.trim(),
-        filterField5: document.getElementById("filterLabel5").value.trim(),
-        filterField6: document.getElementById("filterLabel6").value.trim(),
-        filterField7: document.getElementById("filterLabel7").value.trim(),
-        filterField8: document.getElementById("filterLabel8").value.trim()
-    }
-    extraFieldLabels = {
-        extraField1: document.getElementById("extraLabel1").value.trim(),
-        extraField2: document.getElementById("extraLabel2").value.trim(),
-        extraField3: document.getElementById("extraLabel3").value.trim(),
-        extraField4: document.getElementById("extraLabel4").value.trim(),
-        extraField5: document.getElementById("extraLabel5").value.trim(),
-        extraField6: document.getElementById("extraLabel6").value.trim()
-    }
-    freeNote = document.getElementById("freeNoteConfigInput").value
-    formUrl = document.getElementById("formUrlConfigInput").value.trim()
-    formPrefillMap = collectFormPrefillRows()
-    FILTER_KEYS.forEach((key,i)=>{
-        filterIsPercent[key] = document.getElementById("filterPercent"+(i+1)).checked
-        filterIsDate[key] = document.getElementById("filterDate"+(i+1)).checked
-        filterIsMulti[key] = document.getElementById("filterMulti"+(i+1)).checked
-        filterHidePanel[key] = document.getElementById("filterHidePanel"+(i+1)).checked
-        filterHideColumn[key] = document.getElementById("filterHideColumn"+(i+1)).checked
-        // Si on change le mode d'un filtre, on le réinitialise pour éviter une valeur incohérente
-        selectedFilterValue[key] = ""
-    })
-    grist.setOption("taskStates", stateConfig)
-    grist.setOption("milestoneColor", milestoneColor)
-    grist.setOption("showStatusInPanel", showStatusInPanel)
-    grist.setOption("taskColWidth", taskColWidth)
-    grist.setOption("timelineColWidth", timelineColWidth)
-    grist.setOption("natureDefaults", natureDefaults)
-    grist.setOption("natureOptional", natureOptional)
-    grist.setOption("natureSortEnabled", natureSortEnabled)
-    grist.setOption("natureGroupField", natureGroupField)
-    grist.setOption("taskCfg", taskCfg)
-    grist.setOption("filterLabels", filterLabels)
-    grist.setOption("filterHidePanel", filterHidePanel)
-    grist.setOption("filterHideColumn", filterHideColumn)
-    grist.setOption("extraFieldLabels", extraFieldLabels)
-    grist.setOption("freeNote", freeNote)
-    grist.setOption("formUrl", formUrl)
-    grist.setOption("formPrefillMap", formPrefillMap)
-    grist.setOption("filterIsPercent", filterIsPercent)
-    grist.setOption("filterIsDate", filterIsDate)
-    grist.setOption("filterIsMulti", filterIsMulti)
-    FILTER_KEYS.forEach(key=> grist.setOption("selectedFilterValue_"+key, ""))
-    updateFreeNoteDisplay()
-    configPanel.style.display = "none"
-    if(showTasks){
-        loadTasks()
-    } else {
-        draw(currentRecords, currentMappings)
-    }
-}
-
-function renderConfigRows(config){
-    configRowsEl.innerHTML = ""
-    config.forEach(rule=>addConfigRow(rule))
-}
-
-function addConfigRow(rule){
-    const row = document.createElement("div")
-    row.className = "config-row"
-    row.innerHTML = `
-        <input type="text" class="cfg-match" placeholder="Texte à repérer (vide = défaut)" value="${escapeAttr(rule.match||"")}">
-        <input type="text" class="cfg-label" placeholder="Libellé (légende)" value="${escapeAttr(rule.label||"")}">
-        <input type="color" class="cfg-color" value="${rule.color||"#607d8b"}">
-        <button type="button" class="cfg-remove" title="Supprimer">✕</button>
-    `
-    row.querySelector(".cfg-remove").onclick = ()=> row.remove()
-    configRowsEl.appendChild(row)
-}
-
-function collectConfigFromRows(){
-    const rows = configRowsEl.querySelectorAll(".config-row")
-    const result = []
-    rows.forEach(row=>{
-        result.push({
-            match: row.querySelector(".cfg-match").value.trim(),
-            label: row.querySelector(".cfg-label").value.trim(),
-            color: row.querySelector(".cfg-color").value
-        })
-    })
-    return result
-}
-
-// ===== Lignes de pré-remplissage du formulaire =====
-const formPrefillRowsEl = document.getElementById("formPrefillRows")
-
-function renderFormPrefillRows(map){
-    formPrefillRowsEl.innerHTML = ""
-    map.forEach(item=>addFormPrefillRow(item))
-}
-
-function addFormPrefillRow(item){
-    item = item || {columnId:"", source:"task"}
-    const row = document.createElement("div")
-    row.className = "config-row"
-    let options = PREFILL_SOURCES.map(s=>
-        `<option value="${s.value}"${s.value===item.source?" selected":""}>${s.label}</option>`
-    ).join("")
-    row.innerHTML = `
-        <input type="text" class="prefill-column" placeholder="ID colonne du formulaire" value="${escapeAttr(item.columnId||"")}">
-        <select class="prefill-source">${options}</select>
-        <button type="button" class="cfg-remove" title="Supprimer">✕</button>
-    `
-    row.querySelector(".cfg-remove").onclick = ()=> row.remove()
-    formPrefillRowsEl.appendChild(row)
-}
-
-function collectFormPrefillRows(){
-    const rows = formPrefillRowsEl.querySelectorAll(".config-row")
-    const result = []
-    rows.forEach(row=>{
-        let columnId = row.querySelector(".prefill-column").value.trim()
-        let source = row.querySelector(".prefill-source").value
-        if(columnId) result.push({columnId, source})
-    })
-    return result
-}
-
-document.getElementById("addFormPrefillRow").onclick = ()=>{
-    addFormPrefillRow()
-}
-
 function escapeAttr(s){
     return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;")
 }
@@ -2396,110 +1808,28 @@ function escapeHtml(s){
 }
 
 // Charge la config sauvegardée dans le document Grist (par widget)
+// Seul l'état d'affichage est mémorisé dans le widget (échelle, filtres, tri, regroupement…)
 grist.onOptions((options)=>{
     if(options){
         if(typeof options.scale === "string"){
             scale = options.scale
             document.getElementById("scale").value = scale
         }
-        if(typeof options.taskColWidth === "number" && options.taskColWidth > 0){
-            applyTaskColWidth(options.taskColWidth)
-        }
-        if(typeof options.timelineColWidth === "number" && options.timelineColWidth > 0){
-            applyTimelineColWidth(options.timelineColWidth)
-        }
-        if(Array.isArray(options.natureDefaults)){
-            natureDefaults = options.natureDefaults
-        }
-        if(Array.isArray(options.natureOptional)){
-            natureOptional = options.natureOptional
-        }
-        if(typeof options.natureSortEnabled === "boolean"){
-            natureSortEnabled = options.natureSortEnabled
-        }
+        if(typeof options.groupBy === "string") groupBy = options.groupBy
+        if(typeof options.colorBy === "string") colorBy = options.colorBy
         if(options.exportPrefs && typeof options.exportPrefs === "object"){
             exportPrefs = Object.assign({sortie:"pdf", mise:"suite", groupePage:false}, options.exportPrefs)
         }
-        if(typeof options.groupBy === "string"){
-            groupBy = options.groupBy
-        }
-        if(typeof options.natureGroupField === "string"){
-            natureGroupField = options.natureGroupField
-        }
-        if(options.taskCfg && typeof options.taskCfg === "object"){
-            taskCfg = Object.assign({}, taskCfg, options.taskCfg)
-        }
-        if(typeof options.freeNote === "string"){
-            freeNote = options.freeNote
-            updateFreeNoteDisplay()
-        }
-        if(typeof options.formUrl === "string"){
-            formUrl = options.formUrl
-        }
-        if(Array.isArray(options.formPrefillMap)){
-            formPrefillMap = options.formPrefillMap
-        }
-        if(Array.isArray(options.taskStates) && options.taskStates.length>0){
-            stateConfig = options.taskStates
-        }
-        if(options.milestoneColor){
-            milestoneColor = options.milestoneColor
-        }
-        if(typeof options.showStatusInPanel === "boolean"){
-            showStatusInPanel = options.showStatusInPanel
-        }
-        if(options.filterLabels && typeof options.filterLabels === "object"){
-            filterLabels = Object.assign({filterField:"", filterField2:"", filterField3:"", filterField4:"", filterField5:"", filterField6:"", filterField7:"", filterField8:""}, options.filterLabels)
-        }
-        if(options.extraFieldLabels && typeof options.extraFieldLabels === "object"){
-            extraFieldLabels = Object.assign({extraField1:"", extraField2:"", extraField3:"", extraField4:"", extraField5:"", extraField6:""}, options.extraFieldLabels)
-        }
-        if(options.filterIsPercent && typeof options.filterIsPercent === "object"){
-            filterIsPercent = Object.assign(
-                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false},
-                options.filterIsPercent
-            )
-        }
-        if(options.filterIsDate && typeof options.filterIsDate === "object"){
-            filterIsDate = Object.assign(
-                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false},
-                options.filterIsDate
-            )
-        }
-        if(options.filterIsMulti && typeof options.filterIsMulti === "object"){
-            filterIsMulti = Object.assign(
-                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false},
-                options.filterIsMulti
-            )
-        }
-        if(options.filterHidePanel && typeof options.filterHidePanel === "object"){
-            filterHidePanel = Object.assign(
-                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false},
-                options.filterHidePanel
-            )
-        }
-        if(options.filterHideColumn && typeof options.filterHideColumn === "object"){
-            filterHideColumn = Object.assign(
-                {filterField:false, filterField2:false, filterField3:false, filterField4:false, filterField5:false, filterField6:false, filterField7:false, filterField8:false},
-                options.filterHideColumn
-            )
-        }
         FILTER_KEYS.forEach(key=>{
             let saved = options["selectedFilterValue_"+key]
-            if(typeof saved === "string"){
-                selectedFilterValue[key] = saved
-            }
+            if(typeof saved === "string") selectedFilterValue[key] = saved
         })
         if(Array.isArray(options.sortLevels)){
             sortLevels = ["","",""].map((v,i)=> typeof options.sortLevels[i]==="string" ? options.sortLevels[i] : "")
-        } else if(typeof options.sortBy === "string" && options.sortBy){
-            // Compatibilité avec l'ancien réglage (tri simple)
-            sortLevels = [options.sortBy,"",""]
-        } else if(options.sortAZ === true){
-            // Compatibilité avec l'ancien réglage (case à cocher "Trier A→Z")
-            sortLevels = ["task","",""]
         }
     }
+    applyTaskColWidth(taskColWidth)
+    applyTimelineColWidth(timelineColWidth)
     draw(currentRecords, currentMappings)
 })
 
@@ -2816,8 +2146,7 @@ function updateFilterUI(allRecords, mappings){
 
             let values = [...new Set(
                 allRecords
-                    .map(r=>displayValue(r[mappings[key]]))
-                    .filter(v=>v!=="")
+                    .flatMap(r=>cellItems(r[mappings[key]]))
             )].sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'}))
 
             let selected = (selectedFilterValue[key]||"").split(MULTI_SEP).filter(v=>v!=="")
@@ -2855,8 +2184,7 @@ function updateFilterUI(allRecords, mappings){
         // Valeurs distinctes présentes dans la colonne de filtre (pour l'autocomplétion)
         let values = [...new Set(
             allRecords
-                .map(r=>displayValue(r[mappings[key]]))
-                .filter(v=>v!=="")
+                .flatMap(r=>cellItems(r[mappings[key]]))
         )].sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'}))
 
         options.innerHTML = `<option value="Tous"></option>` +
@@ -2913,7 +2241,7 @@ function applyFilter(records, mappings){
         if(filterIsMulti[key]){
             let selected = val.split(MULTI_SEP).filter(v=>v!=="")
             if(selected.length === 0) return
-            result = result.filter(r => selected.includes(displayValue(r[mappings[key]])))
+            result = result.filter(r => cellItems(r[mappings[key]]).some(v=>selected.includes(v)))
             return
         }
 
@@ -3546,6 +2874,32 @@ function moyenne(vals){
    - un projet retenu par les filtres montre toutes ses actions MEO ;
    - si seules certaines de ses actions passent les filtres, le projet est
      affiché pour situer ces actions, avec elles seulement. */
+/* Rattache chaque action MEO à son projet et note le libellé du projet dans
+   la colonne calculée « __projet » (filtre Projet). */
+function annoterProjets(records, mappings){
+    const cols = detectCols(records)
+    records.forEach(r=>{ r.__projet = ""; r.__parentId = null })
+    if(!mappings.natureAction || !cols.proj) return
+    const projets = records.filter(r=>natureIn(r,mappings,natureDefaults))
+    const keyMap=new Map(), idMap=new Map(), labMap=new Map()
+    let projNumeric=false
+    projets.forEach(p=>{
+        let raw=p[cols.proj], k=parentKeyOf(raw)
+        if(k){ if(!keyMap.has(k)) keyMap.set(k,p); if(typeof raw==="number") projNumeric=true }
+        idMap.set(String(p.id),p)
+        let l=libelleDe(p,mappings).toLowerCase()
+        if(l && !labMap.has(l)) labMap.set(l,p)
+        // projet archivé masqué : absent de la liste du filtre Projet
+        p.__projet = isArchived(p,cols) && !showArchives ? "" : libelleDe(p,mappings)
+    })
+    records.forEach(m=>{
+        if(natureIn(m,mappings,natureDefaults)) return
+        let raw=m[cols.proj], k=parentKeyOf(raw), p=null
+        if(k) p = keyMap.get(k) || (!projNumeric && typeof raw==="number" ? idMap.get(k) : null) || labMap.get(k) || null
+        if(p){ m.__parentId = p.id; m.__projet = p.__projet }
+    })
+}
+
 function buildModel(records, mappings){
     const cols = detectCols(records)
     const hier = !!(mappings.natureAction && cols.proj)
@@ -3559,21 +2913,12 @@ function buildModel(records, mappings){
         const meos = includeOptionalNature
             ? records.filter(r=>natureIn(r,mappings,natureOptional) && !natureIn(r,mappings,natureDefaults))
             : []
-        const keyMap=new Map(), idMap=new Map(), labMap=new Map()
-        let projNumeric=false
-        projets.forEach(p=>{
-            let raw=p[cols.proj], k=parentKeyOf(raw)
-            if(k){ if(!keyMap.has(k)) keyMap.set(k,p); if(typeof raw==="number") projNumeric=true }
-            idMap.set(String(p.id),p)
-            let l=libelleDe(p,mappings).toLowerCase()
-            if(l && !labMap.has(l)) labMap.set(l,p)
-        })
         const kids=new Map(), orphans=[]
         meos.forEach(m=>{
-            let raw=m[cols.proj], k=parentKeyOf(raw), p=null
-            if(k) p = keyMap.get(k) || (!projNumeric && typeof raw==="number" ? idMap.get(k) : null) || labMap.get(k) || null
-            if(p){ if(!kids.has(p.id)) kids.set(p.id,[]); kids.get(p.id).push(m) }
-            else orphans.push(m)
+            if(m.__parentId!==null && m.__parentId!==undefined){
+                if(!kids.has(m.__parentId)) kids.set(m.__parentId,[])
+                kids.get(m.__parentId).push(m)
+            } else orphans.push(m)
         })
         const cleAct = r => (cols.act ? displayValue(r[cols.act]).trim() : "") || libelleDe(r,mappings)
         const cmpAct = (a,b) => cleAct(a).localeCompare(cleAct(b),"fr",{numeric:true,sensitivity:"base"})
@@ -3601,7 +2946,7 @@ function buildModel(records, mappings){
             if(avecAxes){
                 axes.concat([""]).forEach(a=>{
                     let acts = ordered.filter(m=>axeOf(m)===a && shownIds.has(m.id))
-                    if(acts.length) groups.push({axe:a, teinte: a ? AXE_TEINTES[axes.indexOf(a)%AXE_TEINTES.length] : AXE_SANS,
+                    if(acts.length) groups.push({axe:a, teinte: a && !colorKey(mappings) ? AXE_TEINTES[axes.indexOf(a)%AXE_TEINTES.length] : AXE_SANS,
                         acts: acts.map(m=>({rec:m, num:num.get(m.id)}))})
                 })
             } else if(o.shown.length){
@@ -3628,7 +2973,7 @@ function buildModel(records, mappings){
             const vals = groupValues(it.rec, groupBy, mappings)
             vals.forEach(v=>{
                 if(!m.has(v)) m.set(v,[])
-                m.get(v).push(Object.assign({}, it, {others: vals.filter(x=>x!==v && x!==NR_GROUPE)}))
+                m.get(v).push(Object.assign({}, it, {others: vals.filter(x=>x!==v && x!==NR_GROUPE), groupKey:v}))
             })
         })
         let keys = [...m.keys()].sort((a,b)=>{
@@ -3653,7 +2998,7 @@ function flattenItem(it, mappings, respectCollapse, out){
     const nbKids = it.groups.reduce((s,g)=>s+g.acts.length,0) + tasksP.length
     const closed = respectCollapse && collapsedProjects.has(it.rec.id)
     const t = it.kind==="flat" ? "flat" : (it.kind==="orphan" ? "meo" : "proj")
-    out.push({t, rec:it.rec, item:it, others:it.others||[], nbKids, closed, num:null, depth:0})
+    out.push({t, rec:it.rec, item:it, others:it.others||[], groupKey:it.groupKey, nbKids, closed, num:null, depth:0})
     if(closed) return
     tasksP.forEach(k=>out.push({t:"task", rec:k, depth:1}))
     it.groups.forEach(g=>{
@@ -3709,9 +3054,11 @@ function barSpec(row, mappings){
     if(!e && s) e=s
     const inter = estInterrompu(state)
     let fond, plein, solid=false
-    if(row.t==="proj"){ fond="#F3E3E2"; plein="#C0504D" }
+    const coulsLigne = rowCouleurs(row)
+    if(coulsLigne.length){ fond=nPale(coulsLigne[0],0.78); plein=coulsLigne[0] }
+    else if(row.t==="proj"){ fond="#F3E3E2"; plein="#C0504D" }
     else if(row.t==="axe"){ fond="#ffffff"; plein=row.teinte[2] }
-    else if(row.t==="meo" && colorByAxis && row.teinte){ fond=row.teinte[1]; plein=row.teinte[0] }
+    else if(row.t==="meo" && colorByAxis && !colorKey() && row.teinte){ fond=row.teinte[1]; plein=row.teinte[0] }
     else if(!hasProgress){ plein=stateRule(state).color; fond=plein; solid=true }
     else { fond=BAR_TRACK; plein=nBarreCoul(av) }
     if(inter && row.t!=="axe"){ plein="#9A948E" }
@@ -3722,7 +3069,7 @@ function barSpec(row, mappings){
         let t0=todayMidnight()
         if(em<t0 && !estTermine(av,state) && !inter){ retard=true; jours=joursEntre(em,t0) }
     }
-    return {s, e, av, state, fond, plein, solid, retard, jours, inter}
+    return {s, e, av, state, fond, plein, solid, retard, jours, inter, couleurs:coulsLigne}
 }
 
 function statutHtml(state, av){
@@ -3797,7 +3144,10 @@ function renderRow(row, units, mappings){
     const n = units.length
     if(row.t==="grp"){
         const st = `${row.n} projet${row.n>1?"s":""}${row.avg!==null&&row.avg!==undefined?" · "+row.avg+" %":""}`
-        return `<tr class="row-grp"><td class="task-name-cell" data-grp="${escapeAttr(row.key)}" title="Replier / déplier ce groupe">${row.closed?"▸":"▾"} ${escapeHtml(row.key)}<span class="grp-stat">${escapeHtml(st)}</span></td><td colspan="${n}"></td></tr>`
+        const tg = teinteGroupe(row.key)
+        const sty = tg ? ` style="background:${nPale(tg,0.86)};border-top-color:${tg}"` : ""
+        const carre = tg ? `<span class="grp-carre" style="background:${tg}"></span>` : ""
+        return `<tr class="row-grp"><td class="task-name-cell" data-grp="${escapeAttr(row.key)}"${sty} title="Replier / déplier ce groupe">${row.closed?"▸":"▾"} ${carre}${escapeHtml(row.key)}<span class="grp-stat">${escapeHtml(st)}</span></td><td colspan="${n}"${sty}></td></tr>`
     }
     const spec = barSpec(row, mappings)
     const pct = showProgress && spec.av!==null && spec.av!==undefined ? `<span class="nm-pct">${spec.av} %</span>` : ""
@@ -3833,10 +3183,58 @@ function renderRow(row, units, mappings){
     const aussi = row.others && row.others.length ? `<span class="nm-aussi">aussi dans : ${escapeHtml(row.others.join(", "))}</span>` : ""
     const cls = row.t==="proj" ? "nm-proj" : "task-name-main"
     const st = row.t==="flat" ? statutHtml(spec.state, spec.av) : ""
-    const lignes = filterLinesHtml(r, mappings, nom)
+    const lignes = [sousLigneHtml(r)]
+    const cs = spec.couleurs || []
+    const liser = cs.length ? `<span class="liser" style="background:${cs.length>1 ? "linear-gradient("+cs.map((c,k)=>c+" "+(k*100/cs.length)+"%,"+c+" "+((k+1)*100/cs.length)+"%").join(",")+")" : cs[0]}"></span>` : ""
     const tip = [nom].concat(row.others&&row.others.length?["aussi dans : "+row.others.join(", ")]:[]).join(" — ")
-    nameCell = `<td class="task-name-cell${pctCls}" title="${escapeAttr(tip)}"><div class="${cls}">${chev}${escapeHtml(nom||"(sans libellé)")}${arch}${st}${aussi}</div>${lignes.join("")}${pct}</td>`
+    nameCell = `<td class="task-name-cell${pctCls}" title="${escapeAttr(tip)}">${liser}<div class="${cls}">${chev}${escapeHtml(nom||"(sans libellé)")}${arch}${st}${aussi}</div>${lignes.join("")}${pct}</td>`
     return `<tr class="${trCls}"${attrs}>${nameCell}${renderBarCells(row, spec, units, mappings)}</tr>`
+}
+
+// ===== Couleur par (groupement par défaut) =====
+function colorKey(mappings){
+    mappings = mappings || currentMappings
+    let k = colorBy
+    if(k===null) k = FILTER_KEYS.find(x=>filtreParCle(x).colonne===CONFIG.couleurParDefaut) || ""
+    return k && mappings[k] && filtreParCle(k).type==="multi" && filtreParCle(k).colonne!=="__projet" ? k : ""
+}
+let paletteCache = {key:null, map:new Map()}
+function couleurValeur(key, v){
+    const f = filtreParCle(key)
+    if(f && f.colonne==="Groupement" && CONFIG.couleursGroupement[v]) return CONFIG.couleursGroupement[v]
+    if(paletteCache.key!==key){
+        // couleurs de réserve attribuées dans l'ordre alphabétique : stables d'un affichage à l'autre
+        const vals = [...new Set((currentRecords||[]).flatMap(r=>cellItems(r[currentMappings[key]])))]
+            .filter(x=>!(f.colonne==="Groupement" && CONFIG.couleursGroupement[x]))
+            .sort((a,b)=>a.localeCompare(b,"fr",{numeric:true,sensitivity:"base"}))
+        paletteCache = {key, map:new Map(vals.map((x,i)=>[x, CONFIG.couleursReserve[i%CONFIG.couleursReserve.length]]))}
+    }
+    return paletteCache.map.get(v) || CONFIG.couleursReserve[0]
+}
+// Couleurs d'une ligne de projet : la valeur du groupe en cours d'abord quand on regroupe sur le même champ
+function rowCouleurs(row){
+    const ck = colorKey()
+    if(!ck || !row || !row.rec || (row.t!=="proj" && row.t!=="flat")) return []
+    let vals = groupValues(row.rec, ck, currentMappings).filter(v=>v!==NR_GROUPE)
+    if(ck===groupBy && row.groupKey && vals.includes(row.groupKey)) vals = [row.groupKey].concat(vals.filter(v=>v!==row.groupKey))
+    return vals.map(v=>couleurValeur(ck, v))
+}
+function teinteGroupe(key){
+    const ck = colorKey()
+    return ck && ck===groupBy && key!==NR_GROUPE ? couleurValeur(ck, key) : null
+}
+function updateColorByUI(mappings){
+    const sel = document.getElementById("colorBy")
+    const keys = FILTER_KEYS.filter(k=>mappings[k] && filtreParCle(k).type==="multi" && filtreParCle(k).colonne!=="__projet")
+    document.getElementById("colorByWrap").style.display = keys.length ? "" : "none"
+    let opts = `<option value="">Aucune</option>` + keys.map(k=>`<option value="${k}">${escapeHtml(libelleFiltre(k))}</option>`).join("")
+    if(sel.dataset.sig !== opts){ sel.innerHTML = opts; sel.dataset.sig = opts }
+    sel.value = colorKey(mappings)
+    paletteCache = {key:null, map:new Map()}
+}
+function sousLigneHtml(r){
+    const t = CONFIG.sousLigne.map(c=>cellItems(r[c]).join(", ")).filter(Boolean).join(" · ")
+    return t ? `<div class="task-name-sub">${escapeHtml(t)}</div>` : ""
 }
 
 function updateGroupByUI(mappings){
@@ -3851,7 +3249,7 @@ function updateGroupByUI(mappings){
 
 function updateConsoleChips(model){
     const ca = document.getElementById("chipAxes")
-    ca.style.display = model.anyAxe && includeOptionalNature ? "" : "none"
+    ca.style.display = model.anyAxe && includeOptionalNature && !colorKey() ? "" : "none"
     setChip("chipAxes", colorByAxis)
     const cr = document.getElementById("chipArchives")
     cr.style.display = model.cols.archive ? "" : "none"
@@ -3865,12 +3263,14 @@ function draw(records,mappings){
 
     if(!records || records.length===0) return
 
+    annoterProjets(records, mappings)
     updateFilterLabelsUI()
     updateFilterUI(records, mappings)
     updateSortUI(mappings)
     updateNatureUI(mappings)
     updateFiltersBadge(mappings)
     updateGroupByUI(mappings)
+    updateColorByUI(mappings)
 
     const model = buildModel(records, mappings)
     updateConsoleChips(model)
@@ -3948,11 +3348,22 @@ function draw(records,mappings){
 function renderLegend(){
     const legend = document.getElementById("legend")
     let items = []
+    const ck = colorKey()
+    if(ck && lastView && lastView.model){
+        const vus = [...new Set(lastView.model.blocks.flatMap(b=>b.items).filter(it=>it.kind!=="orphan")
+            .flatMap(it=>groupValues(it.rec, ck, currentMappings)).filter(v=>v!==NR_GROUPE))]
+            .sort((a,b)=>a.localeCompare(b,"fr",{numeric:true,sensitivity:"base"}))
+        if(vus.length){
+            items.push(`<span class="legend-item legend-titre">${escapeHtml(libelleFiltre(ck))} :</span>`)
+            vus.forEach(v=>items.push(`<span class="legend-item"><span class="legend-swatch" style="background:${couleurValeur(ck,v)}"></span>${escapeHtml(v)}</span>`))
+            items.push(`<span class="legend-item" style="color:var(--faint)">|</span>`)
+        }
+    }
     const sw = (c, lib, extra) => `<span class="legend-item"><span class="legend-swatch"${extra||""} style="background:${c}"></span>${escapeHtml(lib)}</span>`
     if(currentMappings.progress && showProgress){
-        if(lastView && lastView.model.hier) items.push(sw("#C0504D","Projet"))
+        if(lastView && lastView.model.hier && !ck) items.push(sw("#C0504D","Projet"))
         items.push(sw("#7FA23F","≥ 76 %"), sw("#E3A51A","26 à 75 %"), sw("#F0904A","1 à 25 %"), sw("#D8D3CC","non démarré"))
-        if(colorByAxis && lastView && lastView.model.anyAxe) items.push(`<span class="legend-item">actions : teinte de leur axe</span>`)
+        if(colorByAxis && !ck && lastView && lastView.model.anyAxe) items.push(`<span class="legend-item">actions : teinte de leur axe</span>`)
     } else {
         stateConfig.forEach(rule=>{
             let label = rule.label && rule.label.trim() !== "" ? rule.label : (rule.match || "Autre")
@@ -3972,23 +3383,6 @@ function renderLegend(){
     legend.innerHTML = items.join("")
 }
 
-
-// ===== Panneau latéral de détail =====
-const detailPanel = document.getElementById("detailPanel")
-const detailOverlay = document.getElementById("detailOverlay")
-const detailPanelBody = document.getElementById("detailPanelBody")
-const detailPanelTitle = document.getElementById("detailPanelTitle")
-
-function closeDetailPanel(){
-    detailPanel.classList.remove("open")
-    detailOverlay.classList.remove("open")
-}
-
-document.getElementById("detailPanelClose").onclick = closeDetailPanel
-detailOverlay.onclick = closeDetailPanel
-document.addEventListener("keydown", e=>{
-    if(e.key === "Escape") closeDetailPanel()
-})
 
 // ===== Sélection reliée à Grist : clic = sélection, double-clic = panneau de détail =====
 function selectRow(rowId, pushToGrist){
@@ -4021,21 +3415,6 @@ ganttContainerEl.addEventListener("click", e=>{
     }
     const tr = e.target.closest("tr[data-row-id]")
     if(tr) selectRow(Number(tr.dataset.rowId), true)
-})
-// pas de sélection de texte au double-clic
-ganttContainerEl.addEventListener("mousedown", e=>{ if(e.detail>1) e.preventDefault() })
-ganttContainerEl.addEventListener("dblclick", e=>{
-    if(e.target.closest("[data-chev]") || e.target.closest("[data-grp]")) return
-    const trT = e.target.closest("tr[data-task-id]")
-    if(trT){
-        let task = (tasksRecords||[]).find(t => String(t.id) === String(trT.dataset.taskId))
-        if(task) openTaskDetailPanel(task)
-        return
-    }
-    const tr = e.target.closest("tr[data-row-id]")
-    if(!tr) return
-    let record = (currentRecords||[]).find(r => String(r.id) === String(tr.dataset.rowId))
-    if(record) openDetailPanel(record, currentMappings)
 })
 // La sélection suit aussi le curseur Grist (clic dans la console ou dans une table liée)
 grist.onRecord(rec=>{
@@ -4088,7 +3467,8 @@ function openExportDialog(){
     let puces = []
     if(m.hier) puces.push("Actions MEO : "+oui(includeOptionalNature))
     puces.push("Tâches : "+oui(showTasks && tasksLoaded))
-    if(m.anyAxe) puces.push("Couleur par axe : "+oui(colorByAxis))
+    if(colorKey()) puces.push("Couleur par : "+libelleFiltre(colorKey()))
+    else if(m.anyAxe) puces.push("Couleur par axe : "+oui(colorByAxis))
     puces.push("Avancement : "+oui(showProgress))
     if(m.cols.archive) puces.push("Archives : "+oui(showArchives))
     document.getElementById("exPuces").textContent = puces.join(" · ")
@@ -4171,7 +3551,7 @@ function pgSec(d){ if(!d) return null; return Date.UTC(d.getFullYear(), d.getMon
 /* Ligne de l'écran -> ligne du planning PDF */
 function pgLigne(row, mappings){
     if(row.t==="grp"){
-        return {t:"grp", lib:row.key, resume:`${row.n} projet${row.n>1?"s":""}${row.avg!==null&&row.avg!==undefined?" · "+row.avg+" %":""}`}
+        return {t:"grp", lib:row.key, teinteGrp:teinteGroupe(row.key), resume:`${row.n} projet${row.n>1?"s":""}${row.avg!==null&&row.avg!==undefined?" · "+row.avg+" %":""}`}
     }
     const sp = barSpec(row, mappings)
     let lib, sous = ""
@@ -4189,7 +3569,7 @@ function pgLigne(row, mappings){
         if(lastView && isArchived(row.rec, lastView.model.cols)) sous = "archivé"+(sous?" · "+sous:"")
     }
     return {t:row.t, lib, sous, teinte:row.teinte, d:pgSec(sp.s), f:pgSec(sp.e), av:sp.av, fond:sp.solid?sp.plein:sp.fond,
-        plein:sp.plein, solid:sp.solid, retard:sp.retard, jours:sp.jours, depth:row.depth||0, inter:sp.inter}
+        plein:sp.plein, solid:sp.solid, retard:sp.retard, jours:sp.jours, depth:row.depth||0, inter:sp.inter, couleurs:sp.couleurs||[]}
 }
 
 /* Planning PDF : même dessin que celui de la console (nGantt), sur les
@@ -4211,8 +3591,9 @@ function pgGantt(ctx, rows, per){
     const styleDe=r=>{
         if(r.t==="grp") return {ind:8,st:"bold",c:"#5a4f4c",px:11}
         if(r.t==="axe") return {ind:12,st:"bold",c:r.teinte[2],px:11}
-        if(r.t==="proj") return {ind:0,st:"bold",c:NC.rouge,px:11}
-        if(r.t==="flat") return {ind:0,st:"bold",c:NC.encre,px:11}
+        const dl = r.couleurs && r.couleurs.length ? 11 : 0
+        if(r.t==="proj") return {ind:dl,st:"bold",c:NC.rouge,px:11}
+        if(r.t==="flat") return {ind:dl,st:"bold",c:NC.encre,px:11}
         if(r.t==="meo") return {ind:r.depth===2?26:14,st:"normal",c:NC.encre,px:11}
         return {ind:14+r.depth*12,st:"normal",c:NC.gris,px:10.5}
     }
@@ -4268,15 +3649,22 @@ function pgGantt(ctx, rows, per){
             const hTexte=r._l.length*lhl+r._s.length*12
             const yl=yc-hTexte/2+s.px*0.95
             if(r.t==="grp"){
-                nR(pdf,x,yy,W,h,"#F1EEE9")
-                nL(pdf,x,yy,x+W,yy,NC.taupe,2)
-                r._l.forEach((l,k)=>nT(pdf,x+s.ind,yl+k*lhl,l,{px:s.px,style:"bold",c:s.c}))
+                const tg=r.teinteGrp
+                nR(pdf,x,yy,W,h,tg?nPale(tg,0.86):"#F1EEE9")
+                nL(pdf,x,yy,x+W,yy,tg||NC.taupe,2)
+                const dx = tg ? 16 : 0
+                if(tg) nR(pdf,x+s.ind,yc-5,10,10,tg,2)
+                r._l.forEach((l,k)=>nT(pdf,x+s.ind+dx,yl+k*lhl,l,{px:s.px,style:"bold",c:s.c}))
                 nT(pdf,x+W-8,yc+3.8,r.resume,{px:10,c:NC.taupe,align:"right"})
                 yy+=h
                 nL(pdf,x,yy,x+W,yy,NC.filet,0.8)
                 return
             }
             if(r.t==="axe"){ nR(pdf,x,yy,W,h,nPale(r.teinte[1],0.35)); nR(pdf,x,yy,3,h,r.teinte[0]) }
+            if(r.couleurs && r.couleurs.length){
+                const hl=(h-8)/r.couleurs.length
+                r.couleurs.forEach((c,k)=>nR(pdf,x,yy+4+k*hl,4.5,hl,c))
+            }
             r._l.forEach((l,k)=>nT(pdf,x+s.ind,yl+k*lhl,l,{px:s.px,style:s.st,c:s.c}))
             r._s.forEach((l,k)=>nT(pdf,x+s.ind,yl+r._l.length*lhl+k*12-1,l,{px:9.5,c:NC.gris2}))
             if(r.t==="axe" && r.sous) nT(pdf,xp-8,yc+3.5,r.sous,{px:9.5,c:r.teinte[3],align:"right"})
@@ -4323,13 +3711,26 @@ function pgLegende(ctx, model){
     let x=NP.m, y=ctx.y+8
     const item=(c,lib,o)=>{
         o=o||{}
+        const besoin=(o.w||18)+6+nW(pdf,lib,9.5)+16
+        if(x+besoin>PW-NP.m){ x=NP.m; y+=16; ctx.y+=16 }
         if(o.retard){ nR(pdf,x-1.5,y-1.5,21,12,NC.rouge,3); nR(pdf,x,y,18,9,"#ffffff",2) }
         else nR(pdf,x,y,o.w||18,9,c,2)
         x+=(o.w||18)+6
         x+=nT(pdf,x,y+8,lib,{px:9.5,c:NC.gris})+16
     }
+    const ck=colorKey()
+    if(ck){
+        const vus=[...new Set(model.blocks.flatMap(b=>b.items).filter(it=>it.kind!=="orphan")
+            .flatMap(it=>groupValues(it.rec, ck, currentMappings)).filter(v=>v!==NR_GROUPE))]
+            .sort((a,b)=>a.localeCompare(b,"fr",{numeric:true,sensitivity:"base"}))
+        if(vus.length){
+            x+=nT(pdf,x,y+8,libelleFiltre(ck)+" :",{px:9.5,style:"bold",c:NC.encre})+8
+            vus.forEach(v=>item(couleurValeur(ck,v),v))
+            x=NP.m; y+=16; ctx.y+=16
+        }
+    }
     if(currentMappings.progress && showProgress){
-        if(model.hier) item(NC.rouge,"Projet")
+        if(model.hier && !ck) item(NC.rouge,"Projet")
         item("#7FA23F","≥ 76 %"); item("#E3A51A","26 à 75 %"); item("#F0904A","1 à 25 %"); item("#D8D3CC","non démarré")
     }
     item(null,"échéance dépassée",{retard:true})
@@ -4452,320 +3853,7 @@ function formatDateFr(v){
 }
 
 // Format ISO (aaaa-mm-jj), plus fiable pour pré-remplir un champ Date de formulaire
-function formatDateISO(v){
-    let d = parseDate(v)
-    if(!d) return ""
-    let day = String(d.getDate()).padStart(2,'0')
-    let month = String(d.getMonth()+1).padStart(2,'0')
-    let year = d.getFullYear()
-    return `${year}-${month}-${day}`
-}
-
-// Couleur du libellé selon son intitulé : "journal..." en bleu, "commentaire..." en rouge
-function detailRow(label, valueHtml){
-    return `<div class="detail-row"><div class="detail-label">${escapeHtml(label)}</div><div class="detail-value">${valueHtml}</div></div>`
-}
-
-// --- Charte reprise du widget PDF récap ---
-
-// Badge "clé / valeur". Si l'intitulé et la valeur ne tiennent pas sur une ligne,
-// le badge s'empile : intitulé au-dessus, valeur en dessous.
-function detailBadge(label, valueHtml){
-    let plain = String(valueHtml).replace(/<[^>]*>/g,"").replace(/&[a-z#0-9]+;/gi,"x")
-    let stacked = (String(label||"").length + plain.length) > 50
-    return `<div class="detail-badge${stacked ? " stacked" : ""}"><span class="k">${escapeHtml(label)}</span><span class="v">${valueHtml}</span></div>`
-}
-
-// Pastille colorée selon l'avancement (mêmes seuils que le PDF récap)
-function pctPillStyle(pct){
-    if(pct >= 100) return {bg:"var(--green-pale)", color:"var(--green-text)"}
-    if(pct >= 50)  return {bg:"var(--yellow-pale)", color:"var(--yellow-text)"}
-    if(pct >= 1)   return {bg:"var(--orange-pale)", color:"var(--orange-text)"}
-    return {bg:"var(--red-pale)", color:"var(--red-text)"}
-}
-
-// Pastille colorée pour la priorité (mêmes règles que le PDF récap)
-function priorityPillStyle(label){
-    let s = String(label||"").toLowerCase()
-    if(s.startsWith("p1")) return {bg:"var(--red)", color:"#fff"}
-    if(s.startsWith("p2")) return {bg:"var(--orange)", color:"#fff"}
-    if(s.startsWith("p3")) return {bg:"var(--yellow)", color:"#4d3d00"}
-    if(s.startsWith("interrompu")) return {bg:"#595959", color:"#fff"}
-    if(s.startsWith("termin")) return {bg:"var(--green)", color:"#fff"}
-    return {bg:"var(--bleu-france)", color:"#fff"}
-}
-
-function pillHtml(text, style){
-    return `<span class="detail-pill" style="background:${style.bg};color:${style.color};">${escapeHtml(text)}</span>`
-}
-
-// Une valeur d'une seule ligne part toujours en badge, quelle que soit sa longueur ;
-// seuls les textes multilignes (journal de bord, commentaire...) passent en rubrique
-function isSingleLine(v){
-    return String(v||"").indexOf("\n") === -1
-}
-
-// Découpe un texte type "journal de bord" en entrées : toute ligne commençant par
-// une date JJ/MM/AAAA ouvre une nouvelle entrée, les lignes suivantes lui sont rattachées.
-// Si aucune date n'est trouvée, on retombe sur le rendu texte classique.
-function renderJournal(text){
-    let val = String(text===null || text===undefined ? "" : text)
-    if(!val.trim()) return ""
-    let dateRe = /^\s*(\d{1,2}\/\d{1,2}\/\d{2,4})\s*(?:[-–—:.]\s*)?(.*)$/
-    let typeRe = /^([A-ZÀ-ÖØ-Þ0-9][A-ZÀ-ÖØ-Þ0-9 _''-]{1,24})\s*[-–—:]\s*(.*)$/
-    let entries = []
-    val.split(/\r?\n/).forEach(line=>{
-        let m = line.match(dateRe)
-        if(m){
-            entries.push({date:m[1], head:m[2]||"", rest:[]})
-        } else if(entries.length){
-            entries[entries.length-1].rest.push(line)
-        } else {
-            entries.push({date:null, head:line, rest:[]})
-        }
-    })
-    if(!entries.some(e=>e.date)) return escapeHtml(val)
-
-    let html = entries.map(e=>{
-        if(!e.date){
-            let txt = [e.head].concat(e.rest).join("\n").trim()
-            return txt ? `<div class="detail-entry-body">${escapeHtml(txt)}</div>` : ""
-        }
-        let type = "", body = e.head
-        let t = e.head.match(typeRe)
-        if(t){ type = t[1].trim(); body = t[2] }
-        let full = [body].concat(e.rest).join("\n").replace(/\s+$/,"")
-        let headHtml = `<span class="detail-entry-date">${escapeHtml(e.date)}</span>`
-        if(type) headHtml += `<span class="detail-entry-type">${escapeHtml(type)}</span>`
-        let bodyHtml = full.trim() ? `<div class="detail-entry-body">${escapeHtml(full)}</div>` : ""
-        return `<div class="detail-entry"><div class="detail-entry-head">${headHtml}</div>${bodyHtml}</div>`
-    }).join("")
-
-    return `<div class="detail-journal">${html}</div>`
-}
-
-// Panneau latéral pour une ligne de tâche (table liée)
-function openTaskDetailPanel(task){
-    detailPanelTitle.textContent = displayValue(task[taskCfg.label]) || "Tâche"
-
-    let badges = []
-    let dStart = formatDateFr(task[taskCfg.start])
-    let dEnd = formatDateFr(task[taskCfg.end])
-    if(dStart || dEnd){
-        badges.push(detailBadge("Période", escapeHtml(`${dStart || '?'} → ${dEnd || '?'}`)))
-    }
-    if(taskCfg.state){
-        let rule = stateRule(task[taskCfg.state])
-        let label = rule.label && rule.label.trim() !== "" ? rule.label : (rule.match || "Autre")
-        badges.push(detailBadge("Statut", `<span class="detail-status-badge"><span class="detail-status-dot" style="background:${rule.color}"></span>${escapeHtml(label)}</span>`))
-    }
-    if(taskCfg.progress){
-        let p = getPercentValue(task[taskCfg.progress])
-        if(p !== null) badges.push(detailBadge("Avancement", pillHtml(p+"%", pctPillStyle(p))))
-    }
-
-    detailPanelBody.innerHTML = badges.length ? `<div class="detail-badges">${badges.join("")}</div>` : ""
-    detailPanel.classList.add("open")
-    detailOverlay.classList.add("open")
-}
-
-// Récupère la valeur d'une action pour une "source" donnée (pré-remplissage du formulaire)
-function resolvePrefillValue(source, record, mappings){
-    switch(source){
-        case "task":
-            return record[mappings.task] || ""
-        case "start":
-            return formatDateISO(record[mappings.start])
-        case "end":
-            return formatDateISO(record[mappings.end])
-        case "state": {
-            if(!mappings.state) return ""
-            let rule = stateRule(record[mappings.state])
-            return (rule.label && rule.label.trim()) ? rule.label.trim() : (rule.match || "")
-        }
-        case "progress": {
-            let p = getProgress(record, mappings)
-            return p===null ? "" : String(p)
-        }
-        case "comment":
-            return mappings.comment ? displayValueMultiline(record[mappings.comment]) : ""
-        default:
-            // filterField, filterField2...7, extraField1...6
-            return mappings[source] ? displayValue(record[mappings[source]]) : ""
-    }
-}
-
-// Construit l'URL du formulaire, avec les paramètres de pré-remplissage
-function buildFormUrl(record, mappings){
-    if(!formUrl) return null
-    let params = (formPrefillMap||[])
-        .filter(m => m.columnId && m.columnId.trim())
-        .map(m => {
-            let val = resolvePrefillValue(m.source, record, mappings)
-            return `${encodeURIComponent(m.columnId.trim())}=${encodeURIComponent(val)}`
-        })
-    if(params.length === 0) return formUrl
-    let separator = formUrl.includes("?") ? "&" : "?"
-    return formUrl + separator + params.join("&")
-}
-
-function openDetailPanel(record, mappings){
-    let taskName = record[mappings.task] || ""
-
-    detailPanelTitle.textContent = taskName || "Tâche"
-
-    // Champs courts regroupés en badges, textes longs en rubriques (charte PDF récap)
-    let badges = []
-    let parts = []
-
-    let dStart = formatDateFr(record[mappings.start])
-    let dEnd = formatDateFr(record[mappings.end])
-    if(dStart || dEnd){
-        badges.push(detailBadge("Période", escapeHtml(`${dStart || '?'} → ${dEnd || '?'}`)))
-    }
-
-    // Statut (masqué par défaut dans le panneau, réactivable via ⚙)
-    if(showStatusInPanel && mappings.state){
-        let rule = stateRule(record[mappings.state])
-        let label = rule.label && rule.label.trim() !== "" ? rule.label : (rule.match || "Autre")
-        badges.push(detailBadge("Statut", `<span class="detail-status-badge"><span class="detail-status-dot" style="background:${rule.color}"></span>${escapeHtml(label)}</span>`))
-    }
-
-    if(mappings.progress){
-        let progress = getProgress(record, mappings)
-        if(progress !== null){
-            badges.push(detailBadge("Avancement", pillHtml(progress+"%", pctPillStyle(progress))))
-        }
-    }
-
-    if(mappings.natureAction){
-        let nat = displayValue(record[mappings.natureAction])
-        if(nat) badges.push(detailBadge("Nature de l'action", escapeHtml(nat)))
-    }
-
-    // Sur une ligne PEPS/AV, le champ Projet_Action répète le titre du panneau :
-    // on ne l'affiche que sur les actions de nature MEO.
-    // Si la colonne Nature n'est pas mappée dans le ⚙, on n'applique pas la règle.
-    let isMeoRow = mappings.natureAction
-        ? natureValues(record[mappings.natureAction]).some(v => v.indexOf("meo") !== -1)
-        : true
-
-    // Filtres 1 à 8 (avec leur libellé personnalisé)
-    FILTER_KEYS.forEach((key, idx)=>{
-        if(!mappings[key] || filterHidePanel[key]) return
-        let label = (filterLabels[key] && filterLabels[key].trim()) ? filterLabels[key].trim() : `Filtre ${idx+1}`
-        let normLabel = label.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()
-
-        // Champ "Projet_Action" : réservé aux actions MEO, et toujours présenté en rubrique
-        let isProjetField = normLabel.indexOf("projet") !== -1
-        if(isProjetField && !isMeoRow) return
-
-        if(filterIsPercent[key]){
-            let p = getPercentValue(record[mappings[key]])
-            if(p !== null) badges.push(detailBadge(label, pillHtml(p+"%", pctPillStyle(p))))
-            return
-        }
-
-        let val = displayValueMultiline(record[mappings[key]])
-        if(!val) return
-        if(isProjetField){
-            parts.push(detailRow(label, escapeHtml(val)))
-        } else if(normLabel.indexOf("priorit") !== -1){
-            badges.push(detailBadge(label, pillHtml(val, priorityPillStyle(val))))
-        } else if(isSingleLine(val)){
-            badges.push(detailBadge(label, escapeHtml(val)))
-        } else {
-            parts.push(detailRow(label, renderJournal(val)))
-        }
-    })
-
-    // Champs supplémentaires
-    EXTRA_KEYS.forEach(key=>{
-        if(!mappings[key]) return
-        let val = displayValueMultiline(record[mappings[key]])
-        if(!val) return
-        let idx = EXTRA_KEYS.indexOf(key) + 1
-        let label = (extraFieldLabels[key] && extraFieldLabels[key].trim()) ? extraFieldLabels[key].trim() : `Champ ${idx}`
-        // Emplacements de texte long : toujours en rubrique, même sur une seule ligne
-        parts.push(detailRow(label, renderJournal(val)))
-    })
-
-    if(mappings.comment){
-        let comment = displayValueMultiline(record[mappings.comment])
-        if(comment){
-            parts.push(detailRow("Commentaire", `<div class="detail-comment-box">${escapeHtml(comment)}</div>`))
-        }
-    }
-
-    let badgeBlock = badges.length ? `<div class="detail-badges">${badges.join("")}</div>` : ""
-    detailPanelBody.innerHTML = badgeBlock + parts.join("")
-
-    // Pièce jointe (chargement asynchrone)
-    if(mappings.attachment){
-        let attachmentBlock = document.createElement("div")
-        attachmentBlock.className = "detail-row"
-        attachmentBlock.innerHTML = `<div class="detail-label">Pièce jointe</div><div class="detail-value" id="detailAttachments"><span class="detail-empty">Chargement...</span></div>`
-        detailPanelBody.appendChild(attachmentBlock)
-        loadAttachments(record[mappings.attachment])
-    }
-
-    // Lien vers le formulaire Grist (si configuré dans ⚙)
-    if(formUrl){
-        let formBlock = document.createElement("div")
-        formBlock.className = "detail-row"
-        let url = buildFormUrl(record, mappings)
-        formBlock.innerHTML = `<a class="detail-form-button" href="${escapeAttr(url)}" target="_blank" rel="noopener">📝 Saisir une information</a>`
-        detailPanelBody.appendChild(formBlock)
-    }
-
-    detailPanel.classList.add("open")
-    detailOverlay.classList.add("open")
-}
-
-// Normalise la valeur d'une cellule Pièce Jointe Grist en tableau d'identifiants
-function extractAttachmentIds(value){
-    if(!value) return []
-    let arr = Array.isArray(value) ? value : [value]
-    if(arr[0] === "L") arr = arr.slice(1)
-    return arr.filter(v => v !== null && v !== undefined && v !== "")
-}
-
-async function loadAttachments(rawValue){
-    const container = document.getElementById("detailAttachments")
-    let ids = extractAttachmentIds(rawValue)
-
-    if(!container) return
-    if(ids.length === 0){
-        container.innerHTML = `<span class="detail-empty">Aucune pièce jointe</span>`
-        return
-    }
-
-    try{
-        const tokenInfo = await grist.docApi.getAccessToken({readOnly:true})
-        let html = ""
-        for(let i=0; i<ids.length; i++){
-            let id = ids[i]
-            let downloadUrl = `${tokenInfo.baseUrl}/attachments/${id}/download?auth=${tokenInfo.token}`
-            let fileName = `Pièce jointe ${i+1}`
-            // On tente de récupérer le nom réel du fichier ; en cas d'échec, on garde le libellé générique
-            try{
-                let metaResp = await fetch(`${tokenInfo.baseUrl}/attachments/${id}?auth=${tokenInfo.token}`)
-                if(metaResp.ok){
-                    let meta = await metaResp.json()
-                    let name = meta && (meta.fileName || (meta.fields && meta.fields.fileName))
-                    if(name) fileName = name
-                }
-            }catch(err){ /* on garde le libellé générique */ }
-
-            html += `<a class="detail-attachment" href="${downloadUrl}" download target="_blank" rel="noopener">📎 ${escapeHtml(fileName)}</a>`
-        }
-        container.innerHTML = html
-    }catch(err){
-        container.innerHTML = `<span class="detail-empty">Impossible de charger la pièce jointe</span>`
-    }
-}
-
-grist.onRecords((r,m)=>draw(r,m))
+grist.onRecords(r=>draw(r, mappingsFromConfig(r)))
 </script>
 </body>
 </html>
