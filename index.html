@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Widget planning (Gantt) — version 2026-10-15-a : paramétrage en dur (colonnes de la console), filtre Projet, couleur par groupement, clic = fiche dans la console -->
+<!-- Widget planning (Gantt) — version 2026-10-15-b : paramétrage en dur (colonnes de la console), filtre Projet, couleur par groupement, clic = fiche dans la console -->
 <html>
 <head>
 <meta charset="utf-8">
@@ -1273,7 +1273,8 @@ tr.task-row-sub td{
 <script>
 // L'accès complet au document est nécessaire pour lire la table des tâches (Liste_Tache)
 grist.ready({
-    requiredAccess:'full'   // lecture de la table des tâches ; colonnes figées dans CONFIG
+    requiredAccess:'full',  // lecture de la table des tâches ; colonnes figées dans CONFIG
+    allowSelectBy:true      // le planning peut piloter un autre widget (« Sélectionner par » de la console)
 })
 
 /* =====================================================================
